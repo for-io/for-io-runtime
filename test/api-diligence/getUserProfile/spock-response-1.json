@@ -1,0 +1,12 @@
+{
+  "status": 200,
+  "headers": {
+    "content-type": "application/json; charset=utf-8"
+  },
+  "body": {
+    "_id": "spock",
+    "email": "spock@example.com",
+    "firstName": "John",
+    "lastName": "Spock"
+  }
+}

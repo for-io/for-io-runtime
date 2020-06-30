@@ -1,0 +1,11 @@
+{
+  "status": 200,
+  "headers": {
+    "content-type": "application/json; charset=utf-8"
+  },
+  "body": {
+    "_id": "team_1",
+    "name": "some name",
+    "members": {}
+  }
+}

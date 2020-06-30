@@ -1,0 +1,33 @@
+{
+  "name": "for.io",
+  "version": "0.0.1",
+  "private": true,
+  "config": {},
+  "scripts": {
+    "start": "NODE_ENV=dev node ./bin/server.js",
+    "test": "jest --runInBand",
+    "coverage": "jest --runInBand --coverage"
+  },
+  "dependencies": {
+    "bcrypt": "^5.0.0",
+    "cookie-parser": "^1.4.5",
+    "cors": "^2.8.5",
+    "express": "^4.17.1",
+    "jsonwebtoken": "^8.5.1",
+    "lodash": "^4.17.15",
+    "mongodb": "^3.5.7",
+    "morgan": "^1.10.0",
+    "passport": "^0.4.1",
+    "passport-jwt": "^4.0.0",
+    "winston": "^3.2.1"
+  },
+  "devDependencies": {
+    "@shelf/jest-mongodb": "^1.1.5",
+    "jest": "^26.0.1",
+    "superagent": "^5.2.2",
+    "supertest": "^4.0.2"
+  },
+  "jest": {
+    "preset": "@shelf/jest-mongodb"
+  }
+}

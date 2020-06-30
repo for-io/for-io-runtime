@@ -1,0 +1,12 @@
+{
+  "method": "POST",
+  "url": "/login",
+  "headers": {
+    "x-mock-user": "",
+    "host": "example.com"
+  },
+  "body": {
+    "username": "spock",
+    "password": "Pass!123"
+  }
+}

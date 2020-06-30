@@ -1,0 +1,20 @@
+{
+  "organizations": [
+    {
+      "_id": "organization_1",
+      "name": "some name",
+      "teams": [
+        {
+          "_id": "team_1",
+          "name": "some name",
+          "members": {}
+        }
+      ]
+    },
+    {
+      "_id": "***",
+      "name": "the name",
+      "teams": []
+    }
+  ]
+}

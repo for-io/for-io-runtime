@@ -1,0 +1,8 @@
+{
+  "method": "GET",
+  "url": "/users/spock",
+  "headers": {
+    "x-mock-user": "spock",
+    "host": "example.com"
+  }
+}

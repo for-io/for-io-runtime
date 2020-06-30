@@ -1,0 +1,12 @@
+{
+  "method": "PATCH",
+  "url": "/users/spock",
+  "headers": {
+    "x-mock-user": "spock",
+    "host": "example.com"
+  },
+  "body": {
+    "firstName": "the firstName",
+    "lastName": "the lastName"
+  }
+}

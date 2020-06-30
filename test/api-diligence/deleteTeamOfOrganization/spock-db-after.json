@@ -1,0 +1,9 @@
+{
+  "organizations": [
+    {
+      "_id": "organization_1",
+      "name": "some name",
+      "teams": []
+    }
+  ]
+}

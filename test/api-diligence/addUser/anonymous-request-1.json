@@ -1,0 +1,15 @@
+{
+  "method": "POST",
+  "url": "/users",
+  "headers": {
+    "x-mock-user": "",
+    "host": "example.com"
+  },
+  "body": {
+    "username": "kirk",
+    "password": "abc",
+    "email": "kirk@example.com",
+    "firstName": "James",
+    "lastName": "Kirk"
+  }
+}
