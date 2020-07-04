@@ -72,43 +72,33 @@ module.exports = (router, routes, middleware, api, types, providers, exceptionHa
 
                 switch (name) {
                     case 'req':
-                    case '$req':
                         return req;
 
                     case 'res':
-                    case '$res':
                         return res;
 
                     case 'next':
-                    case '$next':
                         return next;
 
                     case 'exception':
-                    case '$exception':
                         return _exception;
 
                     case 'params':
-                    case '$params':
                         return provideDataObj('params');
 
                     case 'query':
-                    case '$query':
                         return provideDataObj('query');
 
                     case 'body':
-                    case '$body':
                         return provideDataObj('body');
 
                     case 'headers':
-                    case '$headers':
                         return provideDataObj('headers');
 
                     case 'cookies':
-                    case '$cookies':
                         return provideDataObj('cookies');
 
                     case 'specification':
-                    case '$specification':
                         return specification;
 
                     default:
