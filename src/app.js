@@ -42,6 +42,10 @@ const middleware = require('./middleware');
 const auth = require('./services/auth');
 const mail = require('./services/mail');
 
+const types = require('./type-registry').getTypes();
+require('./types-auth');
+require('./types-organizations');
+
 async function createApp(opts = {}) {
   const config = initConfig(opts);
 
@@ -50,7 +54,7 @@ async function createApp(opts = {}) {
   const db = opts.db || await connectToDb();
 
   const components = {
-    _, mongo, db, logger, router, middleware, mail, bcrypt, jwt, config, HTTP_STATUS_CODES,
+    _, types, mongo, db, logger, router, middleware, mail, bcrypt, jwt, config, HTTP_STATUS_CODES,
   };
 
   const context = new loader.DependencyInjection({

@@ -57,7 +57,6 @@ const FILENAMES = {
         "./utils/responses",
         "./utils/exceptionHandler"
     ],
-    _$TYPES_: ["./types"],
     _$ROUTING_: ["./routes"]
 };
 
