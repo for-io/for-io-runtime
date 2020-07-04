@@ -47,6 +47,9 @@ typeRegistry.addTypes(require('./types-auth'));
 typeRegistry.addTypes(require('./types-organizations'));
 const types = typeRegistry.getTypes();
 
+const routing = require('./routing');
+const routes = require('./routes');
+
 async function createApp(opts = {}) {
   const config = initConfig(opts);
 
@@ -55,7 +58,7 @@ async function createApp(opts = {}) {
   const db = opts.db || await connectToDb();
 
   const components = {
-    _, types, mongo, db, logger, router, middleware, mail, bcrypt, jwt, config, HTTP_STATUS_CODES,
+    _, types, mongo, db, routes, logger, router, middleware, mail, bcrypt, jwt, config, HTTP_STATUS_CODES,
   };
 
   const context = new loader.DependencyInjection({
@@ -66,6 +69,9 @@ async function createApp(opts = {}) {
 
   // set up authentication
   context.execute(auth.init);
+
+  // set up routing
+  context.execute(routing);
 
   if (config.DEV_MODE) {
     logger.info('Dependency injection context', context.info());

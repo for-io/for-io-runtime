@@ -56,8 +56,7 @@ const FILENAMES = {
         "./utils/commons",
         "./utils/responses",
         "./utils/exceptionHandler"
-    ],
-    _$ROUTING_: ["./routes"]
+    ]
 };
 
 module.exports = { FILENAMES };
