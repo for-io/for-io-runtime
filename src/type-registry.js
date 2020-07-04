@@ -24,13 +24,15 @@
  * SOFTWARE.
  */
 
-const _utils = require('./helper');
+const helper = require('./helper');
 
 const ERR_DATA_VALIDATION = 'Data validation errors!';
 
 const NO_VAL = null;
 
 const _types = {};
+
+const _util = { _has, _coll };
 
 function _registerType(typeName, factory) {
     _types[typeName] = _wrap(factory);
@@ -94,7 +96,7 @@ const EMAIL_REGEX = /^[^@\s]+@[^@\s]+\.[^@\s]+$/;
 const _builtInTypes = {
 
     _float(val, err, name) {
-        if (_utils.isNumber(val)) {
+        if (helper.isNumber(val)) {
             return parseFloat(val);
         } else {
             err.wrongType(name, 'float', val);
@@ -103,7 +105,7 @@ const _builtInTypes = {
     },
 
     _int(val, err, name) {
-        if (_utils.isNumber(val)) {
+        if (helper.isNumber(val)) {
             let n = parseFloat(val);
 
             if (Number.isInteger(n)) {
@@ -116,7 +118,7 @@ const _builtInTypes = {
     },
 
     _uint(val, err, name) {
-        if (_utils.isNumber(val)) {
+        if (helper.isNumber(val)) {
             let n = parseFloat(val);
 
             if (Number.isInteger(n)) {
@@ -134,7 +136,7 @@ const _builtInTypes = {
     },
 
     _byte(val, err, name) {
-        if (_utils.isNumber(val)) {
+        if (helper.isNumber(val)) {
             let n = parseFloat(val);
 
             if (Number.isInteger(n)) {
@@ -155,7 +157,7 @@ const _builtInTypes = {
     },
 
     _string(val, err, name) {
-        if (_utils.isString(val)) {
+        if (helper.isString(val)) {
             return val;
         } else {
             err.wrongType(name, 'string', val);
@@ -164,7 +166,7 @@ const _builtInTypes = {
     },
 
     _email(val, err, name) {
-        if (_utils.isString(val) && EMAIL_REGEX.test(val)) {
+        if (helper.isString(val) && EMAIL_REGEX.test(val)) {
             return val;
         } else {
             err.wrongType(name, 'email', val);
@@ -173,7 +175,7 @@ const _builtInTypes = {
     },
 
     _boolean(val, err, name) {
-        if (_utils.isBoolean(val)) {
+        if (helper.isBoolean(val)) {
             return val;
         } else {
             if (val === 'true' || val === 'y' || val == 1) {
@@ -188,7 +190,7 @@ const _builtInTypes = {
     },
 
     _object(val, err, name) {
-        if (_utils.isObject(val)) {
+        if (helper.isObject(val)) {
             return val;
         } else {
             err.wrongType(name, 'object', val);
@@ -205,8 +207,8 @@ function _has(val) {
 function _coll(factory, val, err, name) {
     if (val !== undefined && val !== null) {
 
-        if (_utils.isArray(val)) {
-            return val.map((item, index) => factory(item, err, name + index + '.'));
+        if (helper.isArray(val)) {
+            return val.map((item, index) => factory(item, err, name + index + '.', _types, _util));
         } else {
             err.wrongType(name, 'array', val);
             return [];
@@ -227,7 +229,7 @@ function _wrap(factory) {
         const isRoot = _err === undefined;
         if (isRoot) _err = new _ValidationErrors();
 
-        const result = factory(value, _err, _name);
+        const result = factory(value, _err, _name, _types, _util);
 
         function validate() {
             if (_err.hasErrors()) {
@@ -248,7 +250,7 @@ function _wrap(factory) {
             return _err.details();
         }
 
-        if (isRoot && (_utils.isObject(result) || _utils.isArray(result))) {
+        if (isRoot && (helper.isObject(result) || helper.isArray(result))) {
             result.validate = validate.bind(result);
             result.isValid = isValid.bind(result);
             result.getValidationErrors = getValidationErrors.bind(result);
@@ -299,7 +301,7 @@ function addTypes(types) {
     for (const typeName in types) {
         if (types.hasOwnProperty(typeName)) {
             const typeClass = types[typeName];
-            _registerType(typeName, (data, err, name = '') => new typeClass(data, err, name));
+            _registerType(typeName, (data, err, name = '') => new typeClass(data, err, name, _types, _util));
         }
     }
 }

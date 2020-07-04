@@ -42,9 +42,10 @@ const middleware = require('./middleware');
 const auth = require('./services/auth');
 const mail = require('./services/mail');
 
-const types = require('./type-registry').getTypes();
-require('./types-auth');
-require('./types-organizations');
+const typeRegistry = require('./type-registry');
+typeRegistry.addTypes(require('./types-auth'));
+typeRegistry.addTypes(require('./types-organizations'));
+const types = typeRegistry.getTypes();
 
 async function createApp(opts = {}) {
   const config = initConfig(opts);
