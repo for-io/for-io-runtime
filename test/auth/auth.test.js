@@ -23,7 +23,8 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-const { runTest } = require('../api-diligence/test-runner');
+const { runTest } = require('../../apidiligence/test-runner');
+const { createApp } = require("../../src/app");
 
 const state = {};
 
@@ -83,4 +84,4 @@ const test = {
     }],
 };
 
-runTest(test);
+runTest(test, { createApp });

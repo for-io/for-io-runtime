@@ -29,13 +29,12 @@ const { MongoClient } = require('mongodb');
 const { initDB, exportDB } = require('./mongo-test-setup');
 const { unmask } = require('./test-case-comparator');
 const { preprocess } = require('./test-data-preprocessor');
-const { createApp } = require("../../src/app");
 
 const SUPPORTED_HTTP_METHODS = ['GET', 'POST', 'OPTIONS', 'PATCH', 'PUT', 'DELETE'];
 
 const HDR_MOCK_USER = 'x-mock-user';
 
-function runTest(test) {
+function runTest(test, opts = {}) {
     describe(test.name, () => {
 
         let connection;
@@ -66,7 +65,7 @@ function runTest(test) {
             it(testCase.name, async () => {
                 const config = test.config || {};
 
-                const app = await createApp({ db, config });
+                const app = await opts.createApp({ db, config });
                 const agent = request.agent(app);
 
                 const assertedPrecondition = preprocess(testCase.precondition || test.precondition);

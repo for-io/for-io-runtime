@@ -23,8 +23,9 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-const { listTestDirs, loadTest } = require('./test-loader');
-const { runTest } = require('./test-runner');
+const { listTestDirs, loadTest } = require('../../apidiligence/test-loader');
+const { runTest } = require('../../apidiligence/test-runner');
+const { createApp } = require("../../src/app");
 
 const testDirs = listTestDirs(__dirname);
 
@@ -37,5 +38,5 @@ for (const testDir of testDirs) {
         JWT_SECRET: 'jwt_secret',
     };
 
-    runTest(test);
+    runTest(test, { createApp });
 }

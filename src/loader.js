@@ -24,43 +24,6 @@
  * SOFTWARE.
  */
 
-const FILENAMES = {
-    _$MOCKS_: [
-        "test/mocks/bcryptMock",
-        "test/mocks/middlewareMock",
-        "test/mocks/mailMock",
-        "test/mocks/configMock",
-        "test/mocks/jwtMock"
-    ],
-    _$API_: [
-        "src/api/users/getUserProfileImpl",
-        "src/api/users/updateUserImpl",
-        "src/api/users/deleteUserImpl",
-        "src/api/users/listUsersImpl",
-        "src/api/users/loginImpl",
-        "src/api/users/addUserImpl",
-        "src/api/organizations/addOrganizationImpl",
-        "src/api/organizations/updateOrganizationImpl",
-        "src/api/organizations/deleteOrganizationImpl",
-        "src/api/organizations/getOrganizationImpl",
-        "src/api/organizations/listOrganizationsImpl",
-        "src/api/organizations_teams/addTeamToOrganizationImpl",
-        "src/api/organizations_teams/updateTeamOfOrganizationImpl",
-        "src/api/organizations_teams/deleteTeamOfOrganizationImpl",
-        "src/api/organizations_teams/getTeamOfOrganizationImpl",
-        "src/api/organizations_teams/listTeamsOfOrganizationImpl"
-    ],
-    _$PROVIDERS_: ["src/providers/page", "src/providers/log", "src/providers/user"],
-    _$COMPONENTS_: [
-        "src/providers/collections",
-        "src/utils/commons",
-        "src/utils/responses",
-        "src/utils/exceptionHandler"
-    ],
-    _$TYPES_: ["generated/types"],
-    _$ROUTING_: ["generated/routes"]
-};
-
 const SEGMENT_KEY_REGEX = /^_\$[A-Z0-9_]+_$/;
 const GROUP_NAME_REGEX = /^[a-z0-9_\$]+$/;
 const GETTER_SUFFIX = '__getter';
@@ -252,7 +215,7 @@ class DependencyInjection {
 
         try {
             // load
-            this._segmentsByKey = this._loadSegments(FILENAMES);
+            this._segmentsByKey = this._loadSegments(opts.filenames);
 
             // initialize
             this._init();
@@ -279,7 +242,7 @@ class DependencyInjection {
                     let exported;
 
                     try {
-                        exported = require('../' + filename);
+                        exported = require(filename);
                     } catch (e) {
                         console.warn(`The module '${filename}' could not be imported!`);
                         this.logError(e);

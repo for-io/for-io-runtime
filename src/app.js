@@ -36,7 +36,8 @@ const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const HTTP_STATUS_CODES = require('http').STATUS_CODES;
 
-const loader = require('../generated/loader');
+const loader = require('./loader');
+const modules = require('./modules');
 const middleware = require('./middleware');
 const auth = require('./services/auth');
 const mail = require('./services/mail');
@@ -54,6 +55,7 @@ async function createApp(opts = {}) {
 
   const context = new loader.DependencyInjection({
     components,
+    filenames: modules.FILENAMES,
     useMocks: config.useMocks,
   });
 

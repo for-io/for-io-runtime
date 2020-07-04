@@ -4,7 +4,7 @@
   "private": true,
   "config": {},
   "scripts": {
-    "start": "NODE_ENV=dev node ./bin/server.js",
+    "start": "NODE_ENV=dev JWT_SECRET=X node ./src/server.js",
     "test": "jest --runInBand",
     "coverage": "jest --runInBand --coverage"
   },
