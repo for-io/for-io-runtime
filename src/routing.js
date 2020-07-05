@@ -33,7 +33,7 @@ module.exports = (router, routes, middleware, api, types, providers, exceptionHa
         let _dataObjs = {}; // a cache for data objects (params, query, body, headers, cookies)
 
         function initDataObj(name) {
-            let typeName = specification.typeNames[name];
+            let typeName = specification.typeNames ? specification.typeNames[name] : undefined;
 
             if (typeName) {
                 let type = types[typeName];
