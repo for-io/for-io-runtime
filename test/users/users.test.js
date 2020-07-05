@@ -25,20 +25,15 @@
  */
 
 const path = require('path');
-const { listTestDirs, loadTest } = require('../../apidiligence/test-loader');
-const { runTest } = require('../../apidiligence/test-runner');
+const { runApiDiligence } = require('../../apidiligence');
 const testSetup = require('./testSetup');
 
-const testDirs = listTestDirs(path.join(__dirname, 'api-diligence'));
-
-for (const testDir of testDirs) {
-    const test = loadTest(testDir);
-
-    test.config = {
+runApiDiligence({
+    dir: path.join(__dirname, 'api-diligence'),
+    setup: testSetup,
+    config: {
         useMocks: true,
         noHttpLogging: false,
         JWT_SECRET: 'jwt_secret',
-    };
-
-    runTest(test, testSetup);
-}
+    }
+});

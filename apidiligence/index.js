@@ -24,16 +24,21 @@
  * SOFTWARE.
  */
 
-const path = require('path');
-const { runApiDiligence } = require('../../apidiligence');
-const testSetup = require('./testSetup');
+const testLoader = require('./test-loader');
+const testRunner = require('./test-runner');
 
-runApiDiligence({
-    dir: path.join(__dirname, 'api-diligence'),
-    setup: testSetup,
-    config: {
-        useMocks: true,
-        noHttpLogging: false,
-        JWT_SECRET: 'jwt_secret',
+function runApiDiligence(opts) {
+    const testDirs = testLoader.listTestDirs(opts.dir);
+
+    for (const testDir of testDirs) {
+        const test = testLoader.loadTest(testDir);
+
+        if (opts.config) {
+            test.config = opts.config;
+        }
+
+        testRunner.runTest(test, opts.setup);
     }
-});
+}
+
+module.exports = Object.assign({ runApiDiligence }, testLoader, testRunner);

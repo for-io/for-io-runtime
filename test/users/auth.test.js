@@ -24,8 +24,7 @@
  * SOFTWARE.
  */
 
-const { runTest } = require('../../apidiligence/test-runner');
-
+const { runTest } = require('../../apidiligence');
 const testSetup = require('./testSetup');
 
 const state = {};
