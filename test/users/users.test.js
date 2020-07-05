@@ -27,9 +27,7 @@
 const path = require('path');
 const { listTestDirs, loadTest } = require('../../apidiligence/test-loader');
 const { runTest } = require('../../apidiligence/test-runner');
-const { createApp } = require("../../src/app");
-
-const testSetup = { createApp };
+const testSetup = require('./testSetup');
 
 const testDirs = listTestDirs(path.join(__dirname, 'api-diligence'));
 

@@ -24,21 +24,24 @@
  * SOFTWARE.
  */
 
-const path = require('path');
-const { listTestDirs, loadTest } = require('../../apidiligence/test-loader');
-const { runTest } = require('../../apidiligence/test-runner');
-const testSetup = require('./testSetup');
+const { createApp } = require("../../src/app");
 
-const testDirs = listTestDirs(path.join(__dirname, 'api-diligence'));
+const moduleNames = [
+    "./controllers/users/getUserProfileImpl",
+    "./controllers/users/updateUserImpl",
+    "./controllers/users/deleteUserImpl",
+    "./controllers/users/listUsersImpl",
+    "./controllers/users/loginImpl",
+    "./controllers/users/addUserImpl",
+]
 
-for (const testDir of testDirs) {
-    const test = loadTest(testDir);
+const modules = {};
 
-    test.config = {
-        useMocks: true,
-        noHttpLogging: false,
-        JWT_SECRET: 'jwt_secret',
-    };
-
-    runTest(test, testSetup);
+for (const moduleName of moduleNames) {
+    modules[moduleName] = require(moduleName);
 }
+
+const types = require('./users-types');
+const routes = require('./users-routes');
+
+module.exports = { createApp, appOpts: { modules, types, routes } };
