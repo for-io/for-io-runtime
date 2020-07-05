@@ -24,7 +24,7 @@
  * SOFTWARE.
  */
 
-const _utils = require('./helper');
+const helper = require('./helper');
 
 const SEGMENT_KEY_REGEX = /^_\$[A-Z0-9_]+_$/;
 const GROUP_NAME_REGEX = /^[a-z0-9_\$]+$/;
@@ -125,6 +125,7 @@ class DependencyInjection {
         this._factories = Object.assign({}, opts.factories || {});
         this._mockFactories = Object.assign({}, opts.mockFactories || {});
 
+        this._segmentsByKey = {};
         this._segments = {};
         this._groups = {};
         this._getters = {};
@@ -136,7 +137,12 @@ class DependencyInjection {
 
         try {
             // load
-            this._segmentsByKey = this._loadSegments(opts.filenames);
+            this._loadSegments(opts.filenames);
+
+            // register provided modules
+            if (opts.modules) {
+                this._registerModules(opts.modules);
+            }
 
             // initialize
             this._init();
@@ -144,57 +150,70 @@ class DependencyInjection {
             debug('DI context is ready', this.info());
 
         } catch (e) {
-            this._segmentsByKey = {};
-
             debug('DI initialization error!', this.info());
             throw e;
         }
     }
 
     _loadSegments(filenames) {
-        const segsByKey = {};
-
         for (const segmentKey in filenames) {
             if (filenames.hasOwnProperty(segmentKey)) {
                 validateSegmentKey(segmentKey);
 
-                const segs = [];
-
                 for (let filename of filenames[segmentKey]) {
 
-                    let exported;
+                    let importedModule;
 
                     try {
-                        exported = require(filename);
+                        importedModule = require(filename);
                     } catch (e) {
-                        console.warn(`The module '${filename}' could not be imported!`);
-                        this.logError(e);
+                        throw new Error(`The module '${filename}' could not be imported!`, e);
                     }
 
-                    if (exported) {
-                        if (segmentKey in exported) {
-
-                            let exportedSeg = exported[segmentKey];
-
-                            let dependencies = (typeof exportedSeg === 'function') ? _utils.getParamNames(exportedSeg) : [];
-
-                            segs.push({
-                                filename: filename + '.js',
-                                dependencies,
-                                exported: exportedSeg,
-                            });
-
-                        } else {
-                            console.warn(`The module '${filename}' does not export '${segmentKey}'`);
-                        }
-                    }
+                    this._addModuleToSeg(importedModule, filename + '.js');
                 }
+            }
+        }
+    }
 
-                segsByKey[segmentKey] = segs;
+    _registerModules(modules) {
+        if (!helper.isObject(modules)) throw new Error('The modules must be an object, with filenames as keys and modules as values!', modules);
+
+        for (const filename in modules) {
+            if (modules.hasOwnProperty(filename)) {
+                const mod = modules[filename];
+                this._addModuleToSeg(mod, filename);
+            }
+        }
+    }
+
+    _addModuleToSeg(mod, filename) {
+        if (!helper.isObject(mod)) throw new Error(`The module '${filename}' must export an object!`);
+
+        let foundSegKey = false;
+
+        for (const segmentKey in mod) {
+            if (mod.hasOwnProperty(segmentKey)) {
+                validateSegmentKey(segmentKey);
+                foundSegKey = true;
+
+                let exportedSeg = mod[segmentKey];
+
+                let dependencies = (typeof exportedSeg === 'function') ? helper.getParamNames(exportedSeg) : [];
+
+                this._getSegs(segmentKey).push({
+                    filename,
+                    dependencies,
+                    exported: exportedSeg,
+                });
             }
         }
 
-        return segsByKey;
+        if (!foundSegKey) throw new Error(`The module '${filename}' must export at least one segment!`, mod);
+    }
+
+    _getSegs(segmentKey) {
+        return this._segmentsByKey[segmentKey] = this._segmentsByKey[segmentKey] || [];
     }
 
     _init() {
@@ -279,14 +298,14 @@ class DependencyInjection {
     }
 
     _findDependency(name) {
-        if (!_utils.isValidName(name)) {
+        if (!helper.isValidName(name)) {
             throw new Error(`Invalid name: '${name}'`);
         }
 
         if (name === '_context') {
             return this;
         } else if (name === '_utils') {
-            return _utils;
+            return helper;
         }
 
         if (this._mocks.hasOwnProperty(name)) {
@@ -340,7 +359,7 @@ class DependencyInjection {
         const chain = this._depInfo.getChain();
         debug(`Creating component '${name}' (dependency chain: ${chain})`);
 
-        const comp = _utils.invoke(factory, name => this.getDependency(name));
+        const comp = helper.invoke(factory, name => this.getDependency(name));
         this._components[name] = comp;
 
         const segment = this._segments[name];
@@ -356,7 +375,7 @@ class DependencyInjection {
         const chain = this._depInfo.getChain();
         debug(`Creating mock '${name}' (dependency chain: ${chain})`);
 
-        const mock = _utils.invoke(factory, name => this.getDependency(name));
+        const mock = helper.invoke(factory, name => this.getDependency(name));
         this._mocks[name] = mock;
 
         const segment = this._segments[name];
@@ -387,7 +406,7 @@ class DependencyInjection {
 
                     let exportedMembers;
                     if (typeof exported === 'function') {
-                        exportedMembers = _utils.invoke(exported, name => this.getDependency(name));
+                        exportedMembers = helper.invoke(exported, name => this.getDependency(name));
                     } else {
                         exportedMembers = exported;
                     }
@@ -446,7 +465,7 @@ class DependencyInjection {
     }
 
     execute(func) {
-        _utils.invoke(func, name => this.getDependency(name));
+        helper.invoke(func, name => this.getDependency(name));
     }
 
 }

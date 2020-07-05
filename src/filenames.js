@@ -24,7 +24,7 @@
  * SOFTWARE.
  */
 
-const FILENAMES = {
+module.exports = {
     _$MOCKS_: [
         "./mocks/bcryptMock",
         "./mocks/middlewareMock",
@@ -39,16 +39,6 @@ const FILENAMES = {
         "./api/users/listUsersImpl",
         "./api/users/loginImpl",
         "./api/users/addUserImpl",
-        "./api/organizations/addOrganizationImpl",
-        "./api/organizations/updateOrganizationImpl",
-        "./api/organizations/deleteOrganizationImpl",
-        "./api/organizations/getOrganizationImpl",
-        "./api/organizations/listOrganizationsImpl",
-        "./api/organizations_teams/addTeamToOrganizationImpl",
-        "./api/organizations_teams/updateTeamOfOrganizationImpl",
-        "./api/organizations_teams/deleteTeamOfOrganizationImpl",
-        "./api/organizations_teams/getTeamOfOrganizationImpl",
-        "./api/organizations_teams/listTeamsOfOrganizationImpl"
     ],
     _$PROVIDERS_: ["./providers/page", "./providers/log", "./providers/user"],
     _$COMPONENTS_: [
@@ -58,5 +48,3 @@ const FILENAMES = {
         "./utils/exceptionHandler"
     ]
 };
-
-module.exports = { FILENAMES };

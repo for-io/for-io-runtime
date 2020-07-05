@@ -23,6 +23,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
+
 const _ = require('lodash');
 const mongo = require('mongodb');
 const express = require('express');
@@ -37,15 +38,15 @@ const jwt = require('jsonwebtoken');
 const HTTP_STATUS_CODES = require('http').STATUS_CODES;
 
 const loader = require('./loader');
-const modules = require('./modules');
+const filenames = require('./filenames');
 const middleware = require('./middleware');
 const auth = require('./services/auth');
 const mail = require('./services/mail');
 
 const typeRegistry = require('./type-registry');
-typeRegistry.addTypes(require('./types-auth'));
-typeRegistry.addTypes(require('./types-organizations'));
 const types = typeRegistry.getTypes();
+
+typeRegistry.addTypes(require('./types-auth'));
 
 const routing = require('./routing');
 const routes = require('./routes');
@@ -53,9 +54,14 @@ const routes = require('./routes');
 async function createApp(opts = {}) {
   const config = initConfig(opts);
 
+  const modules = opts.modules || [];
   const logger = opts.logger || console;
   const router = opts.router || express.Router();
   const db = opts.db || await connectToDb();
+
+  if (opts.types) {
+    typeRegistry.addTypes(opts.types);
+  }
 
   const components = {
     _, types, mongo, db, routes, logger, router, middleware, mail, bcrypt, jwt, config, HTTP_STATUS_CODES,
@@ -63,7 +69,8 @@ async function createApp(opts = {}) {
 
   const context = new loader.DependencyInjection({
     components,
-    filenames: modules.FILENAMES,
+    modules,
+    filenames,
     useMocks: config.useMocks,
   });
 

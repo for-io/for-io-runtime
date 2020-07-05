@@ -65,7 +65,9 @@ function runTest(test, opts = {}) {
             it(testCase.name, async () => {
                 const config = test.config || {};
 
-                const app = await opts.createApp({ db, config });
+                const appOpts = opts.appOpts || {};
+                Object.assign(appOpts, { db, config });
+                const app = await opts.createApp(appOpts);
                 const agent = request.agent(app);
 
                 const assertedPrecondition = preprocess(testCase.precondition || test.precondition);

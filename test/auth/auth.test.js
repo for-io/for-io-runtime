@@ -23,8 +23,9 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
+
 const { runTest } = require('../../apidiligence/test-runner');
-const { createApp } = require("../../src/app");
+const testSetup = require("../testSetup");
 
 const state = {};
 
@@ -84,4 +85,4 @@ const test = {
     }],
 };
 
-runTest(test, { createApp });
+runTest(test, testSetup);
