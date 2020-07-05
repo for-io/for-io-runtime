@@ -49,7 +49,7 @@ const types = typeRegistry.getTypes();
 typeRegistry.addTypes(require('./types-auth'));
 
 const routing = require('./routing');
-const routes = require('./routes');
+const builtInRoutes = require('./routes');
 
 async function createApp(opts = {}) {
   const config = initConfig(opts);
@@ -58,6 +58,8 @@ async function createApp(opts = {}) {
   const logger = opts.logger || console;
   const router = opts.router || express.Router();
   const db = opts.db || await connectToDb();
+
+  const routes = builtInRoutes.concat(opts.routes || []);
 
   if (opts.types) {
     typeRegistry.addTypes(opts.types);

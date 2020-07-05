@@ -24,27 +24,23 @@
  * SOFTWARE.
  */
 
-const { createApp } = require("../src/app");
+const path = require('path');
+const { listTestDirs, loadTest } = require('../../apidiligence/test-loader');
+const { runTest } = require('../../apidiligence/test-runner');
+const { createApp } = require("../../src/app");
 
-const filenames = [
-    "./controllers/organizations/addOrganizationImpl",
-    "./controllers/organizations/updateOrganizationImpl",
-    "./controllers/organizations/deleteOrganizationImpl",
-    "./controllers/organizations/getOrganizationImpl",
-    "./controllers/organizations/listOrganizationsImpl",
-    "./controllers/organizations_teams/addTeamToOrganizationImpl",
-    "./controllers/organizations_teams/updateTeamOfOrganizationImpl",
-    "./controllers/organizations_teams/deleteTeamOfOrganizationImpl",
-    "./controllers/organizations_teams/getTeamOfOrganizationImpl",
-    "./controllers/organizations_teams/listTeamsOfOrganizationImpl"
-];
+const testSetup = { createApp };
 
-const modules = {};
+const testDirs = listTestDirs(path.join(__dirname, 'api-diligence'));
 
-for (const filename of filenames) {
-    modules[filename] = require(filename);
+for (const testDir of testDirs) {
+    const test = loadTest(testDir);
+
+    test.config = {
+        useMocks: true,
+        noHttpLogging: false,
+        JWT_SECRET: 'jwt_secret',
+    };
+
+    runTest(test, testSetup);
 }
-
-const types = require('./types-organizations');
-
-module.exports = { createApp, appOpts: { modules, types } };

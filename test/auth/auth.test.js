@@ -25,7 +25,9 @@
  */
 
 const { runTest } = require('../../apidiligence/test-runner');
-const testSetup = require("../testSetup");
+const { createApp } = require("../../src/app");
+
+const testSetup = { createApp };
 
 const state = {};
 

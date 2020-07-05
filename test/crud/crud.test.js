@@ -24,11 +24,36 @@
  * SOFTWARE.
  */
 
+const path = require('path');
 const { listTestDirs, loadTest } = require('../../apidiligence/test-loader');
 const { runTest } = require('../../apidiligence/test-runner');
-const testSetup = require("../testSetup");
+const { createApp } = require("../../src/app");
 
-const testDirs = listTestDirs(__dirname);
+const filenames = [
+    "./controllers/organizations/addOrganizationImpl",
+    "./controllers/organizations/updateOrganizationImpl",
+    "./controllers/organizations/deleteOrganizationImpl",
+    "./controllers/organizations/getOrganizationImpl",
+    "./controllers/organizations/listOrganizationsImpl",
+    "./controllers/organizations_teams/addTeamToOrganizationImpl",
+    "./controllers/organizations_teams/updateTeamOfOrganizationImpl",
+    "./controllers/organizations_teams/deleteTeamOfOrganizationImpl",
+    "./controllers/organizations_teams/getTeamOfOrganizationImpl",
+    "./controllers/organizations_teams/listTeamsOfOrganizationImpl"
+];
+
+const modules = {};
+
+for (const filename of filenames) {
+    modules[filename] = require(filename);
+}
+
+const types = require('./crud-types');
+const routes = require('./crud-routes');
+
+const testSetup = { createApp, appOpts: { modules, types, routes } };
+
+const testDirs = listTestDirs(path.join(__dirname, 'api-diligence'));
 
 for (const testDir of testDirs) {
     const test = loadTest(testDir);
