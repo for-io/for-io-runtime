@@ -24,27 +24,23 @@
  * SOFTWARE.
  */
 
-module.exports = {
-    _$MOCKS_: [
-        "./mocks/bcryptMock",
-        "./mocks/middlewareMock",
-        "./mocks/mailMock",
-        "./mocks/configMock",
-        "./mocks/jwtMock"
-    ],
-    _$API_: [
-        "./api/users/getUserProfileImpl",
-        "./api/users/updateUserImpl",
-        "./api/users/deleteUserImpl",
-        "./api/users/listUsersImpl",
-        "./api/users/loginImpl",
-        "./api/users/addUserImpl",
-    ],
-    _$PROVIDERS_: ["./providers/page", "./providers/log", "./providers/user"],
-    _$COMPONENTS_: [
-        "./providers/collections",
-        "./utils/commons",
-        "./utils/responses",
-        "./utils/exceptionHandler"
-    ]
-};
+module.exports = [
+    "./mocks/bcryptMock",
+    "./mocks/middlewareMock",
+    "./mocks/mailMock",
+    "./mocks/configMock",
+    "./mocks/jwtMock",
+    "./api/users/getUserProfileImpl",
+    "./api/users/updateUserImpl",
+    "./api/users/deleteUserImpl",
+    "./api/users/listUsersImpl",
+    "./api/users/loginImpl",
+    "./api/users/addUserImpl",
+    "./providers/page",
+    "./providers/log",
+    "./providers/user",
+    "./providers/collections",
+    "./utils/commons",
+    "./utils/responses",
+    "./utils/exceptionHandler"
+];

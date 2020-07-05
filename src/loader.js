@@ -137,7 +137,7 @@ class DependencyInjection {
 
         try {
             // load
-            this._loadSegments(opts.filenames);
+            this._loadSegments(opts.moduleNames);
 
             // register provided modules
             if (opts.modules) {
@@ -155,23 +155,15 @@ class DependencyInjection {
         }
     }
 
-    _loadSegments(filenames) {
-        for (const segmentKey in filenames) {
-            if (filenames.hasOwnProperty(segmentKey)) {
-                validateSegmentKey(segmentKey);
+    _loadSegments(moduleNames) {
+        for (let moduleName of moduleNames) {
+            try {
+                let importedModule = require(moduleName);
 
-                for (let filename of filenames[segmentKey]) {
+                this._addModuleToSeg(importedModule, moduleName);
 
-                    let importedModule;
-
-                    try {
-                        importedModule = require(filename);
-                    } catch (e) {
-                        throw new Error(`The module '${filename}' could not be imported!`, e);
-                    }
-
-                    this._addModuleToSeg(importedModule, filename + '.js');
-                }
+            } catch (e) {
+                throw new Error(`The module '${moduleName}' could not be imported!`, e);
             }
         }
     }
@@ -179,16 +171,16 @@ class DependencyInjection {
     _registerModules(modules) {
         if (!helper.isObject(modules)) throw new Error('The modules must be an object, with filenames as keys and modules as values!', modules);
 
-        for (const filename in modules) {
-            if (modules.hasOwnProperty(filename)) {
-                const mod = modules[filename];
-                this._addModuleToSeg(mod, filename);
+        for (const moduleName in modules) {
+            if (modules.hasOwnProperty(moduleName)) {
+                const mod = modules[moduleName];
+                this._addModuleToSeg(mod, moduleName);
             }
         }
     }
 
-    _addModuleToSeg(mod, filename) {
-        if (!helper.isObject(mod)) throw new Error(`The module '${filename}' must export an object!`);
+    _addModuleToSeg(mod, moduleName) {
+        if (!helper.isObject(mod)) throw new Error(`The module '${moduleName}' must export an object!`);
 
         let foundSegKey = false;
 
@@ -202,14 +194,14 @@ class DependencyInjection {
                 let dependencies = (typeof exportedSeg === 'function') ? helper.getParamNames(exportedSeg) : [];
 
                 this._getSegs(segmentKey).push({
-                    filename,
+                    filename: moduleName,
                     dependencies,
                     exported: exportedSeg,
                 });
             }
         }
 
-        if (!foundSegKey) throw new Error(`The module '${filename}' must export at least one segment!`, mod);
+        if (!foundSegKey) throw new Error(`The module '${moduleName}' must export at least one segment!`, mod);
     }
 
     _getSegs(segmentKey) {

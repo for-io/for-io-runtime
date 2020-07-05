@@ -38,7 +38,7 @@ const jwt = require('jsonwebtoken');
 const HTTP_STATUS_CODES = require('http').STATUS_CODES;
 
 const loader = require('./loader');
-const filenames = require('./filenames');
+const moduleNames = require('./modulenames');
 const middleware = require('./middleware');
 const auth = require('./services/auth');
 const mail = require('./services/mail');
@@ -54,7 +54,7 @@ const routes = require('./routes');
 async function createApp(opts = {}) {
   const config = initConfig(opts);
 
-  const modules = opts.modules || [];
+  const modules = opts.modules;
   const logger = opts.logger || console;
   const router = opts.router || express.Router();
   const db = opts.db || await connectToDb();
@@ -70,7 +70,7 @@ async function createApp(opts = {}) {
   const context = new loader.DependencyInjection({
     components,
     modules,
-    filenames,
+    moduleNames,
     useMocks: config.useMocks,
   });
 
