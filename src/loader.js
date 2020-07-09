@@ -385,7 +385,7 @@ class DependencyInjection {
         this._depInfo.checkForCircularDependencyAndRegister(segmentKey);
 
         try {
-            const group = this._groups[groupName] = {};
+            const group = this._groups[groupName] = this._components[groupName] || {};
             const segments = this._segmentsByKey[segmentKey] || [];
 
             for (const segment of segments) {

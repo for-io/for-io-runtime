@@ -58,13 +58,14 @@ async function createApp(opts = {}) {
   const router = opts.router || express.Router();
   const db = opts.db || await connectToDb();
   const routes = opts.routes || [];
+  const api = opts.api || {};
 
   if (opts.types) {
     typeRegistry.addTypes(opts.types);
   }
 
   const components = {
-    _, types, mongo, db, routes, logger, router, middleware, mail, bcrypt, jwt, config, HTTP_STATUS_CODES,
+    _, types, mongo, db, routes, logger, router, api, middleware, mail, bcrypt, jwt, config, HTTP_STATUS_CODES,
   };
 
   const context = new loader.DependencyInjection({
