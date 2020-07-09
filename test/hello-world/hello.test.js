@@ -6,7 +6,7 @@ const modules = {
 
 const routes = require('./hello-routes');
 
-const testSetup = { ForIo: { modules, routes } };
+const testSetup = { modules, routes, dir: __dirname };
 
 const test = {
     name: 'hello',

@@ -29,7 +29,7 @@ const { runApiDiligence } = require('../../apidiligence');
 const testSetup = require('./testSetup');
 
 runApiDiligence({
-    dir: path.join(__dirname, 'api-diligence'),
+    testsRoot: path.join(__dirname, 'api-diligence'),
     setup: testSetup,
     config: {
         useMocks: true,

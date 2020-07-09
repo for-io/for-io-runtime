@@ -28,7 +28,7 @@ const testLoader = require('./test-loader');
 const testRunner = require('./test-runner');
 
 function runApiDiligence(opts) {
-    const testDirs = testLoader.listTestDirs(opts.dir);
+    const testDirs = testLoader.listTestDirs(opts.testsRoot);
 
     for (const testDir of testDirs) {
         const test = testLoader.loadTest(testDir);

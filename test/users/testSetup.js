@@ -33,13 +33,7 @@ const moduleNames = [
     "./controllers/users/addUserImpl",
 ]
 
-const modules = {};
-
-for (const moduleName of moduleNames) {
-    modules[moduleName] = require(moduleName);
-}
-
 const types = require('./users-types');
 const routes = require('./users-routes');
 
-module.exports = { ForIo: { modules, types, routes } };
+module.exports = { moduleNames, types, routes, dir: __dirname };

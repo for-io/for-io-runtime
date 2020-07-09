@@ -25,6 +25,7 @@
  */
 
 const _ = require('lodash');
+const path = require('path');
 const mongo = require('mongodb');
 const express = require('express');
 const bcrypt = require('bcrypt');
@@ -48,11 +49,17 @@ async function createApp(opts = {}) {
   const config = initConfig(opts);
 
   const modules = opts.modules;
+
+  const dir = opts.dir;
   const logger = opts.logger || console;
   const router = opts.router || express.Router();
   const db = opts.db || await connectToDb();
   const routes = opts.routes || [];
   const api = opts.api || {};
+
+  if (opts.moduleNames) {
+    appendModuleNames(dir, opts.moduleNames);
+  }
 
   if (opts.types) {
     typeRegistry.addTypes(opts.types);
@@ -95,6 +102,12 @@ function initConfig(opts) {
   }
 
   return config;
+}
+
+function appendModuleNames(dir, names) {
+  for (const name of names) {
+    moduleNames.push(dir ? path.join(dir, name) : name);
+  }
 }
 
 async function connectToDb() {
