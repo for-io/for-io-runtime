@@ -24,7 +24,7 @@
  * SOFTWARE.
  */
 const http = require('http');
-const { createApp } = require('./app');
+const { createApp } = require('./main');
 
 async function start() {
   const app = await createApp();

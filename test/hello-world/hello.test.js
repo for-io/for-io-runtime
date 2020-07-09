@@ -1,5 +1,4 @@
 const { runTest } = require('../../apidiligence');
-const { createApp } = require("../../src/app");
 
 const modules = {
     hello: require('./hello')
@@ -7,7 +6,7 @@ const modules = {
 
 const routes = require('./hello-routes');
 
-const testSetup = { createApp, appOpts: { modules, routes } };
+const testSetup = { ForIo: { modules, routes } };
 
 const test = {
     name: 'hello',

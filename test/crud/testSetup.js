@@ -1,5 +1,3 @@
-const { createApp } = require("../../src/app");
-
 const moduleNames = [
     "./controllers/organizations/addOrganizationImpl",
     "./controllers/organizations/updateOrganizationImpl",
@@ -22,4 +20,4 @@ for (const moduleName of moduleNames) {
 const types = require('./crud-types');
 const routes = require('./crud-routes');
 
-module.exports = { createApp, appOpts: { modules, types, routes } };
+module.exports = { ForIo: { modules, types, routes } };

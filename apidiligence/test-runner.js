@@ -39,6 +39,7 @@ function runTest(test, opts = {}) {
 
         let connection;
         let db;
+        let appFactory;
 
         beforeAll(async () => {
             connection = await MongoClient.connect(global.__MONGO_URI__, {
@@ -47,6 +48,8 @@ function runTest(test, opts = {}) {
             });
 
             db = await connection.db(global.__MONGO_DB_NAME__);
+
+            appFactory = opts.appFactory || require('../src/main').createApp;
         });
 
         beforeEach(async () => {
@@ -65,9 +68,9 @@ function runTest(test, opts = {}) {
             it(testCase.name, async () => {
                 const config = test.config || {};
 
-                const appOpts = opts.appOpts || {};
+                const appOpts = opts.ForIo || {};
                 Object.assign(appOpts, { db, config });
-                const app = await opts.createApp(appOpts);
+                const app = await appFactory(appOpts);
                 const agent = request.agent(app);
 
                 const assertedPrecondition = preprocess(testCase.precondition || test.precondition);

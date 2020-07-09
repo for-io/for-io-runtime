@@ -24,8 +24,6 @@
  * SOFTWARE.
  */
 
-const { createApp } = require("../../src/app");
-
 const moduleNames = [
     "./controllers/users/getUserProfileImpl",
     "./controllers/users/updateUserImpl",
@@ -44,4 +42,4 @@ for (const moduleName of moduleNames) {
 const types = require('./users-types');
 const routes = require('./users-routes');
 
-module.exports = { createApp, appOpts: { modules, types, routes } };
+module.exports = { ForIo: { modules, types, routes } };
