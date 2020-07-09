@@ -137,7 +137,9 @@ class DependencyInjection {
 
         try {
             // load
-            this._loadSegments(opts.moduleNames);
+            if (opts.moduleNames) {
+                this._loadSegments(opts.moduleNames);
+            }
 
             // register provided modules
             if (opts.modules) {
