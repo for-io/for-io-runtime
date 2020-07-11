@@ -25,7 +25,7 @@
  */
 exports._$COMPONENTS_ = {
 
-    exceptionHandler(logger, HTTP_STATUS_CODES) {
+    exceptionHandler__default(logger, HTTP_STATUS_CODES) {
         return (res, exception) => {
             let status;
 

@@ -29,6 +29,7 @@ const helper = require('./helper');
 const SEGMENT_KEY_REGEX = /^_\$[A-Z0-9_]+_$/;
 const GROUP_NAME_REGEX = /^[a-z0-9_\$]+$/;
 const GETTER_SUFFIX = '__getter';
+const DEFAULT_SUFFIX = '__default';
 
 function debug(...args) {
     // console.debug(...args)
@@ -339,16 +340,32 @@ class DependencyInjection {
             }
         }
 
-        const component = this._findAndInitComponent(name);
-        if (component !== undefined) return component;
+        // factory
+        if (this._factories.hasOwnProperty(name)) {
+            return this._produceComponent(name);
+        }
+
+        // try defaults
+        const defaultName = name + DEFAULT_SUFFIX;
+
+        // default component
+        if (this._components.hasOwnProperty(defaultName)) {
+            // found a default component that has been initialized
+            return this._components[defaultName];
+        }
+
+        // default component factory
+        if (this._factories.hasOwnProperty(defaultName)) {
+            return this._produceComponent(defaultName);
+        }
 
         const chain = this._depInfo.getChain();
         throw new Error(`Cannot find dependency '${name}' (dependency chain: ${chain})`);
     }
 
-    _findAndInitComponent(name) {
-        if (!this._factories.hasOwnProperty(name)) return undefined;
+    _produceComponent(name) {
         const factory = this._factories[name];
+        if (!factory) throw new Error(`The factory '${name}' doesn't exist!`);
 
         const chain = this._depInfo.getChain();
         debug(`Creating component '${name}' (dependency chain: ${chain})`);

@@ -25,7 +25,7 @@
  */
 exports._$COMPONENTS_ = {
 
-    responses: {
+    responses__default: {
 
         OK: {
             success: true,
