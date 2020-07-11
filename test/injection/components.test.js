@@ -1,4 +1,4 @@
-const loader = require('../../src/loader');
+const container = require('../../src/container');
 
 test('dependency chain across modules', () => {
     const modules = {
@@ -25,7 +25,7 @@ test('dependency chain inside module', () => {
 });
 
 function verifyDeps(opts) {
-    const context = new loader.DependencyInjection(opts);
+    const context = new container.DependencyInjection(opts);
 
     expect(context.getDependency('baz')).toBe('xyz');
     expect(context.getDependency('bar')).toBe('xy');

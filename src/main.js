@@ -35,7 +35,7 @@ const HTTP_STATUS_CODES = require('http').STATUS_CODES;
 const { newApp } = require('./app');
 
 const routing = require('./routing');
-const loader = require('./loader');
+const container = require('./container');
 const moduleNames = require('./modulenames');
 const middleware = require('./middleware');
 const auth = require('./services/auth');
@@ -69,7 +69,7 @@ async function createApp(opts = {}) {
     _, types, mongo, db, routes, logger, router, api, middleware, mail, bcrypt, jwt, config, HTTP_STATUS_CODES,
   };
 
-  const context = new loader.DependencyInjection({
+  const context = new container.DependencyInjection({
     components,
     modules,
     moduleNames,

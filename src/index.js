@@ -1,4 +1,4 @@
-const loader = require('./loader');
+const container = require('./container');
 const types = require('./types');
 
-module.exports = { loader, types };
+module.exports = { container, types };
