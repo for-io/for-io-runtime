@@ -34,7 +34,9 @@ const SUPPORTED_HTTP_METHODS = ['GET', 'POST', 'OPTIONS', 'PATCH', 'PUT', 'DELET
 
 const HDR_MOCK_USER = 'x-mock-user';
 
-function runTest(test, opts = {}) {
+function runTest(test, setupOpts = {}) {
+    const opts = Object.assign({ db: true }, setupOpts);
+
     describe(test.name, () => {
 
         let connection;
@@ -42,25 +44,33 @@ function runTest(test, opts = {}) {
         let appFactory;
 
         beforeAll(async () => {
-            connection = await MongoClient.connect(global.__MONGO_URI__, {
-                useNewUrlParser: true,
-                useUnifiedTopology: true,
-            });
+            if (opts.db) {
+                connection = await MongoClient.connect(global.__MONGO_URI__, {
+                    useNewUrlParser: true,
+                    useUnifiedTopology: true,
+                });
 
-            db = await connection.db(global.__MONGO_DB_NAME__);
+                db = connection.db(global.__MONGO_DB_NAME__);
+            } else {
+                db = {}; // cannot be falsy value
+            }
 
             appFactory = opts.appFactory || require('../src/main').createApp;
         });
 
         beforeEach(async () => {
-            for (const coll of await db.collections()) {
-                coll.drop();
+            if (opts.db) {
+                for (const coll of await db.collections()) {
+                    coll.drop();
+                }
             }
         });
 
         afterAll(async () => {
-            await connection.close();
-            await db.close();
+            if (opts.db) {
+                await connection.close();
+                await db.close();
+            }
         });
 
         for (const testCase of test.cases) {
@@ -73,12 +83,16 @@ function runTest(test, opts = {}) {
 
                 const assertedPrecondition = preprocess(testCase.precondition || test.precondition);
 
-                // set precondition
-                await initDB(db, assertedPrecondition);
+                if (opts.db && assertedPrecondition) {
+                    // set precondition
+                    await initDB(db, assertedPrecondition);
+                }
 
-                // verify precondition (sanity check)
-                const realPrecondition = await exportDB(db);
-                expect(realPrecondition).toEqual(test.precondition);
+                if (assertedPrecondition) {
+                    // verify precondition (sanity check)
+                    const realPrecondition = opts.db ? await exportDB(db) : {};
+                    expect(realPrecondition).toEqual(test.precondition);
+                }
 
                 for (let i = 0; i < testCase.requests.length; i++) {
                     // pre-process test case data
@@ -136,11 +150,13 @@ function runTest(test, opts = {}) {
 
                     // verify postcondition
                     if (assertedPostcondition) {
-                        const realPostcondition = await exportDB(db);
+                        const realPostcondition = opts.db ? await exportDB(db) : {};
                         const unmaskedPostcondition = unmask(assertedPostcondition, realPostcondition);
                         expect(realPostcondition).toEqual(unmaskedPostcondition);
                     }
                 }
+
+                if (opts.onDone) opts.onDone();
             });
         }
     });

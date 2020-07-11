@@ -8,7 +8,7 @@ const helloApi = {
 
 const routes = [{ name: "hello", verb: "GET", path: "/hello" }];
 
-const testSetup = { modules: { helloApi }, routes, dir: __dirname };
+const testSetup = { modules: { helloApi }, routes, db: false, dir: __dirname };
 
 runTest({
     name: 'default provider',
@@ -16,7 +16,6 @@ runTest({
         useMocks: false,
         JWT_SECRET: 'jwt_secret'
     },
-    precondition: {},
     cases: [{
         name: 'should provide the value for the "name" provider ',
         requests: [{

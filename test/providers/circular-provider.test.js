@@ -25,7 +25,6 @@ runTest({
         useMocks: false,
         JWT_SECRET: 'jwt_secret'
     },
-    precondition: {},
     cases: [{
         name: 'should fail on circular provider dependencies',
         requests: [{
