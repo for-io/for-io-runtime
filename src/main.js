@@ -84,7 +84,7 @@ async function createApp(opts = {}) {
   // set up routing
   context.execute(routing);
 
-  if (config.DEV_MODE) {
+  if (config.NODE_ENV === 'dev') {
     logger.info('Dependency injection context', context.info());
   }
 
@@ -98,10 +98,6 @@ function initConfig(opts) {
   };
 
   if (opts.config) Object.assign(config, opts.config);
-
-  if (config.DEV_MODE === undefined) {
-    config.DEV_MODE = config.NODE_ENV === 'dev'
-  }
 
   return config;
 }

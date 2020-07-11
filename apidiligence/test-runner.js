@@ -76,7 +76,7 @@ function runTest(test, setupOpts = {}) {
         for (const testCase of test.cases) {
 
             it(testCase.name, async () => {
-                const config = Object.assign({}, opts.config, test.config);
+                const config = Object.assign({ NODE_ENV: 'test' }, opts.config, test.config);
                 const appOpts = Object.assign({}, opts, { db, config });
                 const app = await appFactory(appOpts);
                 const agent = request.agent(app);
