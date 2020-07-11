@@ -34,7 +34,6 @@ module.exports = [
     "./providers/log",
     "./providers/user",
     "./providers/collections",
-    "./utils/commons",
     "./utils/responses",
     "./utils/exceptionHandler"
 ];
