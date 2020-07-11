@@ -33,7 +33,6 @@ const test = {
     name: 'auth',
     config: {
         useMocks: false,
-        noHttpLogging: false,
         JWT_SECRET: 'jwt_secret'
     },
     precondition: {},

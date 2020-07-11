@@ -28,14 +28,14 @@ const express = require('express');
 const cors = require('cors');
 const path = require('path');
 const cookieParser = require('cookie-parser');
-const morgan = require('morgan');
 const passport = require('passport');
 
 function newApp({ router, config }) {
   const app = express();
 
-  if (!config.noHttpLogging) {
-    app.use(morgan(config.DEV_MODE ? 'dev' : 'combined'));
+  if (config.httpLogging) {
+    const morgan = require('morgan');
+    app.use(morgan(config.httpLogging)); // e.g. dev, combined
   }
 
   app.use(express.static(path.join(__dirname, 'public')));

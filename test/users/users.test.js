@@ -33,7 +33,6 @@ runApiDiligence({
     setup: testSetup,
     config: {
         useMocks: true,
-        noHttpLogging: false,
         JWT_SECRET: 'jwt_secret',
     }
 });
