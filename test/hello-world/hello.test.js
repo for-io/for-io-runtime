@@ -1,14 +1,16 @@
 const { runTest } = require('../../apidiligence');
 
-const modules = {
-    hello: require('./hello')
+const helloApi = {
+    _$API_() {
+        return { helloWorld: (query) => ({ msg: `Hello, ${query.name}!` }) };
+    },
 };
 
-const routes = require('./hello-routes');
+const routes = [{ name: "helloWorld", verb: "GET", path: "/hello" }];
 
-const testSetup = { modules, routes, dir: __dirname };
+const testSetup = { modules: { helloApi }, routes, dir: __dirname };
 
-const test = {
+runTest({
     name: 'hello',
     config: {
         useMocks: false,
@@ -30,6 +32,4 @@ const test = {
             },
         }],
     }],
-};
-
-runTest(test, testSetup);
+}, testSetup);
