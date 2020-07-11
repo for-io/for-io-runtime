@@ -1,14 +1,27 @@
 const { runTest } = require('../../apidiligence');
 
-const helloApi = {
-    _$API_() {
-        return { hello: (foo) => foo };
+const apiMod = {
+    _$API_: {
+        hello: (foo) => foo
     },
 };
 
 const routes = [{ name: "hello", verb: "GET", path: "/hello" }];
 
-const testSetup = { modules: { helloApi }, routes, dir: __dirname };
+const error = jest.fn(() => { });
+
+const loggerMod = {
+    _$COMPONENTS_: {
+        logger: () => ({ error }),
+    },
+};
+
+function onDone() {
+    expect(error).toHaveBeenCalledTimes(1);
+    expect(error).toHaveBeenCalledWith('Caught exception:', new Error("Unknown parameter: 'foo'"));
+}
+
+const testSetup = { modules: { apiMod, loggerMod }, routes, onDone, db: false, dir: __dirname };
 
 runTest({
     name: 'unknown param',

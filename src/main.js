@@ -66,7 +66,9 @@ async function createApp(opts = {}) {
   }
 
   const components = {
-    _, types, mongo, db, routes, logger, router, api, middleware, mail, bcrypt, jwt, config, HTTP_STATUS_CODES,
+    _, types, mongo, db, routes, router, api, middleware, mail, bcrypt, jwt, config,
+    logger__default: logger,
+    HTTP_STATUS_CODES,
   };
 
   const context = new container.DependencyInjection({

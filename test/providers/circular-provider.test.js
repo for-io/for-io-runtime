@@ -1,6 +1,6 @@
 const { runTest } = require('../../apidiligence');
 
-const helloApi = {
+const apiMod = {
     _$API_() {
         return { hello: (foo) => foo };
     },
@@ -17,7 +17,20 @@ const circProvider = {
 
 const routes = [{ name: "hello", verb: "GET", path: "/hello" }];
 
-const testSetup = { modules: { helloApi, provider: circProvider }, routes, dir: __dirname };
+const error = jest.fn(() => { });
+
+const loggerMod = {
+    _$COMPONENTS_: {
+        logger: () => ({ error }),
+    },
+};
+
+function onDone() {
+    expect(error).toHaveBeenCalledTimes(1);
+    expect(error).toHaveBeenCalledWith('Caught exception:', new RangeError("Maximum call stack size exceeded"));
+}
+
+const testSetup = { modules: { apiMod, loggerMod, circProvider }, routes, onDone, db: false, dir: __dirname };
 
 runTest({
     name: 'circular provider dependencies',
