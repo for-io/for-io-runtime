@@ -268,7 +268,7 @@ class DependencyInjection {
         }
     }
 
-    // should be called through _findDependencyWithTracking()
+    // must be called through _findDependencyWithTracking()
     _findDependency(name) {
         if (!helper.isValidName(name)) {
             throw new Error(`Invalid name: '${name}'`);
@@ -382,7 +382,7 @@ class DependencyInjection {
         this._depInfo.enter(segmentKey);
 
         try {
-            const group = this._groups[groupName] = this._components[groupName] || {};
+            const group = this._components[groupName] || {};
             const segments = this._segmentsByKey[segmentKey] || [];
 
             for (const segment of segments) {
@@ -407,6 +407,9 @@ class DependencyInjection {
 
                 debug('Imported segment: ', segment);
             }
+
+            // assign the group after it has been fully initialized, to prevent returning incomplete group
+            this._groups[groupName] = group;
 
             return group;
 
