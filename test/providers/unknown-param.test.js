@@ -51,10 +51,6 @@ const testSetup = { modules: { api, loggerMod }, onDone, db: false, dir: __dirna
 
 runTest({
     name: 'unknown param',
-    config: {
-        useMocks: false,
-        JWT_SECRET: 'jwt_secret'
-    },
     precondition: {},
     cases: [{
         name: 'should fail on unknown param "foo"',

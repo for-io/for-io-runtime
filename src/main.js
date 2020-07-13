@@ -80,7 +80,7 @@ async function createApp(opts = {}) {
     components,
     modules,
     moduleNames,
-    useMocks: config.useMocks,
+    useMocks: !!config.useMocks,
   });
 
   // set up authentication

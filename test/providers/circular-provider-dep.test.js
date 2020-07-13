@@ -60,10 +60,6 @@ const testSetup = { modules: { api, loggerMod, circProvider }, onDone, db: false
 
 runTest({
     name: 'circular provider dependencies',
-    config: {
-        useMocks: false,
-        JWT_SECRET: 'jwt_secret'
-    },
     cases: [{
         name: 'should fail on circular provider dependencies',
         steps: [{

@@ -40,10 +40,6 @@ const testSetup = { modules: { api }, db: false, dir: __dirname };
 
 runTest({
     name: 'default provider',
-    config: {
-        useMocks: false,
-        JWT_SECRET: 'jwt_secret'
-    },
     cases: [{
         name: 'should provide the value for the "name" provider ',
         steps: [{

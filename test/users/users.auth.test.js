@@ -31,10 +31,6 @@ const state = {};
 
 const test = {
     name: 'auth',
-    config: {
-        useMocks: false,
-        JWT_SECRET: 'jwt_secret'
-    },
     precondition: {},
     cases: [{
         name: 'add new user, login and update profile',

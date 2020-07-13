@@ -31,8 +31,5 @@ const testSetup = require('./testSetup');
 runApiDiligence({
     testsRoot: path.join(__dirname, 'api-diligence'),
     setup: testSetup,
-    config: {
-        useMocks: true,
-        JWT_SECRET: 'jwt_secret',
-    }
+    config: { useMocks: true },
 });

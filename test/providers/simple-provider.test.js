@@ -46,10 +46,6 @@ const testSetup = { modules: { api, nameProvider }, db: false, dir: __dirname };
 
 runTest({
     name: 'simple provider',
-    config: {
-        useMocks: false,
-        JWT_SECRET: 'jwt_secret'
-    },
     cases: [{
         name: 'say hello',
         steps: [{
