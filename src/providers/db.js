@@ -25,7 +25,19 @@
  */
 exports._$COMPONENTS_ = {
 
-    db__default: (mongo, database) => {
+    db__default: (mongo, database, collection_extensions) => {
+
+        function extendColl(coll) {
+            for (const name in collection_extensions) {
+                if (collection_extensions.hasOwnProperty(name)) {
+                    const fn = collection_extensions[name];
+                    coll[name] = fn.bind(coll);
+                }
+            }
+
+            return coll;
+        }
+
         return new Proxy({}, {
             get: function (target, prop, receiver) {
                 switch (prop) {
@@ -33,10 +45,15 @@ exports._$COMPONENTS_ = {
                         return mongo.ObjectId;
 
                     default:
-                        return database.collection(prop);
+                        return extendColl(database.collection(prop));
                 }
             }
         });
     },
+
+};
+
+exports._$COLLECTION_EXTENSIONS_ = {
+
 
 };
