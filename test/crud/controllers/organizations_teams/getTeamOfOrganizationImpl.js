@@ -23,9 +23,9 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-exports._$API_ = (mongo, db, types, responses, _) => {
+exports._$API_ = (db, types, responses, _) => {
 
-    async function getTeamOfOrganization(userId, log, organizationId, teamId2) {
+    async function getTeamOfOrganization(organizationId, teamId2) {
         let organization = await db.organizations.findOne({ _id: organizationId })
         if (!organization) throw responses.NOT_FOUND;
 

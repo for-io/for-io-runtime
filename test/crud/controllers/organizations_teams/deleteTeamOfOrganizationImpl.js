@@ -23,7 +23,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-exports._$API_ = (mongo, db, types, responses, _) => {
+exports._$API_ = (db, responses, _) => {
 
     async function deleteTeamOfOrganization(organizationId, teamId2, userId, log) {
         // check if the organization and the team exist

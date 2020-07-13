@@ -23,7 +23,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-exports._$API_ = (mongo, db, types, responses, _) => {
+exports._$API_ = (db, types, responses, _) => {
 
     async function addOrganization(body, userId, log) {
         let organization = types.Organization(body);
