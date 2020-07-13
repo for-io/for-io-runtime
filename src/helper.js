@@ -1,51 +1,33 @@
-const STRIP_COMMENTS_REGEX = /((\/\/.*$)|(\/\*[\S\s]*?\*\/))/mg;
-const ARGUMENT_NAMES_REGEX = /([^\s,]+)/g;
+/*!
+ * for.io
+ *
+ * Copyright (c) 2019-2020 Nikolche Mihajlovski and EPFL
+ * 
+ * MIT License
+ * 
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ * 
+ * The above copyright notice and this permission notice shall be included in all
+ * copies or substantial portions of the Software.
+ * 
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ * SOFTWARE.
+ */
 
 module.exports = {
 
     isValidName(name) {
         return /^[\w_$]+$/.test(name);
-    },
-
-    getParamNames(func) {
-        const fnStr = func.toString().replace(STRIP_COMMENTS_REGEX, '').trim();
-
-        let leftParPos = fnStr.indexOf('(');
-        let rightParPos = fnStr.indexOf(')');
-        let arrowPos = fnStr.indexOf('=>');
-
-        let paramsStr;
-
-        if (arrowPos < 0 || (leftParPos >= 0 && leftParPos < rightParPos && rightParPos < arrowPos)) {
-            paramsStr = fnStr.slice(leftParPos + 1, rightParPos);
-
-        } else {
-            paramsStr = fnStr.slice(0, arrowPos);
-        }
-
-        paramsStr = paramsStr.trim();
-
-        const paramNames = paramsStr.match(ARGUMENT_NAMES_REGEX) || [];
-
-        for (const name of paramNames) {
-            if (!this.isValidName(name)) {
-                throw new Error(`Invalid parameter names: '${paramsStr}'`);
-            }
-        }
-
-        return paramNames;
-    },
-
-    invoke(func, argProvider, thiz) {
-        if (!func) throw new Error('Invalid func: ' + func);
-        if (!argProvider) throw new Error('Invalid argProvider: ' + argProvider);
-
-        thiz = thiz || func;
-
-        const paramNames = this.getParamNames(func);
-        const args = paramNames.map(argProvider);
-
-        return func.apply(thiz, args);
     },
 
     orElse(val, alternative) {

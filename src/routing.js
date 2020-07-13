@@ -24,7 +24,7 @@
  * SOFTWARE.
  */
 
-module.exports = (router, routes, middleware, api, types, providers, exceptionHandler, logger, _utils) => {
+module.exports = (router, routes, middleware, api, types, providers, exceptionHandler, logger, invoker) => {
 
     async function run(name, handler, req, res, next, specification) {
 
@@ -67,7 +67,7 @@ module.exports = (router, routes, middleware, api, types, providers, exceptionHa
 
         function provide(name) {
             if (providers.hasOwnProperty(name)) {
-                return _utils.invoke(providers[name], provide)
+                return invoker.invoke(providers[name], provide)
             } else {
 
                 switch (name) {
@@ -115,7 +115,7 @@ module.exports = (router, routes, middleware, api, types, providers, exceptionHa
                 throw new Error(`Cannot find the handler for API endpoint '${name}'!`);
             }
 
-            result = await _utils.invoke(handler, provide);
+            result = await invoker.invoke(handler, provide);
 
         } catch (exception) {
             res._exception = exception; // make the exception accessible through the response (needed for the IDE)
@@ -128,7 +128,7 @@ module.exports = (router, routes, middleware, api, types, providers, exceptionHa
             }
 
             try {
-                result = await _utils.invoke(exceptionHandler, provide);
+                result = await invoker.invoke(exceptionHandler, provide);
             } catch (err) {
                 logger.error('An error was thrown by the exception handler!', err);
                 next(err);

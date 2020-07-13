@@ -25,6 +25,8 @@
  */
 
 const helper = require('./helper');
+const invoker = require('./invoker');
+
 const { DependencyTracker } = require('./dep-tracker');
 
 const SEGMENT_KEY_REGEX = /^_\$[A-Z0-9_]+_$/;
@@ -159,7 +161,7 @@ class DependencyInjection {
 
                 let exportedSeg = mod[segmentKey];
 
-                let dependencies = (typeof exportedSeg === 'function') ? helper.getParamNames(exportedSeg) : [];
+                let dependencies = (typeof exportedSeg === 'function') ? invoker.getParamNames(exportedSeg) : [];
 
                 this._getSegs(segmentKey).push({
                     filename: moduleName,
@@ -277,8 +279,6 @@ class DependencyInjection {
         if (name === '_context') {
             return this;
 
-        } else if (name === '_utils') {
-            return helper;
         }
 
         if (this._mocks.hasOwnProperty(name)) {
@@ -348,7 +348,7 @@ class DependencyInjection {
         const chain = this._depInfo.getChain();
         debug(`Creating component '${name}' (dependency chain: ${chain})`);
 
-        const comp = helper.invoke(factory, name => this._findDependencyWithTracking(name));
+        const comp = invoker.invoke(factory, name => this._findDependencyWithTracking(name));
         this._components[name] = comp;
 
         const segment = this._segments[name];
@@ -364,7 +364,7 @@ class DependencyInjection {
         const chain = this._depInfo.getChain();
         debug(`Creating mock '${name}' (dependency chain: ${chain})`);
 
-        const mock = helper.invoke(factory, name => this._findDependencyWithTracking(name));
+        const mock = invoker.invoke(factory, name => this._findDependencyWithTracking(name));
         this._mocks[name] = mock;
 
         const segment = this._segments[name];
@@ -395,7 +395,7 @@ class DependencyInjection {
 
                     let exportedMembers;
                     if (typeof exported === 'function') {
-                        exportedMembers = helper.invoke(exported, name => this._findDependencyWithTracking(name));
+                        exportedMembers = invoker.invoke(exported, name => this._findDependencyWithTracking(name));
                     } else {
                         exportedMembers = exported;
                     }
@@ -450,7 +450,7 @@ class DependencyInjection {
     }
 
     execute(func) {
-        helper.invoke(func, name => this._findDependencyWithTracking(name));
+        invoker.invoke(func, name => this._findDependencyWithTracking(name));
     }
 
 }
