@@ -249,7 +249,7 @@ class DependencyInjection {
 
         return () => {
             if (!retrieved) {
-                value = this.getDependency(targetName);
+                value = this._findDependencyWithTracking(targetName);
                 retrieved = true;
             }
 
@@ -257,6 +257,18 @@ class DependencyInjection {
         }
     }
 
+    _findDependencyWithTracking(name) {
+        this._depInfo.enter(name);
+
+        try {
+            return this._findDependency(name);
+
+        } finally {
+            this._depInfo.leave(name);
+        }
+    }
+
+    // should be called through _findDependencyWithTracking()
     _findDependency(name) {
         if (!helper.isValidName(name)) {
             throw new Error(`Invalid name: '${name}'`);
@@ -264,6 +276,7 @@ class DependencyInjection {
 
         if (name === '_context') {
             return this;
+
         } else if (name === '_utils') {
             return helper;
         }
@@ -335,7 +348,7 @@ class DependencyInjection {
         const chain = this._depInfo.getChain();
         debug(`Creating component '${name}' (dependency chain: ${chain})`);
 
-        const comp = helper.invoke(factory, name => this.getDependency(name));
+        const comp = helper.invoke(factory, name => this._findDependencyWithTracking(name));
         this._components[name] = comp;
 
         const segment = this._segments[name];
@@ -351,7 +364,7 @@ class DependencyInjection {
         const chain = this._depInfo.getChain();
         debug(`Creating mock '${name}' (dependency chain: ${chain})`);
 
-        const mock = helper.invoke(factory, name => this.getDependency(name));
+        const mock = helper.invoke(factory, name => this._findDependencyWithTracking(name));
         this._mocks[name] = mock;
 
         const segment = this._segments[name];
@@ -382,7 +395,7 @@ class DependencyInjection {
 
                     let exportedMembers;
                     if (typeof exported === 'function') {
-                        exportedMembers = helper.invoke(exported, name => this.getDependency(name));
+                        exportedMembers = helper.invoke(exported, name => this._findDependencyWithTracking(name));
                     } else {
                         exportedMembers = exported;
                     }
@@ -403,14 +416,7 @@ class DependencyInjection {
     }
 
     getDependency(name) {
-        this._depInfo.enter(name);
-
-        try {
-            return this._findDependency(name);
-
-        } finally {
-            this._depInfo.leave(name);
-        }
+        return this._findDependencyWithTracking(name);
     }
 
     getSegments(segmentKey) {
@@ -441,7 +447,7 @@ class DependencyInjection {
     }
 
     execute(func) {
-        helper.invoke(func, name => this.getDependency(name));
+        helper.invoke(func, name => this._findDependencyWithTracking(name));
     }
 
 }
