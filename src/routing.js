@@ -24,7 +24,7 @@
  * SOFTWARE.
  */
 
-module.exports = (router, routes, middleware, api, types, providers, exceptionHandler, logger, invoker) => {
+module.exports = (router, routes, middleware, api, types, providers, exceptionHandler, logger, invoker, DependencyTracker) => {
 
     async function run(name, handler, req, res, next, specification) {
 
@@ -65,49 +65,63 @@ module.exports = (router, routes, middleware, api, types, providers, exceptionHa
             throw new Error(`Unknown parameter: '${name}'`);
         }
 
-        function provide(name) {
+        function provide(name, depTracker) {
+            depTracker.enter(name);
+
+            try {
+                return _provide(name, depTracker);
+
+            } finally {
+                depTracker.leave(name);
+            }
+        }
+
+        // must be called only by provide(...)
+        function _provide(name, depTracker) {
             if (providers.hasOwnProperty(name)) {
-                return invoker.invoke(providers[name], provide)
-            } else {
+                return invoker.invoke(providers[name], depName => provide(depName, depTracker))
+            }
 
-                switch (name) {
-                    case 'req':
-                        return req;
+            switch (name) {
+                case 'req':
+                    return req;
 
-                    case 'res':
-                        return res;
+                case 'res':
+                    return res;
 
-                    case 'next':
-                        return next;
+                case 'next':
+                    return next;
 
-                    case 'exception':
-                        return _exception;
+                case 'exception':
+                    return _exception;
 
-                    case 'params':
-                        return provideDataObj('params');
+                case 'params':
+                    return provideDataObj('params');
 
-                    case 'query':
-                        return provideDataObj('query');
+                case 'query':
+                    return provideDataObj('query');
 
-                    case 'body':
-                        return provideDataObj('body');
+                case 'body':
+                    return provideDataObj('body');
 
-                    case 'headers':
-                        return provideDataObj('headers');
+                case 'headers':
+                    return provideDataObj('headers');
 
-                    case 'cookies':
-                        return provideDataObj('cookies');
+                case 'cookies':
+                    return provideDataObj('cookies');
 
-                    case 'specification':
-                        return specification;
+                case 'specification':
+                    return specification;
 
-                    default:
-                        return getDataParam(name);
-                }
+                default:
+                    return getDataParam(name);
             }
         }
 
         let result;
+
+        const apiDepTracker = new DependencyTracker();
+        apiDepTracker.enter(name);
 
         try {
 
@@ -115,7 +129,7 @@ module.exports = (router, routes, middleware, api, types, providers, exceptionHa
                 throw new Error(`Cannot find the handler for API endpoint '${name}'!`);
             }
 
-            result = await invoker.invoke(handler, provide);
+            result = await invoker.invoke(handler, depName => provide(depName, apiDepTracker));
 
         } catch (exception) {
             res._exception = exception; // make the exception accessible through the response (needed for the IDE)
@@ -128,7 +142,8 @@ module.exports = (router, routes, middleware, api, types, providers, exceptionHa
             }
 
             try {
-                result = await invoker.invoke(exceptionHandler, provide);
+                apiDepTracker.enter('exceptionHandler');
+                result = await invoker.invoke(exceptionHandler, depName => provide(depName, apiDepTracker));
             } catch (err) {
                 logger.error('An error was thrown by the exception handler!', err);
                 next(err);

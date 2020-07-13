@@ -34,6 +34,7 @@ const HTTP_STATUS_CODES = require('http').STATUS_CODES;
 
 const { newApp } = require('./app');
 
+const { DependencyTracker } = require('./dep-tracker');
 const invoker = require('./invoker');
 const routing = require('./routing');
 const container = require('./container');
@@ -67,7 +68,10 @@ async function createApp(opts = {}) {
   }
 
   const components = {
-    _, invoker, types, mongo, db, routes, router, api, middleware, mail, bcrypt, jwt, config,
+    _, invoker, types, mongo, db,
+    routes, router, api, middleware,
+    mail, bcrypt, jwt, config,
+    DependencyTracker,
     logger__default: logger,
     HTTP_STATUS_CODES,
   };

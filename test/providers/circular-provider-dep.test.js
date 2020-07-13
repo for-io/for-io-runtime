@@ -27,7 +27,7 @@ const loggerMod = {
 
 function onDone() {
     expect(error).toHaveBeenCalledTimes(1);
-    expect(error).toHaveBeenCalledWith('Caught exception:', new RangeError("Maximum call stack size exceeded"));
+    expect(error).toHaveBeenCalledWith('Caught exception:', new Error("Detected circular dependency: foo -> bar -> foo"));
 }
 
 const testSetup = { modules: { apiMod, loggerMod, circProvider }, routes, onDone, db: false, dir: __dirname };

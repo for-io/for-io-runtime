@@ -278,7 +278,6 @@ class DependencyInjection {
 
         if (name === '_context') {
             return this;
-
         }
 
         if (this._mocks.hasOwnProperty(name)) {
