@@ -55,7 +55,7 @@ async function createApp(opts = {}) {
   const dir = opts.dir;
   const logger = opts.logger || console;
   const router = opts.router || express.Router();
-  const database = opts.db || await connectToDb();
+  const database = opts.db || await connectToDb(config);
   const routes = opts.routes || [];
   const api = opts.api || {};
 
@@ -113,11 +113,11 @@ function appendModuleNames(dir, names) {
   }
 }
 
-async function connectToDb() {
-  const MONGO_URL = 'mongodb://localhost:27017/test';
-  const mongoClient = new mongo.MongoClient(MONGO_URL, { useNewUrlParser: true, useUnifiedTopology: true });
-  const conn = await mongoClient.connect();
-  return conn.db('test');
+async function connectToDb(config) {
+  const mongoUrl = config.MONGO_URL || process.env.MONGO_URL || 'mongodb://localhost:27017/test';
+  const mongoClient = new mongo.MongoClient(mongoUrl, { useNewUrlParser: true, useUnifiedTopology: true });
+  await mongoClient.connect();
+  return mongoClient.db();
 }
 
 module.exports = { createApp };
