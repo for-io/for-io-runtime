@@ -33,8 +33,8 @@ exports._$API_ = (db, bcrypt, jwt, config, responses, _) => {
         if (!match) throw responses.FORBIDDEN;
 
         const userData = {
-            _id: user._id,
-            email: user.email
+            id: user._id,
+            email: user.email,
         };
 
         const token = jwt.sign({ user: userData }, config.JWT_SECRET);

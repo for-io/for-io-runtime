@@ -37,7 +37,7 @@ const test = {
     },
     precondition: {},
     cases: [{
-        name: 'add new user and login',
+        name: 'add new user, login and update profile',
         requests: [{
             request: {
                 method: 'POST',
@@ -77,7 +77,25 @@ const test = {
             response: {
                 status: 200,
                 body: {
-                    token: (val) => { state.token = val },
+                    token: (val) => { state.authToken = val },
+                }
+            },
+        }, {
+            request: {
+                method: 'PATCH',
+                url: '/users/kirk',
+                headers: {
+                    Authorization: () => `Bearer ${state.authToken}`,
+                },
+                body: {
+                    firstName: "J.",
+                    lastName: "KIRK",
+                }
+            },
+            response: {
+                status: 200,
+                body: {
+                    success: true,
                 }
             },
         }],
