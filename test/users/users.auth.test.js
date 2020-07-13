@@ -38,7 +38,7 @@ const test = {
     precondition: {},
     cases: [{
         name: 'add new user, login and update profile',
-        requests: [{
+        steps: [{
             request: {
                 method: 'POST',
                 url: '/users',
@@ -50,12 +50,7 @@ const test = {
                     lastName: "Kirk",
                 }
             },
-            response: {
-                status: 200,
-                body: {
-                    _id: 'kirk',
-                }
-            },
+            200: { _id: 'kirk' },
             postcondition: {
                 users: [{
                     _id: "kirk",
@@ -74,11 +69,8 @@ const test = {
                     password: "abc",
                 }
             },
-            response: {
-                status: 200,
-                body: {
-                    token: (val) => { state.authToken = val },
-                }
+            200: {
+                token: (val) => { state.authToken = val },
             },
         }, {
             request: {
@@ -92,12 +84,29 @@ const test = {
                     lastName: "KIRK",
                 }
             },
-            response: {
-                status: 200,
+            200: { success: true },
+            postcondition: {
+                users: [{
+                    _id: "kirk",
+                    email: "kirk@example.com",
+                    passwordHash: "***",
+                    firstName: "J.",
+                    lastName: "KIRK",
+                }]
+            },
+        }, {
+            request: {
+                method: 'PATCH',
+                url: '/users/kirk',
+                headers: {
+                    Authorization: () => `Bearer WRONG-TOKEN`,
+                },
                 body: {
-                    success: true,
+                    firstName: "X",
+                    lastName: "Y",
                 }
             },
+            401: {},
         }],
     }],
 };

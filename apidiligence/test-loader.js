@@ -54,7 +54,7 @@ function loadTest(dir) {
     let casesByUser = {};
 
     function getCase(username) {
-        casesByUser[username] = casesByUser[username] || { name: `as ${username}`, requests: [] };
+        casesByUser[username] = casesByUser[username] || { name: `as ${username}`, steps: [] };
         return casesByUser[username];
     }
 
@@ -83,8 +83,8 @@ function loadTest(dir) {
                     let reqIndex = parseInt(m[3]) - 1; // turn into 0-based index
 
                     let testCase = getCase(username);
-                    testCase.requests[reqIndex] = testCase.requests[reqIndex] || {};
-                    testCase.requests[reqIndex][reqProp] = loadJson(filename);
+                    testCase.steps[reqIndex] = testCase.steps[reqIndex] || {};
+                    testCase.steps[reqIndex][reqProp] = loadJson(filename);
                 }
             }
         }

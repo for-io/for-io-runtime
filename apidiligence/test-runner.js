@@ -94,24 +94,24 @@ function runTest(test, setupOpts = {}) {
                     expect(realPrecondition).toEqual(test.precondition);
                 }
 
-                for (let i = 0; i < testCase.requests.length; i++) {
+                for (let i = 0; i < testCase.steps.length; i++) {
                     // pre-process test case data
-                    const reqCase = testCase.requests[i];
+                    const step = testCase.steps[i];
 
-                    if (reqCase.skip === true) continue;
+                    if (step.skip === true) continue;
 
-                    const username = reqCase.username || testCase.username || test.username;
+                    const username = step.username || testCase.username || test.username;
 
-                    const assertedPostcondition = reqCase.postcondition || testCase.postcondition || test.postcondition;
+                    const assertedPostcondition = step.postcondition || testCase.postcondition || test.postcondition;
 
                     // init asserted request
                     const defaultReq = { headers: {} };
-                    const assertedReq = Object.assign(defaultReq, preprocess(reqCase.request));
+                    const assertedReq = Object.assign(defaultReq, preprocess(initReq(step.request)));
                     validateReq(assertedReq);
 
                     // init asserted response
                     const defaultResp = { headers: {} };
-                    const assertedResp = Object.assign(defaultResp, reqCase.response);
+                    const assertedResp = Object.assign(defaultResp, initResp(step));
 
                     // prepare a request
                     const method = assertedReq.method.toLowerCase();
@@ -160,6 +160,41 @@ function runTest(test, setupOpts = {}) {
             });
         }
     });
+}
+
+function initReq(req) {
+    if (typeof req === 'string') {
+        let parts = req.split(' ');
+
+        return {
+            method: parts[0],
+            url: parts[1],
+        };
+
+    } else {
+        return req;
+    }
+}
+
+function initResp(step) {
+    if (step.response) return step.response;
+
+    let codes = Object.keys(step).filter(key => /^\d+$/.test(key));
+
+    if (codes.length === 0) {
+        throw new Error('The test step is missing a response!');
+
+    } else if (codes.length > 1) {
+        throw new Error('The test step has more than one response code!');
+
+    } else {
+        let code = codes[0];
+
+        return {
+            status: parseInt(code),
+            body: step[code],
+        };
+    }
 }
 
 function constructCookieList(cookies) {
