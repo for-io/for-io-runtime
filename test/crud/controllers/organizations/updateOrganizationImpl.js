@@ -25,11 +25,9 @@
  */
 exports._$API_ = (mongo, db, types, responses, _) => {
 
-    const organizations = db.collection('organizations');
-
     async function updateOrganization(organizationId, body, userId, log) {
         // check if the organization exists
-        let count = await organizations.countDocuments({ _id: organizationId }, { limit: 1 });
+        let count = await db.organizations.countDocuments({ _id: organizationId }, { limit: 1 });
         if (count === 0) throw responses.NOT_FOUND;
 
         let filter = {
@@ -42,7 +40,7 @@ exports._$API_ = (mongo, db, types, responses, _) => {
             },
         };
 
-        let result = await organizations.updateOne(filter, modification);
+        let result = await db.organizations.updateOne(filter, modification);
 
         if (result.matchedCount === 0) throw responses.FORBIDDEN;
 

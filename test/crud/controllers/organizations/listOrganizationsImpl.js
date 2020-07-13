@@ -25,8 +25,6 @@
  */
 exports._$API_ = (mongo, db, types, responses, _) => {
 
-    const organizations = db.collection('organizations');
-
     async function listOrganizations(userId, page, log) {
         let query = {};
 
@@ -39,7 +37,7 @@ exports._$API_ = (mongo, db, types, responses, _) => {
             limit: page.limit,
         };
 
-        return await organizations.find(query, options).toArray();
+        return await db.organizations.find(query, options).toArray();
     }
 
     return { listOrganizations };

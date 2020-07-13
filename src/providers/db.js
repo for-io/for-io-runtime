@@ -25,6 +25,18 @@
  */
 exports._$COMPONENTS_ = {
 
-    $users: (db) => db.collection('users'),
+    db__default: (mongo, database) => {
+        return new Proxy({}, {
+            get: function (target, prop, receiver) {
+                switch (prop) {
+                    case 'ObjectId':
+                        return mongo.ObjectId;
+
+                    default:
+                        return database.collection(prop);
+                }
+            }
+        });
+    },
 
 };

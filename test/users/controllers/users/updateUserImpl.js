@@ -23,7 +23,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-exports._$API_ = ($users, types, responses, _) => {
+exports._$API_ = (db, types, responses, _) => {
 
     async function updateUserProfile(id, body, userId, log) {
         // users can update only their own profile
@@ -36,7 +36,7 @@ exports._$API_ = ($users, types, responses, _) => {
             },
         };
 
-        let result = await $users.updateOne({ _id: id }, modification);
+        let result = await db.users.updateOne({ _id: id }, modification);
 
         if (result.matchedCount === 0) throw responses.NOT_FOUND;
 

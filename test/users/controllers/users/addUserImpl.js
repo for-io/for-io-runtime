@@ -23,15 +23,15 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-exports._$API_ = ($users, bcrypt, types, responses, _) => {
+exports._$API_ = (db, bcrypt, types) => {
 
-    async function addUser(body, log) {
+    async function addUser(body) {
         let user = types.User(body);
 
         user._id = body.username;
         user.passwordHash = await bcrypt.hash(body.password, 10);
 
-        let res = await $users.insertOne(user);
+        let res = await db.users.insertOne(user);
 
         return { _id: res.insertedId };
     }

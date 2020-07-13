@@ -25,12 +25,10 @@
  */
 exports._$API_ = (mongo, db, types, responses, _) => {
 
-    const organizations = db.collection('organizations');
-
     async function addOrganization(body, userId, log) {
         let organization = types.Organization(body);
 
-        let res = await organizations.insertOne(organization);
+        let res = await db.organizations.insertOne(organization);
 
         return { _id: res.insertedId };
     }

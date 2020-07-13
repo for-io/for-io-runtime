@@ -23,17 +23,15 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-exports._$API_ = (mongo, db, types, responses, _) => {
-
-    const organizations = db.collection('organizations');
+exports._$API_ = (db, types, responses, _) => {
 
     async function addTeamToOrganization(organizationId, userId, body, log) {
         // check if the organization exists
-        let count = await organizations.countDocuments({ _id: organizationId }, { limit: 1 });
+        let count = await db.organizations.countDocuments({ _id: organizationId }, { limit: 1 });
         if (count === 0) throw responses.NOT_FOUND;
 
         let team = types.Team(body);
-        team._id = mongo.ObjectId();
+        team._id = db.ObjectId();
 
         let modification = {
             $push: {
@@ -41,7 +39,7 @@ exports._$API_ = (mongo, db, types, responses, _) => {
             },
         };
 
-        let result = await organizations.updateOne({ _id: organizationId }, modification);
+        let result = await db.organizations.updateOne({ _id: organizationId }, modification);
 
         if (result.matchedCount === 0) throw responses.NOT_FOUND;
 

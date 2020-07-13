@@ -55,7 +55,7 @@ async function createApp(opts = {}) {
   const dir = opts.dir;
   const logger = opts.logger || console;
   const router = opts.router || express.Router();
-  const db = opts.db || await connectToDb();
+  const database = opts.db || await connectToDb();
   const routes = opts.routes || [];
   const api = opts.api || {};
 
@@ -68,7 +68,7 @@ async function createApp(opts = {}) {
   }
 
   const components = {
-    _, invoker, types, mongo, db,
+    _, invoker, types, mongo, database,
     routes, router, api, middleware,
     mail, bcrypt, jwt, config,
     DependencyTracker,
@@ -114,7 +114,7 @@ function appendModuleNames(dir, names) {
 }
 
 async function connectToDb() {
-  const MONGO_URL = 'mongodb://localhost:27017';
+  const MONGO_URL = 'mongodb://localhost:27017/test';
   const mongoClient = new mongo.MongoClient(MONGO_URL, { useNewUrlParser: true, useUnifiedTopology: true });
   const conn = await mongoClient.connect();
   return conn.db('test');

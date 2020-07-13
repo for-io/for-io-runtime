@@ -25,11 +25,9 @@
  */
 exports._$API_ = (mongo, db, types, responses, _) => {
 
-    const organizations = db.collection('organizations');
-
     async function deleteTeamOfOrganization(organizationId, teamId2, userId, log) {
         // check if the organization and the team exist
-        let count = await organizations.countDocuments({
+        let count = await db.organizations.countDocuments({
             _id: organizationId,
             'teams._id': teamId2,
         }, { limit: 1 });
@@ -44,7 +42,7 @@ exports._$API_ = (mongo, db, types, responses, _) => {
             }
         };
 
-        let result = await organizations.updateOne({ _id: organizationId }, modification);
+        let result = await db.organizations.updateOne({ _id: organizationId }, modification);
 
         if (result.matchedCount === 0) throw responses.FORBIDDEN;
 

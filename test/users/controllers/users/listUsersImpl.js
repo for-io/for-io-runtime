@@ -23,7 +23,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-exports._$API_ = ($users, types, responses, _) => {
+exports._$API_ = (db, types, responses, _) => {
 
     async function listUsers(page, log) {
         let query = {};
@@ -39,7 +39,7 @@ exports._$API_ = ($users, types, responses, _) => {
             limit: page.limit,
         };
 
-        return await $users.find(query, options).toArray();
+        return await db.users.find(query, options).toArray();
     }
 
     return { listUsers };

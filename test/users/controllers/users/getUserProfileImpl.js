@@ -23,11 +23,11 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-exports._$API_ = ($users, types, responses, _) => {
+exports._$API_ = (db, responses, _) => {
 
     async function getUserProfile(id, log) {
-        let profile = await $users.findOne({ _id: id });
-        
+        let profile = await db.users.findOne({ _id: id });
+
         delete profile.passwordHash;
 
         if (!profile) throw responses.NOT_FOUND;

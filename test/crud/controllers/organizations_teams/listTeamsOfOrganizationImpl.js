@@ -25,8 +25,6 @@
  */
 exports._$API_ = (mongo, db, types, responses, _) => {
 
-    const organizations = db.collection('organizations');
-
     async function listTeamsOfOrganization(organizationId, userId, log) {
         let query = { _id: organizationId };
 
@@ -36,7 +34,7 @@ exports._$API_ = (mongo, db, types, responses, _) => {
             },
         };
 
-        let rawOrganization = await organizations.findOne(query, options);
+        let rawOrganization = await db.organizations.findOne(query, options);
         if (!rawOrganization) throw responses.NOT_FOUND;
 
         let organization = types.Organization(rawOrganization);

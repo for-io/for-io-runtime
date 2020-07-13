@@ -25,18 +25,16 @@
  */
 exports._$API_ = (mongo, db, types, responses, _) => {
 
-    const organizations = db.collection('organizations');
-
     async function deleteOrganization(organizationId, userId, log) {
         // check if the organization exists
-        let count = await organizations.countDocuments({ _id: organizationId }, { limit: 1 });
+        let count = await db.organizations.countDocuments({ _id: organizationId }, { limit: 1 });
         if (count === 0) throw responses.NOT_FOUND;
 
         let filter = {
             _id: organizationId,
         };
 
-        let result = await organizations.deleteOne(filter);
+        let result = await db.organizations.deleteOne(filter);
 
         if (result.deletedCount === 0) throw responses.FORBIDDEN;
 

@@ -23,10 +23,10 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-exports._$API_ = ($users, bcrypt, jwt, config, responses, _) => {
+exports._$API_ = (db, bcrypt, jwt, config, responses, _) => {
 
     async function login(body) {
-        const user = await $users.findOne({ _id: body.username });
+        const user = await db.users.findOne({ _id: body.username });
         if (!user) throw responses.NOT_FOUND;
 
         const match = await bcrypt.compare(body.password, user.passwordHash);

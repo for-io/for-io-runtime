@@ -23,13 +23,13 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-exports._$API_ = ($users, types, responses, _) => {
+exports._$API_ = (db, types, responses, _) => {
 
     async function deleteUser(id, userId, log) {
         // users can delete only their own profile
         if (id !== userId) throw responses.FORBIDDEN;
 
-        let result = await $users.deleteOne({ _id: id });
+        let result = await db.users.deleteOne({ _id: id });
 
         if (result.deletedCount === 0) throw responses.NOT_FOUND;
 

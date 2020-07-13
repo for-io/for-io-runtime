@@ -30,10 +30,10 @@ module.exports = [
     "./mocks/mailMock",
     "./mocks/configMock",
     "./mocks/jwtMock",
+    "./providers/db",
     "./providers/page",
     "./providers/log",
     "./providers/user",
-    "./providers/collections",
     "./utils/responses",
     "./utils/exceptionHandler"
 ];

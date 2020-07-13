@@ -25,11 +25,9 @@
  */
 exports._$API_ = (mongo, db, types, responses, _) => {
 
-    const organizations = db.collection('organizations');
-
     async function updateTeamOfOrganization(organizationId, teamId2, body, userId, log) {
         // check if the organization and the team exist
-        let found = await organizations.countDocuments({ _id: organizationId, 'teams._id': teamId2 }, { limit: 1 });
+        let found = await db.organizations.countDocuments({ _id: organizationId, 'teams._id': teamId2 }, { limit: 1 });
         if (found === 0) throw responses.NOT_FOUND;
 
         let filter = {
@@ -48,7 +46,7 @@ exports._$API_ = (mongo, db, types, responses, _) => {
             },
         };
 
-        let result = await organizations.updateOne(filter, modification);
+        let result = await db.organizations.updateOne(filter, modification);
 
         if (result.matchedCount === 0) throw responses.FORBIDDEN; // didn't match criteria, or was concurrently deleted
 
