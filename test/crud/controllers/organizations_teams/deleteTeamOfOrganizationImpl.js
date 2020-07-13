@@ -27,12 +27,7 @@ exports._$API_ = (mongo, db, types, responses, _) => {
 
     async function deleteTeamOfOrganization(organizationId, teamId2, userId, log) {
         // check if the organization and the team exist
-        let count = await db.organizations.countDocuments({
-            _id: organizationId,
-            'teams._id': teamId2,
-        }, { limit: 1 });
-
-        if (count === 0) throw responses.NOT_FOUND;
+        if (!await db.organizations.exists({ _id: organizationId, 'teams._id': teamId2 })) throw responses.NOT_FOUND;
 
         let modification = {
             $pull: {

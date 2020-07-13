@@ -55,5 +55,11 @@ exports._$COMPONENTS_ = {
 
 exports._$COLLECTION_EXTENSIONS_ = {
 
+    exists: () => {
+        return async function exists(filter) {
+            let count = await this.countDocuments(filter, { limit: 1 });
+            return count === 0;
+        };
+    },
 
 };

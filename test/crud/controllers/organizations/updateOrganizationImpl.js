@@ -27,8 +27,7 @@ exports._$API_ = (mongo, db, types, responses, _) => {
 
     async function updateOrganization(organizationId, body, userId, log) {
         // check if the organization exists
-        let count = await db.organizations.countDocuments({ _id: organizationId }, { limit: 1 });
-        if (count === 0) throw responses.NOT_FOUND;
+        if (!await db.organizations.exists({ _id: organizationId })) throw responses.NOT_FOUND;
 
         let filter = {
             _id: organizationId,
