@@ -55,7 +55,7 @@ async function createApp(opts = {}) {
   const dir = opts.dir;
   const logger = opts.logger || console;
   const router = opts.router || express.Router();
-  const database = opts.db || await connectToDb(config);
+  const database = opts.database || await connectToDb(config);
   const routes = opts.routes || [];
   const api = opts.api || {};
 
