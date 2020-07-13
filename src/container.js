@@ -25,6 +25,7 @@
  */
 
 const helper = require('./helper');
+const { DependencyTracker } = require('./dep-tracker');
 
 const SEGMENT_KEY_REGEX = /^_\$[A-Z0-9_]+_$/;
 const GROUP_NAME_REGEX = /^[a-z0-9_\$]+$/;
@@ -75,49 +76,13 @@ function getTargetOfGetter(name) {
     return name.substring(0, name.length - GETTER_SUFFIX.length);
 }
 
-class DependencyInfo {
-
-    constructor() {
-        this._chain = [];
-    }
-
-    getChain(startingPos = 0) {
-        return this._chain.slice(startingPos).join(' -> ');
-    }
-
-    checkForCircularDependencyAndRegister(name) {
-        let pos = this._chain.indexOf(name);
-
-        if (pos >= 0) {
-            let chain = this.getChain(pos) + ' -> ' + name;
-            let fullChain = this.getChain() + ' -> ' + name;
-            let e = new Error(`Detected circular dependency: ${chain}`);
-            e.details = { 'Full chain': fullChain };
-            throw e;
-        }
-
-        this._chain.push(name);
-    }
-
-    finishInitialization(name) {
-        let pos = this._chain.indexOf(name);
-
-        if (pos < 0) {
-            throw new Error(`Dependency was not registered: '${name}'`);
-        }
-
-        this._chain.splice(pos, 1);
-    }
-
-}
-
 class DependencyInjection {
 
     constructor(opts) {
         debug('Initializing DI context...');
 
         this._createdOn = new Date();
-        this._depInfo = new DependencyInfo();
+        this._depInfo = new DependencyTracker();
         this._useMocks = opts.useMocks;
 
         this._components = Object.assign({}, opts.components || {});
@@ -401,7 +366,7 @@ class DependencyInjection {
 
         debug(`Importing segments of '${segmentKey}' into '${groupName}'`);
 
-        this._depInfo.checkForCircularDependencyAndRegister(segmentKey);
+        this._depInfo.enter(segmentKey);
 
         try {
             const group = this._groups[groupName] = this._components[groupName] || {};
@@ -433,18 +398,18 @@ class DependencyInjection {
             return group;
 
         } finally {
-            this._depInfo.finishInitialization(segmentKey);
+            this._depInfo.leave(segmentKey);
         }
     }
 
     getDependency(name) {
-        this._depInfo.checkForCircularDependencyAndRegister(name);
+        this._depInfo.enter(name);
 
         try {
             return this._findDependency(name);
 
         } finally {
-            this._depInfo.finishInitialization(name);
+            this._depInfo.leave(name);
         }
     }
 
