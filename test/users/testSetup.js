@@ -25,6 +25,7 @@
  */
 
 const moduleNames = [
+    './users-routes',
     "./controllers/users/getUserProfileImpl",
     "./controllers/users/updateUserImpl",
     "./controllers/users/deleteUserImpl",
@@ -34,6 +35,5 @@ const moduleNames = [
 ]
 
 const types = require('./users-types');
-const routes = require('./users-routes');
 
-module.exports = { moduleNames, types, routes, dir: __dirname };
+module.exports = { moduleNames, types, dir: __dirname };

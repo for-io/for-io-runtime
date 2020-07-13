@@ -24,140 +24,147 @@
  * SOFTWARE.
  */
 
-module.exports = [{
-    name: "updateUserProfile",
-    route: "PATCH /users/:id",
-    verb: "PATCH",
-    path: "/users/:id",
-    title: "Update user profile",
-    description: "",
-    params: {
-        id: "string"
+exports._$ROUTES_ = {
+
+    updateUserProfile: {
+        route: "PATCH /users/:id",
+        verb: "PATCH",
+        path: "/users/:id",
+        title: "Update user profile",
+        description: "",
+        params: {
+            id: "string"
+        },
+        query: {},
+        body: {
+            firstName: "string",
+            lastName: "string"
+        },
+        headers: {},
+        cookies: {},
+        roles: [],
+        responses: [200, 403, 404, 422],
+        middleware: ["authenticate"],
+        tags: ["users"],
+        typeNames: {
+            params: "UpdateUserProfileParams",
+            body: "UpdateUserProfileBody"
+        },
+        model: "User:update"
     },
-    query: {},
-    body: {
-        firstName: "string",
-        lastName: "string"
+
+    listUsers: {
+        route: "GET /users",
+        verb: "GET",
+        path: "/users",
+        title: "List users",
+        description: "",
+        params: {},
+        query: {},
+        body: {},
+        headers: {},
+        cookies: {},
+        roles: [],
+        responses: [200, 403],
+        middleware: ["authenticate"],
+        tags: ["users"],
+        typeNames: {},
+        model: "User:list"
     },
-    headers: {},
-    cookies: {},
-    roles: [],
-    responses: [200, 403, 404, 422],
-    middleware: ["authenticate"],
-    tags: ["users"],
-    typeNames: {
-        params: "UpdateUserProfileParams",
-        body: "UpdateUserProfileBody"
+
+    deleteUser: {
+        route: "DELETE /users/:id",
+        verb: "DELETE",
+        path: "/users/:id",
+        title: "Delete user",
+        description: "",
+        params: {
+            id: "string"
+        },
+        query: {},
+        body: {},
+        headers: {},
+        cookies: {},
+        roles: [],
+        responses: [200, 403, 404],
+        middleware: ["authenticate"],
+        tags: ["users"],
+        typeNames: {
+            params: "DeleteUserParams"
+        },
+        model: "User:remove"
     },
-    model: "User:update"
-}, {
-    name: "listUsers",
-    route: "GET /users",
-    verb: "GET",
-    path: "/users",
-    title: "List users",
-    description: "",
-    params: {},
-    query: {},
-    body: {},
-    headers: {},
-    cookies: {},
-    roles: [],
-    responses: [200, 403],
-    middleware: ["authenticate"],
-    tags: ["users"],
-    typeNames: {},
-    model: "User:list"
-}, {
-    name: "deleteUser",
-    route: "DELETE /users/:id",
-    verb: "DELETE",
-    path: "/users/:id",
-    title: "Delete user",
-    description: "",
-    params: {
-        id: "string"
+
+    login: {
+        route: "POST /login",
+        verb: "POST",
+        path: "/login",
+        title: "Login user",
+        description: "",
+        params: {},
+        query: {},
+        body: {
+            username: "string",
+            password: "password"
+        },
+        headers: {},
+        cookies: {},
+        roles: [],
+        responses: [200, 403, 404, 500],
+        middleware: [],
+        tags: ["users"],
+        typeNames: {
+            body: "LoginBody"
+        }
     },
-    query: {},
-    body: {},
-    headers: {},
-    cookies: {},
-    roles: [],
-    responses: [200, 403, 404],
-    middleware: ["authenticate"],
-    tags: ["users"],
-    typeNames: {
-        params: "DeleteUserParams"
+
+    getUserProfile: {
+        route: "GET /users/:id",
+        verb: "GET",
+        path: "/users/:id",
+        title: "Get user profile",
+        description: "",
+        params: {
+            id: "string"
+        },
+        query: {},
+        body: {},
+        headers: {},
+        cookies: {},
+        roles: [],
+        responses: [200, 403, 404],
+        middleware: ["authenticate"],
+        tags: ["users"],
+        typeNames: {
+            params: "GetUserProfileParams"
+        },
+        model: "User:getProfile"
     },
-    model: "User:remove"
-}, {
-    name: "login",
-    route: "POST /login",
-    verb: "POST",
-    path: "/login",
-    title: "Login user",
-    description: "",
-    params: {},
-    query: {},
-    body: {
-        username: "string",
-        password: "password"
-    },
-    headers: {},
-    cookies: {},
-    roles: [],
-    responses: [200, 403, 404, 500],
-    middleware: [],
-    tags: ["users"],
-    typeNames: {
-        body: "LoginBody"
+
+    addUser: {
+        route: "POST /users",
+        verb: "POST",
+        path: "/users",
+        title: "Create user",
+        description: "",
+        params: {},
+        query: {},
+        body: {
+            username: "string",
+            password: "password",
+            email: "email",
+            firstName: "string",
+            lastName: "string"
+        },
+        headers: {},
+        cookies: {},
+        roles: [],
+        responses: [200, 403, 422],
+        middleware: [],
+        tags: ["users"],
+        typeNames: {
+            body: "AddUserBody"
+        },
+        model: "User:add"
     }
-}, {
-    name: "getUserProfile",
-    route: "GET /users/:id",
-    verb: "GET",
-    path: "/users/:id",
-    title: "Get user profile",
-    description: "",
-    params: {
-        id: "string"
-    },
-    query: {},
-    body: {},
-    headers: {},
-    cookies: {},
-    roles: [],
-    responses: [200, 403, 404],
-    middleware: ["authenticate"],
-    tags: ["users"],
-    typeNames: {
-        params: "GetUserProfileParams"
-    },
-    model: "User:getProfile"
-}, {
-    name: "addUser",
-    route: "POST /users",
-    verb: "POST",
-    path: "/users",
-    title: "Create user",
-    description: "",
-    params: {},
-    query: {},
-    body: {
-        username: "string",
-        password: "password",
-        email: "email",
-        firstName: "string",
-        lastName: "string"
-    },
-    headers: {},
-    cookies: {},
-    roles: [],
-    responses: [200, 403, 422],
-    middleware: [],
-    tags: ["users"],
-    typeNames: {
-        body: "AddUserBody"
-    },
-    model: "User:add"
-}];
+};

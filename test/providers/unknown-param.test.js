@@ -4,9 +4,11 @@ const apiMod = {
     _$API_: {
         hello: (foo) => foo
     },
-};
 
-const routes = [{ name: "hello", verb: "GET", path: "/hello" }];
+    _$ROUTES_: {
+        hello: { verb: "GET", path: "/hello" },
+    },
+};
 
 const error = jest.fn(() => { });
 
@@ -21,7 +23,7 @@ function onDone() {
     expect(error).toHaveBeenCalledWith('Caught exception:', new Error("Unknown parameter: 'foo'"));
 }
 
-const testSetup = { modules: { apiMod, loggerMod }, routes, onDone, db: false, dir: __dirname };
+const testSetup = { modules: { apiMod, loggerMod }, onDone, db: false, dir: __dirname };
 
 runTest({
     name: 'unknown param',

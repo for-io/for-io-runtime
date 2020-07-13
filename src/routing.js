@@ -160,25 +160,30 @@ module.exports = (router, routes, middleware, api, types, providers, exceptionHa
         }
     }
 
-    function initRoutes(router) {
-        for (const spec of routes) {
-            const method = router[spec.verb.toLowerCase()].bind(router);
+    function initRoutes() {
+        for (const name in routes) {
+            if (routes.hasOwnProperty(name)) {
+                const spec = routes[name];
+                spec.name = name;
 
-            const args = [spec.path];
+                const method = router[spec.verb.toLowerCase()].bind(router);
 
-            for (const middName of spec.middleware || []) {
-                const middlewareFactory = middleware[middName];
+                const args = [spec.path];
 
-                if (!middlewareFactory) throw new Error(`Cannot find middleware factory with name: "${middName}"`);
+                for (const middName of spec.middleware || []) {
+                    const middlewareFactory = middleware[middName];
 
-                args.push(middlewareFactory(spec));
+                    if (!middlewareFactory) throw new Error(`Cannot find middleware factory with name: "${middName}"`);
+
+                    args.push(middlewareFactory(spec));
+                }
+
+                args.push(async (req, res, next) => {
+                    await run(name, api[name], req, res, next, spec);
+                });
+
+                method(...args);
             }
-
-            args.push(async (req, res, next) => {
-                await run(spec.name, api[spec.name], req, res, next, spec);
-            });
-
-            method(...args);
         }
     }
 
@@ -186,7 +191,7 @@ module.exports = (router, routes, middleware, api, types, providers, exceptionHa
         router._dispatch(request, callbacks);
     }
 
-    initRoutes(router);
+    initRoutes();
 
     return { dispatch };
 }

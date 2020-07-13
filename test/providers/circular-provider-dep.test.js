@@ -4,6 +4,10 @@ const apiMod = {
     _$API_() {
         return { hello: (foo) => foo };
     },
+
+    _$ROUTES_: {
+        hello: { verb: "GET", path: "/hello" },
+    },
 };
 
 const circProvider = {
@@ -14,8 +18,6 @@ const circProvider = {
         };
     }
 }
-
-const routes = [{ name: "hello", verb: "GET", path: "/hello" }];
 
 const error = jest.fn(() => { });
 
@@ -30,7 +32,7 @@ function onDone() {
     expect(error).toHaveBeenCalledWith('Caught exception:', new Error("Detected circular dependency: foo -> bar -> foo"));
 }
 
-const testSetup = { modules: { apiMod, loggerMod, circProvider }, routes, onDone, db: false, dir: __dirname };
+const testSetup = { modules: { apiMod, loggerMod, circProvider }, onDone, db: false, dir: __dirname };
 
 runTest({
     name: 'circular provider dependencies',

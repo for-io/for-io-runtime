@@ -4,11 +4,13 @@ const helloApi = {
     _$API_() {
         return { hello: (name) => ({ msg: `Hello, ${name}!` }) };
     },
+
+    _$ROUTES_: {
+        hello: { verb: "GET", path: "/hello" },
+    },
 };
 
-const routes = [{ name: "hello", verb: "GET", path: "/hello" }];
-
-const testSetup = { modules: { helloApi }, routes, db: false, dir: __dirname };
+const testSetup = { modules: { helloApi }, db: false, dir: __dirname };
 
 runTest({
     name: 'default provider',
