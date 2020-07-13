@@ -30,12 +30,12 @@ exports._$MOCKS_ = {
         authenticate(routeSpec) {
             return function (req, res, next) {
                 let userId = req.headers['x-mock-user'] || req.query['mock-user'];
+
+                if (!userId) throw { status: 401, body: {} };
+
                 let email = `${userId}@example.com`;
 
-                // minimalistic user profile matching Passport.js profile:
-                // see http://www.passportjs.org/docs/profile/
-
-                req.user = { id: userId, emails: [{ value: email, type: 'home' }] };
+                req.user = { id: userId, email };
 
                 next();
             };

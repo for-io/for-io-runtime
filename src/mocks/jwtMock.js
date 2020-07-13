@@ -31,10 +31,6 @@ exports._$MOCKS_ = {
             return 'MOCK.SIGNED.TOKEN';
         },
 
-        verify(token, secretOrPublicKey, options) {
-            return { foo: bar };
-        },
-
     })
 
 };
