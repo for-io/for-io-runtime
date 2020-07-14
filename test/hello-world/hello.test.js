@@ -27,11 +27,11 @@
 const { runTest } = require('../../apidiligence');
 
 const api = {
-    _$API_() {
+    _$CONTROLLERS_() {
         return { helloWorld: (query) => ({ msg: `Hello, ${query.name}!` }) };
     },
 
-    _$ROUTES_: {
+    _$API_: {
         helloWorld: { verb: "GET", path: "/hello" },
     },
 };

@@ -24,7 +24,7 @@
  * SOFTWARE.
  */
 
-exports._$ROUTES_ = {
+exports._$API_ = {
 
     addOrganization: {
         route: "POST /organizations",

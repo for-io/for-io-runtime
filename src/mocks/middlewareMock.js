@@ -27,7 +27,7 @@ exports._$MOCKS_ = {
 
     middleware: () => ({
 
-        authenticate(routeSpec) {
+        authenticate(apiSpec) {
             return function (req, res, next) {
                 let userId = req.headers['x-mock-user'] || req.query['mock-user'];
 

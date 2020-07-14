@@ -23,7 +23,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-exports._$API_ = (db, responses, _) => {
+exports._$CONTROLLERS_ = (db, responses, _) => {
 
     async function updateTeamOfOrganization(organizationId, teamId2, body, userId, log) {
         // check if the organization and the team exist

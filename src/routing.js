@@ -24,7 +24,7 @@
  * SOFTWARE.
  */
 
-module.exports = (router, routes, middleware, api, types, providers, exceptionHandler, logger, invoker, DependencyTracker) => {
+module.exports = (router, api, middleware, controllers, types, providers, exceptionHandler, logger, invoker, DependencyTracker) => {
 
     async function run(name, handler, req, res, next, specification) {
 
@@ -161,9 +161,9 @@ module.exports = (router, routes, middleware, api, types, providers, exceptionHa
     }
 
     function initRoutes() {
-        for (const name in routes) {
-            if (routes.hasOwnProperty(name)) {
-                const spec = routes[name];
+        for (const name in api) {
+            if (api.hasOwnProperty(name)) {
+                const spec = api[name];
                 spec.name = name;
 
                 const method = router[spec.verb.toLowerCase()].bind(router);
@@ -179,7 +179,7 @@ module.exports = (router, routes, middleware, api, types, providers, exceptionHa
                 }
 
                 args.push(async (req, res, next) => {
-                    await run(name, api[name], req, res, next, spec);
+                    await run(name, controllers[name], req, res, next, spec);
                 });
 
                 method(...args);

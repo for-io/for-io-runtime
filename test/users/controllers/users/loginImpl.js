@@ -23,7 +23,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-exports._$API_ = (db, bcrypt, jwt, config, responses, _) => {
+exports._$CONTROLLERS_ = (db, bcrypt, jwt, config, responses, _) => {
 
     async function login(body) {
         const user = await db.users.findOne({ _id: body.username });

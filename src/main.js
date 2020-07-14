@@ -56,8 +56,8 @@ async function createApp(opts = {}) {
   const logger = opts.logger || console;
   const router = opts.router || express.Router();
   const database = opts.database || await connectToDb(config);
-  const routes = opts.routes || {};
   const api = opts.api || {};
+  const controllers = opts.controllers || {};
 
   if (opts.moduleNames) {
     appendModuleNames(dir, opts.moduleNames);
@@ -69,7 +69,7 @@ async function createApp(opts = {}) {
 
   const components = {
     _, invoker, types, mongo, database,
-    routes, router, api, middleware,
+    api, router, controllers, middleware,
     mail, bcrypt, jwt, config,
     DependencyTracker,
     logger__default: logger,
