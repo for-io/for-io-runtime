@@ -24,6 +24,8 @@
  * SOFTWARE.
  */
 
+const { sortRoutes } = require('./route-sorter');
+
 module.exports = (router, api, middleware, controllers, types, providers, exceptionHandler, logger, invoker, DependencyTracker) => {
 
     async function run(name, controller, req, res, next, specification) {
@@ -160,33 +162,46 @@ module.exports = (router, api, middleware, controllers, types, providers, except
         }
     }
 
-    function initRoutes() {
+    function _getRoutes() {
+        const routes = [];
+
         for (const name in api) {
             if (api.hasOwnProperty(name)) {
                 const route = api[name];
                 route.name = name;
-
-                const method = router[route.verb.toLowerCase()].bind(router);
-
-                const args = [route.path];
-
-                for (const middName of route.middleware || []) {
-                    const middlewareFactory = middleware[middName];
-
-                    if (!middlewareFactory) throw new Error(`Cannot find middleware factory with name: "${middName}"`);
-
-                    args.push(middlewareFactory(route));
-                }
-
-                const controller = _findController(route, controllers);
-                if (!controller) throw new Error(`Cannot find a controller for API endpoint: "${name}"`);
-
-                args.push(async (req, res, next) => {
-                    await run(name, controller, req, res, next, route);
-                });
-
-                method(...args);
+                routes.push(route);
             }
+        }
+
+        return routes;
+    }
+
+    function initRoutes() {
+        const routes = _getRoutes();
+
+        sortRoutes(routes);
+
+        for (const route of routes) {
+            const method = router[route.verb.toLowerCase()].bind(router);
+
+            const args = [route.path];
+
+            for (const middName of route.middleware || []) {
+                const middlewareFactory = middleware[middName];
+
+                if (!middlewareFactory) throw new Error(`Cannot find middleware factory with name: "${middName}"`);
+
+                args.push(middlewareFactory(route));
+            }
+
+            const controller = _findController(route, controllers);
+            if (!controller) throw new Error(`Cannot find a controller for API endpoint: "${route.name}"`);
+
+            args.push(async (req, res, next) => {
+                await run(route.name, controller, req, res, next, route);
+            });
+
+            method(...args);
         }
     }
 
