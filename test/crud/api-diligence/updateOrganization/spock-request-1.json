@@ -2,7 +2,6 @@
   "method": "PATCH",
   "url": "/organizations/organization_1",
   "headers": {
-    "x-mock-user": "spock",
     "host": "example.com"
   },
   "body": {

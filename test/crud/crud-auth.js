@@ -24,21 +24,26 @@
  * SOFTWARE.
  */
 
-const moduleNames = [
-    './crud-auth',
-    './crud-routes',
-    "./controllers/organizations/addOrganizationImpl",
-    "./controllers/organizations/updateOrganizationImpl",
-    "./controllers/organizations/deleteOrganizationImpl",
-    "./controllers/organizations/getOrganizationImpl",
-    "./controllers/organizations/listOrganizationsImpl",
-    "./controllers/organizations_teams/addTeamToOrganizationImpl",
-    "./controllers/organizations_teams/updateTeamOfOrganizationImpl",
-    "./controllers/organizations_teams/deleteTeamOfOrganizationImpl",
-    "./controllers/organizations_teams/getTeamOfOrganizationImpl",
-    "./controllers/organizations_teams/listTeamsOfOrganizationImpl"
-];
+exports._$API_ = (jwt, config, responses, _) => {
 
-const types = require('./crud-types');
+    async function login(body) {
+        if (body.username !== body.password) throw responses.FORBIDDEN;
 
-module.exports = { moduleNames, types, dir: __dirname };
+        const userData = { id: body.username };
+
+        const token = jwt.sign({ user: userData }, config.JWT_SECRET);
+
+        return { token };
+    }
+
+    return { login };
+}
+
+exports._$ROUTES_ = {
+
+    login: {
+        verb: "POST",
+        path: "/login",
+    },
+
+};

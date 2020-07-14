@@ -33,6 +33,10 @@ function runApiDiligence(opts) {
     for (const testDir of testDirs) {
         const test = testLoader.loadTest(testDir);
 
+        if (opts.test) {
+            Object.assign(test, opts.test);
+        }
+
         if (opts.config) {
             test.config = opts.config;
         }

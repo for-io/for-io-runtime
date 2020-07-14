@@ -28,8 +28,10 @@ const path = require('path');
 const { runApiDiligence } = require('../../apidiligence');
 const testSetup = require('./testSetup');
 
+const setup = Object.assign({}, testSetup, { mockAuth: true });
+
 runApiDiligence({
     testsRoot: path.join(__dirname, 'api-diligence'),
-    setup: testSetup,
+    setup: setup,
     config: { useMocks: true },
 });

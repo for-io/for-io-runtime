@@ -79,11 +79,8 @@ runTest({
     cases: [{
         name: 'unauthorized request',
         steps: [{
-            request: {
-                method: 'GET',
-                url: '/hello',
-                headers: { 'x-mock-user': 'spock' },
-            },
+            username: 'spock',
+            request: 'GET /hello',
             401: {},
         }],
     }],
@@ -98,12 +95,9 @@ runTest({
     cases: [{
         name: 'authorized request',
         steps: [{
-            request: {
-                method: 'GET',
-                url: '/hello',
-                headers: { 'x-mock-user': 'spock' },
-            },
+            username: 'spock',
+            request: 'GET /hello',
             200: { msg: 'Hello, spock!' },
         }],
     }],
-}, testSetup);
+}, Object.assign({}, testSetup, { mockAuth: true }));

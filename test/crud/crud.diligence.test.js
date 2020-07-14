@@ -28,8 +28,38 @@ const path = require('path');
 const { runApiDiligence } = require('../../apidiligence');
 const testSetup = require('./testSetup');
 
+const tokens = {};
+async function getAuthToken({ username, agent }) {
+    if (!tokens[username]) {
+        let resp = await agent.post('/login')
+            .send({ username, password: username })
+            .timeout(1000)
+            .catch(err => {
+                console.error(err);
+                throw err;
+            });
+
+        if (resp.statusCode !== 200) throw new Error('Expected successful login!');
+
+        tokens[username] = resp.body.token;
+    }
+    return tokens[username];
+}
+
+// run tests with mock auth
+const setup1 = Object.assign({}, testSetup, { mockAuth: true });
 runApiDiligence({
     testsRoot: path.join(__dirname, 'api-diligence'),
-    setup: testSetup,
+    test: { tags: ['mock-auth'], username: 'spock' },
+    setup: setup1,
     config: { useMocks: true },
+});
+
+// run tests with real auth
+const setup2 = Object.assign({}, testSetup, { getAuthToken });
+runApiDiligence({
+    testsRoot: path.join(__dirname, 'api-diligence'),
+    test: { tags: ['real-auth'], username: 'spock' },
+    setup: setup2,
+    config: {},
 });

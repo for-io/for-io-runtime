@@ -37,7 +37,9 @@ const HDR_MOCK_USER = 'x-mock-user';
 function runTest(test, setupOpts = {}) {
     const opts = Object.assign({ db: true }, setupOpts);
 
-    describe(test.name, () => {
+    const testName = test.tags ? test.name + ' [' + test.tags.join(', ') + ']' : test.name;
+
+    describe(testName, () => {
 
         let connection;
         let db;
@@ -97,21 +99,23 @@ function runTest(test, setupOpts = {}) {
                 for (let i = 0; i < testCase.steps.length; i++) {
                     // pre-process test case data
                     const step = testCase.steps[i];
-
                     if (step.skip === true) continue;
 
-                    const username = step.username || testCase.username || test.username;
+                    const stepReq = initReq(step.request);
+                    const stepResp = initResp(step);
+
+                    const username = stepReq.username || step.username || testCase.username || test.username;
 
                     const assertedPostcondition = step.postcondition || testCase.postcondition || test.postcondition;
 
                     // init asserted request
                     const defaultReq = { headers: {} };
-                    const assertedReq = Object.assign(defaultReq, preprocess(initReq(step.request)));
+                    const assertedReq = Object.assign(defaultReq, preprocess(stepReq));
                     validateReq(assertedReq);
 
                     // init asserted response
                     const defaultResp = { headers: {} };
-                    const assertedResp = Object.assign(defaultResp, initResp(step));
+                    const assertedResp = Object.assign(defaultResp, stepResp);
 
                     // prepare a request
                     const method = assertedReq.method.toLowerCase();
@@ -120,7 +124,13 @@ function runTest(test, setupOpts = {}) {
                         .set(assertedReq.headers || {});
 
                     if (username) {
-                        pendingReq = pendingReq.set(HDR_MOCK_USER, username);
+                        if (setupOpts.mockAuth) {
+                            pendingReq = pendingReq.set(HDR_MOCK_USER, username);
+
+                        } else if (setupOpts.getAuthToken && assertedReq.headers.Authorization === undefined && assertedReq.headers.authorization === undefined) {
+                            let token = await setupOpts.getAuthToken({ username, agent: request.agent(app) });
+                            pendingReq = pendingReq.set('Authorization', `Bearer ${token}`);
+                        }
                     }
 
                     if (assertedReq.body) {

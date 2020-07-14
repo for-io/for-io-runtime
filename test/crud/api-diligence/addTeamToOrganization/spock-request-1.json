@@ -2,7 +2,6 @@
   "method": "POST",
   "url": "/organizations/organization_1/teams",
   "headers": {
-    "x-mock-user": "spock",
     "host": "example.com"
   },
   "body": {
