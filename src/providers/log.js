@@ -26,6 +26,7 @@
 exports._$PROVIDERS_ = (logger) => ({
 
     log() {
+        // can be customized to retrieve request-specific logger for tracing
         return logger;
     },
 
