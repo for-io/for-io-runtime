@@ -26,9 +26,9 @@
 
 module.exports = (router, api, middleware, controllers, types, providers, exceptionHandler, logger, invoker, DependencyTracker) => {
 
-    async function run(name, handler, req, res, next, specification) {
+    async function run(name, controller, req, res, next, specification) {
 
-        let _exception; // will be set if the handler throws an exception
+        let _exception; // will be set if the controller throws an exception
 
         let _dataObjs = {}; // a cache for data objects (params, query, body, headers, cookies)
 
@@ -125,11 +125,11 @@ module.exports = (router, api, middleware, controllers, types, providers, except
 
         try {
 
-            if (!handler) {
-                throw new Error(`Cannot find the handler for API endpoint '${name}'!`);
+            if (!controller) {
+                throw new Error(`Cannot find the controller for API endpoint '${name}'!`);
             }
 
-            result = await invoker.invoke(handler, depName => provide(depName, apiDepTracker));
+            result = await invoker.invoke(controller, depName => provide(depName, apiDepTracker));
 
         } catch (exception) {
             res._exception = exception; // make the exception accessible through the response (needed for the IDE)
@@ -163,27 +163,38 @@ module.exports = (router, api, middleware, controllers, types, providers, except
     function initRoutes() {
         for (const name in api) {
             if (api.hasOwnProperty(name)) {
-                const spec = api[name];
-                spec.name = name;
+                const route = api[name];
+                route.name = name;
 
-                const method = router[spec.verb.toLowerCase()].bind(router);
+                const method = router[route.verb.toLowerCase()].bind(router);
 
-                const args = [spec.path];
+                const args = [route.path];
 
-                for (const middName of spec.middleware || []) {
+                for (const middName of route.middleware || []) {
                     const middlewareFactory = middleware[middName];
 
                     if (!middlewareFactory) throw new Error(`Cannot find middleware factory with name: "${middName}"`);
 
-                    args.push(middlewareFactory(spec));
+                    args.push(middlewareFactory(route));
                 }
 
+                const controller = _findController(route, controllers);
+                if (!controller) throw new Error(`Cannot find a controller for API endpoint: "${name}"`);
+
                 args.push(async (req, res, next) => {
-                    await run(name, controllers[name], req, res, next, spec);
+                    await run(name, controller, req, res, next, route);
                 });
 
                 method(...args);
             }
+        }
+    }
+
+    function _findController(route, controllers) {
+        if (route.run) {
+            return route.run;
+        } else {
+            return controllers[route.name];
         }
     }
 

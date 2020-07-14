@@ -27,10 +27,8 @@
 const { runTest } = require('../../apidiligence');
 
 const api = {
-    _$CONTROLLERS_: { hello: (foo) => foo },
-
     _$API_: {
-        hello: { verb: "GET", path: "/hello" },
+        hello: { verb: "GET", path: "/hello", run: (foo) => foo },
     },
 };
 

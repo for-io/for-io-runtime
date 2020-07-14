@@ -27,13 +27,17 @@
 const { runTest } = require('../../apidiligence');
 
 const api = {
-    _$CONTROLLERS_() {
-        return { helloWorld: (query) => ({ msg: `Hello, ${query.name}!` }) };
-    },
 
     _$API_: {
-        helloWorld: { verb: "GET", path: "/hello" },
+        helloWorld: {
+            verb: "GET",
+            path: "/hello",
+            run(query) {
+                return { msg: `Hello, ${query.name}!` };
+            }
+        },
     },
+
 };
 
 const testSetup = { modules: { api }, db: false, dir: __dirname };
