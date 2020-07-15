@@ -163,7 +163,7 @@ class ListTeamsOfOrganizationParams {
     }
 }
 
-module.exports = {
+exports.$typedefs = {
     Organization,
     Team,
     AddOrganizationBody,

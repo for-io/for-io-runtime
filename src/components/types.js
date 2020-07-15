@@ -24,15 +24,12 @@
  * SOFTWARE.
  */
 
-const moduleNames = [
-    './users-routes',
-    './users-types',
-    "./controllers/users/getUserProfileImpl",
-    "./controllers/users/updateUserImpl",
-    "./controllers/users/deleteUserImpl",
-    "./controllers/users/listUsersImpl",
-    "./controllers/users/loginImpl",
-    "./controllers/users/addUserImpl",
-]
+exports.$components = {
 
-module.exports = { moduleNames, dir: __dirname };
+    types__default(typeRegistry, typedefs) {
+        typeRegistry.addTypes(typedefs);
+
+        return typeRegistry.getTypes();
+    },
+
+};

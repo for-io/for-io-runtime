@@ -25,6 +25,7 @@
  */
 
 module.exports = [
+    "./components/types",
     "./components/responses",
     "./components/exceptionHandler",
     "./mocks/bcryptMock",

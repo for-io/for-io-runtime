@@ -27,6 +27,7 @@
 const moduleNames = [
     './crud-auth',
     './crud-routes',
+    './crud-types',
     "./controllers/organizations/addOrganizationImpl",
     "./controllers/organizations/updateOrganizationImpl",
     "./controllers/organizations/deleteOrganizationImpl",
@@ -39,6 +40,4 @@ const moduleNames = [
     "./controllers/organizations_teams/listTeamsOfOrganizationImpl"
 ];
 
-const types = require('./crud-types');
-
-module.exports = { moduleNames, types, dir: __dirname };
+module.exports = { moduleNames, dir: __dirname };

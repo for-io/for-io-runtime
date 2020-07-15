@@ -43,7 +43,6 @@ const middleware = require('./middleware');
 const auth = require('./auth');
 
 const typeRegistry = require('./type-registry');
-const types = typeRegistry.getTypes();
 
 async function createApp(opts = {}) {
   const config = initConfig(opts);
@@ -54,21 +53,18 @@ async function createApp(opts = {}) {
   const logger = opts.logger || console;
   const router = opts.router || express.Router();
   const database = opts.database || await connectToDb(config);
-  const api = opts.api || {};
-  const controllers = opts.controllers || {};
 
   if (opts.moduleNames) {
     appendModuleNames(dir, opts.moduleNames);
   }
 
-  if (opts.types) {
-    typeRegistry.addTypes(opts.types);
-  }
-
   const components = {
-    _, invoker, types, mongo, database,
-    api, router, controllers, middleware,
+    _, invoker, mongo, database,
+    router, middleware, typeRegistry,
     bcrypt, jwt, config,
+    typedefs__default: {},
+    controllers__default: {},
+    api__default: {},
     DependencyTracker,
     logger__default: logger,
     HTTP_STATUS_CODES,

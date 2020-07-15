@@ -110,7 +110,7 @@ class AddUserBody {
     }
 }
 
-module.exports = {
+exports.$typedefs = {
     User,
     UpdateUserProfileParams,
     UpdateUserProfileBody,
