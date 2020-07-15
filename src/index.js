@@ -1,4 +1,4 @@
 const container = require('./container');
-const types = require('./types');
+const typeRegistry = require('./type-registry');
 
-module.exports = { container, types };
+module.exports = { container, typeRegistry };

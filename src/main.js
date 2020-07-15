@@ -44,7 +44,6 @@ const auth = require('./auth');
 
 const typeRegistry = require('./type-registry');
 const types = typeRegistry.getTypes();
-typeRegistry.addTypes(require('./types-auth'));
 
 async function createApp(opts = {}) {
   const config = initConfig(opts);

@@ -27,17 +27,15 @@
 const container = require('../../src/container');
 
 test('dependency chain across modules', () => {
-    const modules = {
+    verify({
         mod1: { $components: { foo: 'x' } },
         mod2: { $components: { bar: (foo) => foo + 'y' } },
         mod3: { $components: { baz: (bar) => bar + 'z' } },
-    };
-
-    verifyDeps({ modules });
+    });
 });
 
 test('dependency chain inside module', () => {
-    const modules = {
+    verify({
         mod1: {
             $components: {
                 foo: 'x',
@@ -45,13 +43,11 @@ test('dependency chain inside module', () => {
                 baz: (bar) => bar + 'z',
             }
         },
-    };
-
-    verifyDeps({ modules });
+    });
 });
 
-function verifyDeps(opts) {
-    const context = new container.DependencyInjection(opts);
+function verify(modules) {
+    const context = new container.DependencyInjection({ modules });
 
     expect(context.getDependency('baz')).toBe('xyz');
     expect(context.getDependency('bar')).toBe('xy');
