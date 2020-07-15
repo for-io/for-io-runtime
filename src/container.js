@@ -278,7 +278,8 @@ class DependencyInjection {
 
         const defaultName = name + DEFAULT_SUFFIX;
 
-        if (name === '_context') {
+        // context
+        if (name === '__context') {
             return this;
         }
 
