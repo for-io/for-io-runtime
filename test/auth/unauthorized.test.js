@@ -27,11 +27,11 @@
 const { runTest } = require('../../apidiligence');
 
 const api = {
-    _$CONTROLLERS_: {
+    $controllers: {
         hello: (userId) => ({ msg: `Hello, ${userId}!` })
     },
 
-    _$API_: {
+    $api: {
         hello: {
             verb: "GET", path: "/hello", middleware: ['authenticate'],
         },

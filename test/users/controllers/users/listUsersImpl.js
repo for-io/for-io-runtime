@@ -23,7 +23,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-exports._$CONTROLLERS_ = (db, types, responses, _) => {
+exports.$controllers = (db, types, responses, _) => {
 
     async function listUsers(page, log) {
         let query = {};

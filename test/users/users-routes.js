@@ -24,7 +24,7 @@
  * SOFTWARE.
  */
 
-exports._$API_ = {
+exports.$api = {
 
     updateUserProfile: {
         route: "PATCH /users/:id",

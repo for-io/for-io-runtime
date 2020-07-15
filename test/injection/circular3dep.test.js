@@ -28,9 +28,9 @@ const container = require('../../src/container');
 
 test('circular dependency of 3 components across modules', () => {
     const modules = {
-        mod1: { _$COMPONENTS_: { foo: (baz) => baz + 'x' } },
-        mod2: { _$COMPONENTS_: { bar: (foo) => foo + 'y' } },
-        mod3: { _$COMPONENTS_: { baz: (bar) => bar + 'z' } },
+        mod1: { $components: { foo: (baz) => baz + 'x' } },
+        mod2: { $components: { bar: (foo) => foo + 'y' } },
+        mod3: { $components: { baz: (bar) => bar + 'z' } },
     };
 
     verifyDeps({ modules });
@@ -39,7 +39,7 @@ test('circular dependency of 3 components across modules', () => {
 test('circular dependency of 3 components inside module', () => {
     const modules = {
         mod1: {
-            _$COMPONENTS_: {
+            $components: {
                 foo: (baz) => baz + 'x',
                 bar: (foo) => foo + 'y',
                 baz: (bar) => bar + 'z',

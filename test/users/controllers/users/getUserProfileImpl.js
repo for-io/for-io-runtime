@@ -23,7 +23,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-exports._$CONTROLLERS_ = (db, responses, _) => {
+exports.$controllers = (db, responses, _) => {
 
     async function getUserProfile(id, log) {
         let profile = await db.users.findOne({ _id: id });

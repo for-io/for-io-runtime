@@ -28,9 +28,9 @@ const container = require('../../src/container');
 
 test('dependency chain across modules', () => {
     const modules = {
-        mod1: { _$COMPONENTS_: { foo: 'x' } },
-        mod2: { _$COMPONENTS_: { bar: (foo) => foo + 'y' } },
-        mod3: { _$COMPONENTS_: { baz: (bar) => bar + 'z' } },
+        mod1: { $components: { foo: 'x' } },
+        mod2: { $components: { bar: (foo) => foo + 'y' } },
+        mod3: { $components: { baz: (bar) => bar + 'z' } },
     };
 
     verifyDeps({ modules });
@@ -39,7 +39,7 @@ test('dependency chain across modules', () => {
 test('dependency chain inside module', () => {
     const modules = {
         mod1: {
-            _$COMPONENTS_: {
+            $components: {
                 foo: 'x',
                 bar: (foo) => foo + 'y',
                 baz: (bar) => bar + 'z',

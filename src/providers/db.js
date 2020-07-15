@@ -23,14 +23,14 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-exports._$COMPONENTS_ = {
+exports.$components = {
 
-    db__default: (mongo, database, collection_extensions) => {
+    db__default: (mongo, database, collectionExtensions) => {
 
         function extendColl(coll) {
-            for (const name in collection_extensions) {
-                if (collection_extensions.hasOwnProperty(name)) {
-                    const fn = collection_extensions[name];
+            for (const name in collectionExtensions) {
+                if (collectionExtensions.hasOwnProperty(name)) {
+                    const fn = collectionExtensions[name];
                     coll[name] = fn.bind(coll);
                 }
             }
@@ -53,7 +53,7 @@ exports._$COMPONENTS_ = {
 
 };
 
-exports._$COLLECTION_EXTENSIONS_ = {
+exports.$collectionExtensions = {
 
     exists: () => {
         return async function exists(filter) {

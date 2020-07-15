@@ -27,13 +27,13 @@
 const { runTest } = require('../../apidiligence');
 
 const api = {
-    _$API_: {
+    $api: {
         hello: { verb: "GET", path: "/hello", run: (foo) => foo },
     },
 };
 
 const circProvider = {
-    _$PROVIDERS_() {
+    $providers() {
         return {
             foo: (bar) => bar + 'x',
             bar: (foo) => foo + 'y',
@@ -44,7 +44,7 @@ const circProvider = {
 const error = jest.fn(() => { });
 
 const loggerMod = {
-    _$COMPONENTS_: {
+    $components: {
         logger: { error },
     },
 };

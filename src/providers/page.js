@@ -23,7 +23,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-exports._$PROVIDERS_ = () => ({
+exports.$providers = () => ({
 
     page(params) {
         const DEFAULT_PAGE_SIZE = 10;

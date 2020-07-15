@@ -29,7 +29,7 @@ const invoker = require('./invoker');
 
 const { DependencyTracker } = require('./dep-tracker');
 
-const SEGMENT_KEY_REGEX = /^_\$[A-Z0-9_]+_$/;
+const SEGMENT_KEY_REGEX = /^\$\w+$/;
 const GROUP_NAME_REGEX = /^[a-z0-9_\$]+$/;
 const GETTER_SUFFIX = '__getter';
 const DEFAULT_SUFFIX = '__default';
@@ -61,13 +61,13 @@ function validateGroupName(groupName) {
 function segmentKeyToGroupName(segmentKey) {
     validateSegmentKey(segmentKey);
 
-    return segmentKey.toLowerCase().substring(2, segmentKey.length - 1);
+    return segmentKey.substring(1);
 }
 
 function groupNameToSegmentKey(groupName) {
     validateGroupName(groupName);
 
-    return '_$' + groupName.toUpperCase() + '_';
+    return '$' + groupName;
 }
 
 function isValidGetterName(name) {
@@ -180,15 +180,15 @@ class DependencyInjection {
 
     _init() {
         if (this._useMocks) {
-            this._initComponents(this._segmentsByKey._$MOCKS_, false);
+            this._initComponents(this._segmentsByKey.$mocks, false);
         }
 
-        this._initComponents(this._segmentsByKey._$COMPONENTS_, true);
+        this._initComponents(this._segmentsByKey.$components, true);
 
         for (const segmentKey in this._segmentsByKey) {
             if (this._segmentsByKey.hasOwnProperty(segmentKey)) {
                 // components have already been initialized (for DI)
-                if (segmentKey !== '_$COMPONENTS_' && segmentKey !== '_$MOCKS_') {
+                if (segmentKey !== '$components' && segmentKey !== '$mocks') {
                     this._importGroup(segmentKey);
                 }
             }

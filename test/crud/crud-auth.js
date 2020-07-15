@@ -24,7 +24,7 @@
  * SOFTWARE.
  */
 
-exports._$CONTROLLERS_ = (jwt, config, responses, _) => {
+exports.$controllers = (jwt, config, responses, _) => {
 
     async function login(body) {
         if (body.username !== body.password) throw responses.FORBIDDEN;
@@ -39,7 +39,7 @@ exports._$CONTROLLERS_ = (jwt, config, responses, _) => {
     return { login };
 }
 
-exports._$API_ = {
+exports.$api = {
 
     login: {
         verb: "POST",

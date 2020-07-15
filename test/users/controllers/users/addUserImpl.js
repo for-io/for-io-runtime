@@ -23,7 +23,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-exports._$CONTROLLERS_ = (db, bcrypt, types) => {
+exports.$controllers = (db, bcrypt, types) => {
 
     async function addUser(body) {
         let user = types.User(body);

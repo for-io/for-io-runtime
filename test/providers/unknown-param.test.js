@@ -27,7 +27,7 @@
 const { runTest } = require('../../apidiligence');
 
 const api = {
-    _$API_: {
+    $api: {
         hello: { verb: "GET", path: "/hello", run: (foo) => foo },
     },
 };
@@ -35,7 +35,7 @@ const api = {
 const error = jest.fn(() => { });
 
 const loggerMod = {
-    _$COMPONENTS_: {
+    $components: {
         logger: { error },
     },
 };

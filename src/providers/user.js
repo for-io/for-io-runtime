@@ -23,7 +23,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-exports._$PROVIDERS_ = (responses) => ({
+exports.$providers = (responses) => ({
 
     user(req) {
         return req.user;

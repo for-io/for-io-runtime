@@ -23,7 +23,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-exports._$PROVIDERS_ = (logger) => ({
+exports.$providers = (logger) => ({
 
     log() {
         // can be customized to retrieve request-specific logger for tracing

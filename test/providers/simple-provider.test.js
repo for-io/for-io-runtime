@@ -27,19 +27,19 @@
 const { runTest } = require('../../apidiligence');
 
 const api = {
-    _$CONTROLLERS_: {
+    $controllers: {
         hello(name) {
             return { msg: `Hello, ${name}!` }
         },
     },
 
-    _$API_: {
+    $api: {
         hello: { verb: "GET", path: "/hello" },
     },
 };
 
 const nameProvider = {
-    _$PROVIDERS_() {
+    $providers() {
         return { name: (query) => query.name.toUpperCase() };
     }
 }
