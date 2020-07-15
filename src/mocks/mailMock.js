@@ -25,12 +25,10 @@
  */
 exports._$MOCKS_ = {
 
-    mail: () => ({
-
+    mail: {
         sendMail() {
             return { success: true };
-        },
-
-    }),
+        }
+    },
 
 };

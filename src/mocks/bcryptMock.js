@@ -25,7 +25,7 @@
  */
 exports._$MOCKS_ = {
 
-    bcrypt: () => ({
+    bcrypt: {
 
         async hash(plaintextPassword, saltRounds) {
             return `mock-hash-of-${plaintextPassword}`;
@@ -36,6 +36,6 @@ exports._$MOCKS_ = {
             return passHash === hash;
         },
 
-    })
+    }
 
 };

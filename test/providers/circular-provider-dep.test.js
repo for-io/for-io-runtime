@@ -45,7 +45,7 @@ const error = jest.fn(() => { });
 
 const loggerMod = {
     _$COMPONENTS_: {
-        logger: () => ({ error }),
+        logger: { error },
     },
 };
 

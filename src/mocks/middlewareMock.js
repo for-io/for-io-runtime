@@ -25,7 +25,7 @@
  */
 exports._$MOCKS_ = {
 
-    middleware: () => ({
+    middleware: {
 
         authenticate(apiSpec) {
             return function (req, res, next) {
@@ -41,6 +41,6 @@ exports._$MOCKS_ = {
             };
         },
 
-    }),
+    },
 
 };
