@@ -34,6 +34,8 @@ const SUPPORTED_HTTP_METHODS = ['GET', 'POST', 'OPTIONS', 'PATCH', 'PUT', 'DELET
 
 const HDR_MOCK_USER = 'x-mock-user';
 
+const TEST_CONFIG_DEFAULTS = { NODE_ENV: 'test', JWT_SECRET: 'jwt_secret', useMocks: true };
+
 function runTest(test, setupOpts = {}) {
     const opts = Object.assign({ db: true }, setupOpts);
 
@@ -78,7 +80,8 @@ function runTest(test, setupOpts = {}) {
         for (const testCase of test.cases) {
 
             it(testCase.name, async () => {
-                const config = Object.assign({ NODE_ENV: 'test', JWT_SECRET: 'jwt_secret' }, opts.config, test.config);
+                const config = Object.assign(TEST_CONFIG_DEFAULTS, opts.config, test.config);
+
                 const appOpts = Object.assign({}, opts, { database: db, config });
                 const app = await appFactory(appOpts);
                 const agent = request.agent(app);

@@ -32,6 +32,5 @@ const setup = Object.assign({}, testSetup, { mockAuth: true });
 
 runApiDiligence({
     testsRoot: path.join(__dirname, 'api-diligence'),
-    setup: setup,
-    config: { useMocks: true },
+    setup,
 });

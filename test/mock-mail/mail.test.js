@@ -66,5 +66,4 @@ runTest({
             200: { mail: 'MOCK' },
         }],
     }],
-    config: { useMocks: true },
 }, testSetup);

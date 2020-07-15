@@ -31,6 +31,7 @@ const state = {};
 
 const test = {
     name: 'auth',
+    config: { useMocks: false },
     precondition: {},
     cases: [{
         name: 'add new user, login and update profile',

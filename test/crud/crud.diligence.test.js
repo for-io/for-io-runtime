@@ -61,5 +61,5 @@ runApiDiligence({
     testsRoot: path.join(__dirname, 'api-diligence'),
     test: { tags: ['real-auth'], username: 'spock' },
     setup: setup2,
-    config: {},
+    config: { useMocks: false },
 });
