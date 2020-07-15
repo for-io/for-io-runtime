@@ -40,8 +40,7 @@ const routing = require('./routing');
 const container = require('./container');
 const moduleNames = require('./modulenames');
 const middleware = require('./middleware');
-const auth = require('./services/auth');
-const mail = require('./services/mail');
+const auth = require('./auth');
 
 const typeRegistry = require('./type-registry');
 const types = typeRegistry.getTypes();
@@ -70,7 +69,7 @@ async function createApp(opts = {}) {
   const components = {
     _, invoker, types, mongo, database,
     api, router, controllers, middleware,
-    mail, bcrypt, jwt, config,
+    bcrypt, jwt, config,
     DependencyTracker,
     logger__default: logger,
     HTTP_STATUS_CODES,

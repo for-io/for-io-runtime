@@ -24,8 +24,6 @@
  * SOFTWARE.
  */
 
-const helper = require('./helper');
-
 class DependencyTracker {
 
     constructor() {

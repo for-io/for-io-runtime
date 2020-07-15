@@ -25,15 +25,14 @@
  */
 
 module.exports = [
+    "./components/responses",
+    "./components/exceptionHandler",
     "./mocks/bcryptMock",
     "./mocks/middlewareMock",
-    "./mocks/mailMock",
     "./mocks/configMock",
     "./mocks/jwtMock",
     "./providers/db",
     "./providers/page",
     "./providers/log",
-    "./providers/user",
-    "./utils/responses",
-    "./utils/exceptionHandler"
+    "./providers/user"
 ];

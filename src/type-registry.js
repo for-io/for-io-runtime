@@ -24,7 +24,7 @@
  * SOFTWARE.
  */
 
-const helper = require('./helper');
+const utils = require('./utils');
 
 const ERR_DATA_VALIDATION = 'Data validation errors!';
 
@@ -96,7 +96,7 @@ const EMAIL_REGEX = /^[^@\s]+@[^@\s]+\.[^@\s]+$/;
 const _builtInTypes = {
 
     _float(val, err, name) {
-        if (helper.isNumber(val)) {
+        if (utils.isNumber(val)) {
             return parseFloat(val);
         } else {
             err.wrongType(name, 'float', val);
@@ -105,7 +105,7 @@ const _builtInTypes = {
     },
 
     _int(val, err, name) {
-        if (helper.isNumber(val)) {
+        if (utils.isNumber(val)) {
             let n = parseFloat(val);
 
             if (Number.isInteger(n)) {
@@ -118,7 +118,7 @@ const _builtInTypes = {
     },
 
     _uint(val, err, name) {
-        if (helper.isNumber(val)) {
+        if (utils.isNumber(val)) {
             let n = parseFloat(val);
 
             if (Number.isInteger(n)) {
@@ -136,7 +136,7 @@ const _builtInTypes = {
     },
 
     _byte(val, err, name) {
-        if (helper.isNumber(val)) {
+        if (utils.isNumber(val)) {
             let n = parseFloat(val);
 
             if (Number.isInteger(n)) {
@@ -157,7 +157,7 @@ const _builtInTypes = {
     },
 
     _string(val, err, name) {
-        if (helper.isString(val)) {
+        if (utils.isString(val)) {
             return val;
         } else {
             err.wrongType(name, 'string', val);
@@ -166,7 +166,7 @@ const _builtInTypes = {
     },
 
     _email(val, err, name) {
-        if (helper.isString(val) && EMAIL_REGEX.test(val)) {
+        if (utils.isString(val) && EMAIL_REGEX.test(val)) {
             return val;
         } else {
             err.wrongType(name, 'email', val);
@@ -175,7 +175,7 @@ const _builtInTypes = {
     },
 
     _boolean(val, err, name) {
-        if (helper.isBoolean(val)) {
+        if (utils.isBoolean(val)) {
             return val;
         } else {
             if (val === 'true' || val === 'y' || val == 1) {
@@ -190,7 +190,7 @@ const _builtInTypes = {
     },
 
     _object(val, err, name) {
-        if (helper.isObject(val)) {
+        if (utils.isObject(val)) {
             return val;
         } else {
             err.wrongType(name, 'object', val);
@@ -207,7 +207,7 @@ function _has(val) {
 function _coll(factory, val, err, name) {
     if (val !== undefined && val !== null) {
 
-        if (helper.isArray(val)) {
+        if (utils.isArray(val)) {
             return val.map((item, index) => factory(item, err, name + index + '.', _types, _util));
         } else {
             err.wrongType(name, 'array', val);
@@ -250,7 +250,7 @@ function _wrap(factory) {
             return _err.details();
         }
 
-        if (isRoot && (helper.isObject(result) || helper.isArray(result))) {
+        if (isRoot && (utils.isObject(result) || utils.isArray(result))) {
             result.validate = validate.bind(result);
             result.isValid = isValid.bind(result);
             result.getValidationErrors = getValidationErrors.bind(result);

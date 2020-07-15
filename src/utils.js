@@ -59,4 +59,8 @@ module.exports = {
         return x !== null && (typeof x === 'object') && !Array.isArray(x);
     },
 
+    must(cond, errMsg = 'Assertion failed!') {
+        if (!cond) throw new Error(errMsg);
+    },
+
 };

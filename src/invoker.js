@@ -24,7 +24,7 @@
  * SOFTWARE.
  */
 
-const helper = require('./helper');
+const utils = require('./utils');
 
 const STRIP_COMMENTS_REGEX = /((\/\/.*$)|(\/\*[\S\s]*?\*\/))/mg;
 const ARGUMENT_NAMES_REGEX = /([^\s,]+)/g;
@@ -50,7 +50,7 @@ function getParamNames(func) {
     const paramNames = paramsStr.match(ARGUMENT_NAMES_REGEX) || [];
 
     for (const name of paramNames) {
-        if (!helper.isValidName(name)) {
+        if (!utils.isValidName(name)) {
             throw new Error(`Invalid parameter names: '${paramsStr}'`);
         }
     }

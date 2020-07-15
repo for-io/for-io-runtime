@@ -24,7 +24,7 @@
  * SOFTWARE.
  */
 
-const helper = require('./helper');
+const utils = require('./utils');
 const invoker = require('./invoker');
 
 const { DependencyTracker } = require('./dep-tracker');
@@ -139,7 +139,7 @@ class DependencyInjection {
     }
 
     _registerModules(modules) {
-        if (!helper.isObject(modules)) throw new Error('The modules must be an object, with filenames as keys and modules as values!', modules);
+        if (!utils.isObject(modules)) throw new Error('The modules must be an object, with filenames as keys and modules as values!', modules);
 
         for (const moduleName in modules) {
             if (modules.hasOwnProperty(moduleName)) {
@@ -150,7 +150,7 @@ class DependencyInjection {
     }
 
     _addModuleToSeg(mod, moduleName) {
-        if (!helper.isObject(mod)) throw new Error(`The module '${moduleName}' must export an object!`);
+        if (!utils.isObject(mod)) throw new Error(`The module '${moduleName}' must export an object!`);
 
         let foundSegKey = false;
 
@@ -272,7 +272,7 @@ class DependencyInjection {
 
     // must be called through _findDependencyWithTracking()
     _findDependency(name) {
-        if (!helper.isValidName(name)) {
+        if (!utils.isValidName(name)) {
             throw new Error(`Invalid name: '${name}'`);
         }
 
