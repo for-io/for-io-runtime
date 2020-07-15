@@ -207,11 +207,11 @@ class DependencyInjection {
                     const comp = exported[name];
 
                     if (real) {
-                        if ((name in this._components) || (name in this._factories) || (name in this._segments)) {
+                        if ((name in this._components) || (name in this._factories)) {
                             throw new Error(`Detected duplicate definition of the component '${name}'`);
                         }
                     } else {
-                        if ((name in this._mocks) || (name in this._mockFactories) || (name in this._segments)) {
+                        if ((name in this._mocks) || (name in this._mockFactories)) {
                             throw new Error(`Detected duplicate definition of the mock '${name}'`);
                         }
                     }

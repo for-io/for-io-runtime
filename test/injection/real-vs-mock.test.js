@@ -24,47 +24,28 @@
  * SOFTWARE.
  */
 
-module.exports = {
+const container = require('../../src/container');
 
-    isValidName(name) {
-        return /^[\w_$]+$/.test(name);
-    },
+test('mock instead of real (across modules)', () => {
+    verify({
+        mod1: { $components: { foo: 'R' } },
+        mod2: { $mocks: { foo: 'M' } },
+    });
+});
 
-    orElse(val, alternative) {
-        return val !== undefined ? val : alternative;
-    },
+test('mock instead of real (inside module)', () => {
+    verify({
+        mod1: {
+            $components: { foo: 'R' },
+            $mocks: { foo: 'M' }
+        },
+    });
+});
 
-    isArray(x) {
-        return Array.isArray(x);
-    },
+function verify(modules) {
+    const context1 = new container.DependencyInjection({ modules, useMocks: true });
+    expect(context1.getDependency('foo')).toBe('M');
 
-    isString(x) {
-        return typeof x === 'string' || (x instanceof String);
-    },
-
-    isNumber(x) {
-        return !isNaN(x - parseFloat(x));
-    },
-
-    isBoolean(x) {
-        return typeof x === 'boolean' || (x instanceof Boolean);
-    },
-
-    isFunction(x) {
-        let s = Object.prototype.toString.call(x);
-        return s === '[object Function]' || s === '[object AsyncFunction]';
-    },
-
-    isObject(x) {
-        return x !== null && (typeof x === 'object') && !Array.isArray(x);
-    },
-
-    must(cond, errMsg = 'Assertion failed!') {
-        if (!cond) throw new Error(errMsg);
-    },
-
-    def(val, desc) {
-        if (val === undefined) throw new Error(`Undefined "${desc}"!`);
-    },
-
-};
+    const context2 = new container.DependencyInjection({ modules, useMocks: false });
+    expect(context2.getDependency('foo')).toBe('R');
+}

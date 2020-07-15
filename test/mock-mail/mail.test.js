@@ -24,47 +24,47 @@
  * SOFTWARE.
  */
 
-module.exports = {
+const { runTest } = require('../../apidiligence');
 
-    isValidName(name) {
-        return /^[\w_$]+$/.test(name);
+const api = {
+
+    $api: (mail) => ({
+        sendMail: {
+            verb: "POST",
+            path: "/mail",
+            run() {
+                return { mail: mail.send() };
+            }
+        },
+    }),
+
+    $components: {
+        mail: {
+            send() {
+                return 'REAL';
+            }
+        }
     },
 
-    orElse(val, alternative) {
-        return val !== undefined ? val : alternative;
+    $mocks: {
+        mail: {
+            send() {
+                return 'MOCK';
+            }
+        }
     },
-
-    isArray(x) {
-        return Array.isArray(x);
-    },
-
-    isString(x) {
-        return typeof x === 'string' || (x instanceof String);
-    },
-
-    isNumber(x) {
-        return !isNaN(x - parseFloat(x));
-    },
-
-    isBoolean(x) {
-        return typeof x === 'boolean' || (x instanceof Boolean);
-    },
-
-    isFunction(x) {
-        let s = Object.prototype.toString.call(x);
-        return s === '[object Function]' || s === '[object AsyncFunction]';
-    },
-
-    isObject(x) {
-        return x !== null && (typeof x === 'object') && !Array.isArray(x);
-    },
-
-    must(cond, errMsg = 'Assertion failed!') {
-        if (!cond) throw new Error(errMsg);
-    },
-
-    def(val, desc) {
-        if (val === undefined) throw new Error(`Undefined "${desc}"!`);
-    },
-
 };
+
+const testSetup = { modules: { api }, db: false, dir: __dirname };
+
+runTest({
+    name: 'should use mock mail instead of real',
+    cases: [{
+        name: 'send mail',
+        steps: [{
+            request: 'POST /mail',
+            200: { mail: 'MOCK' },
+        }],
+    }],
+    config: { useMocks: true },
+}, testSetup);

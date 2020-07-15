@@ -25,6 +25,7 @@
  */
 
 const { sortRoutes } = require('./route-sorter');
+const utils = require('./utils');
 
 module.exports = (router, api, middleware, controllers, types, providers, exceptionHandler, logger, invoker, DependencyTracker) => {
 
@@ -169,6 +170,11 @@ module.exports = (router, api, middleware, controllers, types, providers, except
             if (api.hasOwnProperty(name)) {
                 const route = api[name];
                 route.name = name;
+
+                utils.must(!utils.isFunction(route), 'The route cannot be a function: ' + route);
+                utils.def(route.verb, 'route.verb');
+                utils.def(route.path, 'route.path');
+
                 routes.push(route);
             }
         }
@@ -182,6 +188,7 @@ module.exports = (router, api, middleware, controllers, types, providers, except
         sortRoutes(routes);
 
         for (const route of routes) {
+
             const method = router[route.verb.toLowerCase()].bind(router);
 
             const args = [route.path];
