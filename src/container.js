@@ -276,18 +276,37 @@ class DependencyInjection {
             throw new Error(`Invalid name: '${name}'`);
         }
 
+        const defaultName = name + DEFAULT_SUFFIX;
+
         if (name === '_context') {
             return this;
         }
 
-        if (this._mocks.hasOwnProperty(name)) {
-            // found a mock that has been initialized
-            return this._mocks[name];
+        if (this._useMocks) {
+            // mock
+            if (this._mocks.hasOwnProperty(name)) {
+                // found a mock that has been initialized
+                return this._mocks[name];
+            }
+
+            // mock factory
+            if (this._mockFactories.hasOwnProperty(name)) {
+                return this._produceMock(name);
+            }
+
+            // default mock
+            if (this._mocks.hasOwnProperty(defaultName)) {
+                // found a default mock that has been initialized
+                return this._mocks[defaultName];
+            }
+
+            // default mock factory
+            if (this._mockFactories.hasOwnProperty(defaultName)) {
+                return this._produceMock(defaultName);
+            }
         }
 
-        const mock = this._findAndInitMock(name);
-        if (mock !== undefined) return mock;
-
+        // getter
         if (isValidGetterName(name)) {
             let targetName = getTargetOfGetter(name);
 
@@ -298,16 +317,19 @@ class DependencyInjection {
             return this._getters[targetName];
         }
 
+        // group (initialized)
         if (this._groups.hasOwnProperty(name)) {
             // found a group that has been initialized
             return this._groups[name];
         }
 
+        // component
         if (this._components.hasOwnProperty(name)) {
             // found a component that has been initialized
             return this._components[name];
         }
 
+        // group (to initialize)
         if (isValidGroupName(name)) {
             let segmentKey = groupNameToSegmentKey(name);
 
@@ -317,13 +339,10 @@ class DependencyInjection {
             }
         }
 
-        // factory
+        // component factory
         if (this._factories.hasOwnProperty(name)) {
             return this._produceComponent(name);
         }
-
-        // try defaults
-        const defaultName = name + DEFAULT_SUFFIX;
 
         // default component
         if (this._components.hasOwnProperty(defaultName)) {
@@ -356,9 +375,9 @@ class DependencyInjection {
         return comp;
     }
 
-    _findAndInitMock(name) {
-        if (!this._mockFactories.hasOwnProperty(name)) return undefined;
+    _produceMock(name) {
         const factory = this._mockFactories[name];
+        if (!factory) throw new Error(`The mock factory '${name}' doesn't exist!`);
 
         const chain = this._depInfo.getChain();
         debug(`Creating mock '${name}' (dependency chain: ${chain})`);
@@ -427,7 +446,7 @@ class DependencyInjection {
     }
 
     getGroup(name) {
-        return this._groups[name.toLowerCase()];
+        return this._groups[name];
     }
 
     logError(e) {

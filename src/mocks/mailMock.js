@@ -25,7 +25,7 @@
  */
 exports.$mocks = {
 
-    mail: {
+    mail__default: {
         sendMail() {
             return { success: true };
         }

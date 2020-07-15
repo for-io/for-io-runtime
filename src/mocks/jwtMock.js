@@ -25,7 +25,7 @@
  */
 exports.$mocks = {
 
-    jwt: {
+    jwt__default: {
         sign(payload, secretOrPrivateKey, options) {
             return 'MOCK.SIGNED.TOKEN';
         },

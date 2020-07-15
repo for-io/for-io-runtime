@@ -25,7 +25,7 @@
  */
 exports.$mocks = {
 
-    config: {
+    config__default: {
         JWT_SECRET: 'jwt_secret',
     }
 
