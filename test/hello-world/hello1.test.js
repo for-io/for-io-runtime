@@ -27,39 +27,22 @@
 const { runTest } = require('../../apidiligence');
 
 const api = {
-
-    $api: (mail) => ({
-        'POST /mail'() {
-            return { mail: mail.send() };
+    $api: {
+        'GET /hello'(name) {
+            return { msg: `Hello, ${name}!` };
         },
-    }),
-
-    $components: {
-        mail: {
-            send() {
-                return 'REAL';
-            }
-        }
-    },
-
-    $mocks: {
-        mail: {
-            send() {
-                return 'MOCK';
-            }
-        }
     },
 };
 
 const testSetup = { modules: { api }, db: false, dir: __dirname };
 
 runTest({
-    name: 'should use mock mail instead of real',
+    name: 'hello',
     cases: [{
-        name: 'send mail',
+        name: 'say hello',
         steps: [{
-            request: 'POST /mail',
-            200: { mail: 'MOCK' },
+            request: 'GET /hello?name=spock',
+            200: { msg: 'Hello, spock!' },
         }],
     }],
 }, testSetup);

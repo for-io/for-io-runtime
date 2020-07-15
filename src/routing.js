@@ -168,12 +168,20 @@ module.exports = (router, api, middleware, controllers, types, providers, except
 
         for (const name in api) {
             if (api.hasOwnProperty(name)) {
-                const route = api[name];
-                route.name = name;
+                let route = api[name];
 
-                utils.must(!utils.isFunction(route), 'The route cannot be a function: ' + route);
-                utils.def(route.verb, 'route.verb');
-                utils.def(route.path, 'route.path');
+                if (utils.isFunction(route)) {
+                    const run = route;
+                    const { verb, path } = utils.extractRoute(name);
+
+                    route = { name, verb, path, run };
+
+                } else if (utils.isObject(route)) {
+                    route.name = name;
+
+                } else {
+                    throw new Error('The route must be an object or function: ' + route);
+                }
 
                 routes.push(route);
             }
@@ -189,8 +197,11 @@ module.exports = (router, api, middleware, controllers, types, providers, except
 
         for (const route of routes) {
 
-            const method = router[route.verb.toLowerCase()].bind(router);
+            utils.def(route.name, 'route.name');
+            utils.def(route.verb, 'route.verb');
+            utils.def(route.path, 'route.path');
 
+            const method = router[route.verb.toLowerCase()].bind(router);
             const args = [route.path];
 
             for (const middName of route.middleware || []) {

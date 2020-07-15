@@ -67,4 +67,14 @@ module.exports = {
         if (val === undefined) throw new Error(`Undefined "${desc}"!`);
     },
 
+    extractRoute(s) {
+        let parts = s.split(' ');
+
+        this.must(parts.length === 2, 'Expected route to have 2 parts: verb and path (e.g. GET /foo), but found: ' + parts.length);
+
+        return {
+            verb: parts[0],
+            path: parts[1],
+        };
+    }
 };
