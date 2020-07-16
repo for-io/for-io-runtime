@@ -23,6 +23,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
+
 exports.$components = {
 
     exceptionHandler__default(logger, HTTP_STATUS_CODES) {
