@@ -83,6 +83,7 @@ class DependencyInjection {
     constructor(opts) {
         debug('Initializing DI context...');
 
+        this._require = opts.require || require;
         this._createdOn = new Date();
         this._depInfo = new DependencyTracker();
         this._useMocks = opts.useMocks;
@@ -104,14 +105,14 @@ class DependencyInjection {
         }
 
         try {
-            // load
-            if (opts.moduleNames) {
-                this._loadSegments(opts.moduleNames);
-            }
-
             // register provided modules
             if (opts.modules) {
                 this._registerModules(opts.modules);
+            }
+
+            // load modules
+            if (opts.moduleNames) {
+                this._loadSegments(opts.moduleNames);
             }
 
             // initialize
@@ -128,7 +129,7 @@ class DependencyInjection {
     _loadSegments(moduleNames) {
         for (let moduleName of moduleNames) {
             try {
-                let importedModule = require(moduleName);
+                let importedModule = this._require(moduleName);
 
                 this._addModuleToSeg(importedModule, moduleName);
 
@@ -164,7 +165,7 @@ class DependencyInjection {
                 let dependencies = (typeof exportedSeg === 'function') ? invoker.getParamNames(exportedSeg) : [];
 
                 this._getSegs(segmentKey).push({
-                    filename: moduleName,
+                    moduleName,
                     dependencies,
                     exported: exportedSeg,
                 });

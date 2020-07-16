@@ -32,31 +32,28 @@ const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const HTTP_STATUS_CODES = require('http').STATUS_CODES;
 
-const { newApp } = require('./app');
+const { createExpressApp } = require('./app');
 
 const { DependencyTracker } = require('./dep-tracker');
 const invoker = require('./invoker');
 const routing = require('./routing');
 const container = require('./container');
-const moduleNames = require('./modulenames');
 const middleware = require('./middleware');
 const auth = require('./auth');
-
 const typeRegistry = require('./type-registry');
+const builtInModules = require('./builtInModules');
 
 async function createApp(opts = {}) {
   const config = initConfig(opts);
 
-  const modules = opts.modules;
+  const modules = Object.assign({}, builtInModules, opts.modules);
 
   const dir = opts.dir;
   const logger = opts.logger || console;
   const router = opts.router || express.Router();
   const database = opts.database || await connectToDb(config);
 
-  if (opts.moduleNames) {
-    appendModuleNames(dir, opts.moduleNames);
-  }
+  const moduleNames = opts.moduleNames ? opts.moduleNames.map(name => dir ? path.join(dir, name) : name) : undefined;
 
   const components = {
     _, invoker, mongo, database,
@@ -75,6 +72,7 @@ async function createApp(opts = {}) {
     modules,
     moduleNames,
     useMocks: !!config.useMocks,
+    require,
   });
 
   // set up authentication
@@ -87,7 +85,7 @@ async function createApp(opts = {}) {
     logger.info('Dependency injection context', context.info());
   }
 
-  return newApp({ router, config });
+  return createExpressApp({ router, config });
 }
 
 function initConfig(opts) {
@@ -99,12 +97,6 @@ function initConfig(opts) {
   if (opts.config) Object.assign(config, opts.config);
 
   return config;
-}
-
-function appendModuleNames(dir, names) {
-  for (const name of names) {
-    moduleNames.push(dir ? path.join(dir, name) : name);
-  }
 }
 
 async function connectToDb(config) {

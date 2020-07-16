@@ -30,7 +30,7 @@ const path = require('path');
 const cookieParser = require('cookie-parser');
 const passport = require('passport');
 
-function newApp({ router, config }) {
+function createExpressApp({ router, config }) {
   const app = express();
 
   if (config.httpLogging) {
@@ -50,4 +50,4 @@ function newApp({ router, config }) {
   return app;
 }
 
-module.exports = { newApp };
+module.exports = { createExpressApp };

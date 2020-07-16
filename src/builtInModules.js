@@ -24,16 +24,28 @@
  * SOFTWARE.
  */
 
-module.exports = [
-    "./components/types",
-    "./components/responses",
-    "./components/exceptionHandler",
-    "./mocks/bcryptMock",
-    "./mocks/middlewareMock",
-    "./mocks/configMock",
-    "./mocks/jwtMock",
-    "./providers/db",
-    "./providers/page",
-    "./providers/log",
-    "./providers/user"
-];
+const builtInTypesModule = require("./components/types");
+const builtInResponsesModule = require("./components/responses");
+const builtInExceptionHandlerModule = require("./components/exceptionHandler");
+const builtInBcryptMockModule = require("./mocks/bcryptMock");
+const builtInMiddlewareMockModule = require("./mocks/middlewareMock");
+const builtInConfigMockModule = require("./mocks/configMock");
+const builtInJwtMockModule = require("./mocks/jwtMock");
+const builtInDbProviderModule = require("./providers/db");
+const builtInPageProviderModule = require("./providers/page");
+const builtInLogProviderModule = require("./providers/log");
+const builtInUserProviderModule = require("./providers/user");
+
+module.exports = {
+    builtInTypesModule,
+    builtInResponsesModule,
+    builtInExceptionHandlerModule,
+    builtInBcryptMockModule,
+    builtInMiddlewareMockModule,
+    builtInConfigMockModule,
+    builtInJwtMockModule,
+    builtInDbProviderModule,
+    builtInPageProviderModule,
+    builtInLogProviderModule,
+    builtInUserProviderModule,
+};
