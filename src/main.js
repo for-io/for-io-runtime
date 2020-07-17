@@ -30,56 +30,42 @@ const mongo = require('mongodb');
 const express = require('express');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
+const auth = require('./auth');
+const middleware = require('./middleware');
 const HTTP_STATUS_CODES = require('http').STATUS_CODES;
 
 const { createExpressApp } = require('./app');
-
-const { DependencyTracker } = require('./dep-tracker');
-const invoker = require('./invoker');
-const routing = require('./routing');
-const container = require('./container');
-const middleware = require('./middleware');
-const auth = require('./auth');
-const typeRegistry = require('./type-registry');
-const builtInModules = require('./builtInModules');
+const { createAppContext } = require('./appcontext');
 
 async function createApp(opts = {}) {
   const config = initConfig(opts);
 
-  const modules = Object.assign({}, builtInModules, opts.modules);
-
-  const dir = opts.dir;
+  const modules = opts.modules;
   const logger = opts.logger || console;
   const router = opts.router || express.Router();
   const database = opts.database || await connectToDb(config);
 
+  const dir = opts.dir;
   const moduleNames = opts.moduleNames ? opts.moduleNames.map(name => dir ? path.join(dir, name) : name) : undefined;
 
   const components = {
-    _, invoker, mongo, database,
-    router, middleware, typeRegistry,
+    _, mongo, database,
+    router, middleware,
     bcrypt, jwt, config,
-    typedefs__default: {},
-    controllers__default: {},
-    api__default: {},
-    DependencyTracker,
     logger__default: logger,
     HTTP_STATUS_CODES,
   };
 
-  const context = new container.DependencyInjection({
-    components,
+  const context = createAppContext({
     modules,
     moduleNames,
-    useMocks: !!config.useMocks,
+    components,
     require,
+    useMocks: !!config.useMocks,
   });
 
   // set up authentication
   context.execute(auth.init);
-
-  // set up routing
-  context.execute(routing);
 
   if (config.NODE_ENV === 'dev') {
     logger.info('Dependency injection context', context.info());
