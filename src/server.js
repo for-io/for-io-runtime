@@ -23,8 +23,9 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
+
 const http = require('http');
-const { appFactory } = require('./main');
+const appFactory = require('./appFactory');
 
 async function start() {
   const app = await appFactory();

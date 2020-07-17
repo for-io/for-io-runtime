@@ -24,7 +24,7 @@
  * SOFTWARE.
  */
 
-const { appFactory } = require('../../src/main');
+const appFactory = require('../../src/appFactory');
 
 const moduleNames = [
     './users-routes',

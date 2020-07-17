@@ -92,4 +92,4 @@ async function connectToDb(config) {
   return mongoClient.db();
 }
 
-module.exports = { appFactory: createApp };
+module.exports = createApp;

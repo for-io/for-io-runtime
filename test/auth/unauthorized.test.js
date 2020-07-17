@@ -25,16 +25,17 @@
  */
 
 const { runTest } = require('api-diligence');
-const { appFactory } = require('../../src/main');
+const appFactory = require('../../src/appFactory');
 
 const api = {
-    $controllers: {
-        hello: (userId) => ({ msg: `Hello, ${userId}!` })
-    },
-
     $api: {
         hello: {
-            verb: "GET", path: "/hello", middleware: ['authenticate'],
+            verb: "GET",
+            path: "/hello",
+            middleware: ['authenticate'],
+            run(userId) {
+                return { msg: `Hello, ${userId}!` };
+            }
         },
     },
 };
