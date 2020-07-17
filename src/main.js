@@ -28,10 +28,12 @@ const _ = require('lodash');
 const path = require('path');
 const mongo = require('mongodb');
 const express = require('express');
-const bcrypt = require('bcrypt');
-const auth = require('./auth');
+
 const middleware = require('./middleware');
 const HTTP_STATUS_CODES = require('http').STATUS_CODES;
+
+const auth = require('./server-modules/auth');
+const passwords = require('./server-modules/passwords');
 
 const { createExpressApp } = require('./app');
 const { createAppContext } = require('./appcontext');
@@ -39,7 +41,7 @@ const { createAppContext } = require('./appcontext');
 async function createApp(opts = {}) {
   const config = initConfig(opts);
 
-  const builtInModules = { auth };
+  const builtInModules = { auth, passwords };
   const modules = Object.assign(builtInModules, opts.modules);
 
   const logger = opts.logger || console;
@@ -50,9 +52,9 @@ async function createApp(opts = {}) {
   const moduleNames = opts.moduleNames ? opts.moduleNames.map(name => dir ? path.join(dir, name) : name) : undefined;
 
   const components = {
-    _, mongo, database,
+    _, config,
+    mongo, database,
     router, middleware,
-    bcrypt, config,
     logger__default: logger,
     HTTP_STATUS_CODES,
   };
@@ -62,7 +64,7 @@ async function createApp(opts = {}) {
     moduleNames,
     components,
     require,
-    useMocks: !!config.useMocks,
+    useMocks: config.useMocks,
   });
 
   if (config.NODE_ENV === 'dev') {

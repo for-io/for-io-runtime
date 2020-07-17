@@ -26,13 +26,13 @@
 
 exports.$mocks = {
 
-    bcrypt__default: {
+    passwords__default: {
 
-        async hash(plaintextPassword, saltRounds) {
+        async hash(plaintextPassword) {
             return `mock-hash-of-${plaintextPassword}`;
         },
 
-        async compare(plaintextPassword, hash) {
+        async compareWithHash(plaintextPassword, hash) {
             let passHash = await this.hash(plaintextPassword);
             return passHash === hash;
         },

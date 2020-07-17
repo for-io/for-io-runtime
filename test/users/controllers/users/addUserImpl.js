@@ -23,13 +23,13 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-exports.$controllers = (db, bcrypt, types) => {
+exports.$controllers = (db, passwords, types) => {
 
     async function addUser(body) {
         let user = types.User(body);
 
         user._id = body.username;
-        user.passwordHash = await bcrypt.hash(body.password, 10);
+        user.passwordHash = await passwords.hash(body.password);
 
         let res = await db.users.insertOne(user);
 

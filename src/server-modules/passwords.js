@@ -24,28 +24,22 @@
  * SOFTWARE.
  */
 
-const builtInTypesModule = require("./components/types");
-const builtInResponsesModule = require("./components/responses");
-const builtInExceptionHandlerModule = require("./components/exceptionHandler");
-const builtInPasswordsMockModule = require("./mocks/passwordsMock");
-const builtInMiddlewareMockModule = require("./mocks/middlewareMock");
-const builtInConfigMockModule = require("./mocks/configMock");
-const builtInAuthMockModule = require("./mocks/authMock");
-const builtInDbProviderModule = require("./providers/db");
-const builtInPageProviderModule = require("./providers/page");
-const builtInLogProviderModule = require("./providers/log");
-const builtInUserProviderModule = require("./providers/user");
+const bcrypt = require('bcrypt');
 
-module.exports = {
-    builtInTypesModule,
-    builtInResponsesModule,
-    builtInExceptionHandlerModule,
-    builtInPasswordsMockModule,
-    builtInMiddlewareMockModule,
-    builtInConfigMockModule,
-    builtInAuthMockModule,
-    builtInDbProviderModule,
-    builtInPageProviderModule,
-    builtInLogProviderModule,
-    builtInUserProviderModule,
+exports.$components = {
+
+    passwords__default() {
+        return {
+
+            async hash(plaintextPassword) {
+                return await bcrypt.hash(plaintextPassword, 10);
+            },
+
+            async compareWithHash(plaintextPassword, hash) {
+                return await bcrypt.compare(plaintextPassword, hash);
+            },
+
+        };
+    },
+
 };

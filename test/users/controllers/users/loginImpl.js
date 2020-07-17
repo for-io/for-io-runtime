@@ -23,13 +23,13 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-exports.$controllers = (db, bcrypt, auth, responses, _) => {
+exports.$controllers = (db, passwords, auth, responses, _) => {
 
     async function login(body) {
         const user = await db.users.findOne({ _id: body.username });
         if (!user) throw responses.NOT_FOUND;
 
-        const match = await bcrypt.compare(body.password, user.passwordHash);
+        const match = await passwords.compareWithHash(body.password, user.passwordHash);
         if (!match) throw responses.FORBIDDEN;
 
         const userData = {
