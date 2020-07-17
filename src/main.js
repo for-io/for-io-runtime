@@ -29,7 +29,6 @@ const path = require('path');
 const mongo = require('mongodb');
 const express = require('express');
 const bcrypt = require('bcrypt');
-const jwt = require('jsonwebtoken');
 const auth = require('./auth');
 const middleware = require('./middleware');
 const HTTP_STATUS_CODES = require('http').STATUS_CODES;
@@ -53,7 +52,7 @@ async function createApp(opts = {}) {
   const components = {
     _, mongo, database,
     router, middleware,
-    bcrypt, jwt, config,
+    bcrypt, config,
     logger__default: logger,
     HTTP_STATUS_CODES,
   };

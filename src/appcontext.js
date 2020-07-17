@@ -36,11 +36,11 @@ function createAppContext({ modules, moduleNames, components = {}, useMocks = fa
     const builtInComponents = {
         invoker,
         typeRegistry,
+        DependencyTracker,
         typedefs__default: {},
         controllers__default: {},
         api__default: {},
         config__default: {},
-        DependencyTracker,
         logger__default: console,
     };
 

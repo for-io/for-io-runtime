@@ -24,9 +24,9 @@
  * SOFTWARE.
  */
 
-exports.$controllers = (auth, responses, _) => {
+exports.$api = (auth, responses, _) => ({
 
-    async function login(body) {
+    async 'POST /login'(body) {
         if (body.username !== body.password) throw responses.FORBIDDEN;
 
         const userData = { id: body.username };
@@ -34,16 +34,6 @@ exports.$controllers = (auth, responses, _) => {
         const token = auth.signToken({ user: userData });
 
         return { token };
-    }
-
-    return { login };
-}
-
-exports.$api = {
-
-    login: {
-        verb: "POST",
-        path: "/login",
     },
 
-};
+});

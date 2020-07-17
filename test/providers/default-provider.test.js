@@ -26,19 +26,15 @@
 
 const { runTest } = require('../../apidiligence');
 
-const api = {
-    $controllers: {
-        hello(name) {
+const mod = {
+    $api: {
+        'GET /hello'(name) {
             return { msg: `Hello, ${name}!` }
         }
     },
-
-    $api: {
-        hello: { verb: "GET", path: "/hello" },
-    },
 };
 
-const testSetup = { modules: { api }, db: false, dir: __dirname };
+const testSetup = { modules: { api: mod }, db: false, dir: __dirname };
 
 runTest({
     name: 'default provider',
