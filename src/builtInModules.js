@@ -29,7 +29,6 @@ const builtInResponsesModule = require("./components/responses");
 const builtInExceptionHandlerModule = require("./components/exceptionHandler");
 const builtInPasswordsMockModule = require("./mocks/passwordsMock");
 const builtInMiddlewareMockModule = require("./mocks/middlewareMock");
-const builtInConfigMockModule = require("./mocks/configMock");
 const builtInAuthMockModule = require("./mocks/authMock");
 const builtInDbProviderModule = require("./providers/db");
 const builtInPageProviderModule = require("./providers/page");
@@ -42,7 +41,6 @@ module.exports = {
     builtInExceptionHandlerModule,
     builtInPasswordsMockModule,
     builtInMiddlewareMockModule,
-    builtInConfigMockModule,
     builtInAuthMockModule,
     builtInDbProviderModule,
     builtInPageProviderModule,
