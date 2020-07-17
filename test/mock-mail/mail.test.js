@@ -24,7 +24,8 @@
  * SOFTWARE.
  */
 
-const { runTest } = require('../../apidiligence');
+const { runTest } = require('api-diligence');
+const { appFactory } = require('../../src/main');
 
 const api = {
 
@@ -51,7 +52,7 @@ const api = {
     },
 };
 
-const testSetup = { modules: { api }, db: false, dir: __dirname };
+const testSetup = { modules: { api }, appFactory, db: false, dir: __dirname };
 
 runTest({
     name: 'should use mock mail instead of real',

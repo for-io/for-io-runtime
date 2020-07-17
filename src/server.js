@@ -24,10 +24,10 @@
  * SOFTWARE.
  */
 const http = require('http');
-const { createApp } = require('./main');
+const { appFactory } = require('./main');
 
 async function start() {
-  const app = await createApp();
+  const app = await appFactory();
 
   let port = normalizePort(process.env.PORT || '3000');
   app.set('port', port);

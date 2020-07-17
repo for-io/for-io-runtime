@@ -24,6 +24,8 @@
  * SOFTWARE.
  */
 
+const { appFactory } = require('../../src/main');
+
 const moduleNames = [
     './users-routes',
     './users-types',
@@ -35,4 +37,4 @@ const moduleNames = [
     "./controllers/users/addUserImpl",
 ]
 
-module.exports = { moduleNames, dir: __dirname };
+module.exports = { moduleNames, appFactory, dir: __dirname };

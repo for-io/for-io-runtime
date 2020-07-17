@@ -24,7 +24,8 @@
  * SOFTWARE.
  */
 
-const { runTest } = require('../../apidiligence');
+const { runTest } = require('api-diligence');
+const { appFactory } = require('../../src/main');
 
 const api = {
     $api: {
@@ -45,7 +46,7 @@ function onDone() {
     expect(error).toHaveBeenCalledWith('Caught exception:', new Error("Unknown parameter: 'foo'"));
 }
 
-const testSetup = { modules: { api, loggerMod }, onDone, db: false, dir: __dirname };
+const testSetup = { modules: { api, loggerMod }, onDone, appFactory, db: false, dir: __dirname };
 
 runTest({
     name: 'unknown param',

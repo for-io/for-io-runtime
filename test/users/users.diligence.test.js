@@ -25,7 +25,7 @@
  */
 
 const path = require('path');
-const { runApiDiligence } = require('../../apidiligence');
+const { runApiDiligence } = require('api-diligence');
 const testSetup = require('./testSetup');
 
 const setup = Object.assign({}, testSetup, { mockAuth: true });

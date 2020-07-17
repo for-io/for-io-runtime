@@ -24,7 +24,8 @@
  * SOFTWARE.
  */
 
-const { runTest } = require('../../apidiligence');
+const { runTest } = require('api-diligence');
+const { appFactory } = require('../../src/main');
 
 const api = {
     $api: {
@@ -34,7 +35,7 @@ const api = {
     },
 };
 
-const testSetup = { modules: { api }, db: false, dir: __dirname };
+const testSetup = { modules: { api }, appFactory, db: false, dir: __dirname };
 
 runTest({
     name: 'hello',

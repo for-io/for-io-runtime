@@ -24,6 +24,8 @@
  * SOFTWARE.
  */
 
+const { appFactory } = require('../../src/main');
+
 const moduleNames = [
     './crud-auth',
     './crud-routes',
@@ -40,4 +42,4 @@ const moduleNames = [
     "./controllers/organizations_teams/listTeamsOfOrganizationImpl"
 ];
 
-module.exports = { moduleNames, dir: __dirname };
+module.exports = { moduleNames, appFactory, dir: __dirname };

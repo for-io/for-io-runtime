@@ -24,7 +24,8 @@
  * SOFTWARE.
  */
 
-const { runTest } = require('../../apidiligence');
+const { runTest } = require('api-diligence');
+const { appFactory } = require('../../src/main');
 
 const api = {
     $controllers: {
@@ -44,7 +45,7 @@ const nameProvider = {
     }
 }
 
-const testSetup = { modules: { api, nameProvider }, db: false, dir: __dirname };
+const testSetup = { modules: { api, nameProvider }, appFactory, db: false, dir: __dirname };
 
 runTest({
     name: 'simple provider',
