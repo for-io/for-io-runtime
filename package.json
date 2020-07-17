@@ -1,7 +1,6 @@
 {
   "name": "for.io",
-  "version": "0.0.1",
-  "private": true,
+  "version": "1.0.0",
   "config": {},
   "scripts": {
     "start": "NODE_ENV=dev JWT_SECRET=X node ./src/server.js",
@@ -32,5 +31,11 @@
   },
   "jest": {
     "preset": "@shelf/jest-mongodb"
-  }
+  },
+  "files": [
+    "LICENSE",
+    "README.md",
+    "index.js",
+    "src/"
+  ]
 }
