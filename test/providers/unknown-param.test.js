@@ -46,7 +46,7 @@ function onDone() {
     expect(error).toHaveBeenCalledWith('Caught exception:', new Error("Unknown parameter: 'foo'"));
 }
 
-const testSetup = { modules: { api, loggerMod }, onDone, appFactory, db: false, dir: __dirname };
+const testSetup = { modules: { api, loggerMod }, onDone, appFactory };
 
 runTest({
     name: 'unknown param',

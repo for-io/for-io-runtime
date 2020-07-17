@@ -37,4 +37,4 @@ const moduleNames = [
     "./controllers/users/addUserImpl",
 ]
 
-module.exports = { moduleNames, appFactory, dir: __dirname };
+module.exports = { moduleNames, appFactory, db: 'mongodb', dir: __dirname };

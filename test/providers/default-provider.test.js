@@ -35,7 +35,7 @@ const mod = {
     },
 };
 
-const testSetup = { modules: { api: mod }, appFactory, db: false, dir: __dirname };
+const testSetup = { modules: { api: mod }, appFactory };
 
 runTest({
     name: 'default provider',

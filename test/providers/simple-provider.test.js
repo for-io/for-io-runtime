@@ -45,7 +45,7 @@ const nameProvider = {
     }
 }
 
-const testSetup = { modules: { api, nameProvider }, appFactory, db: false, dir: __dirname };
+const testSetup = { modules: { api, nameProvider }, appFactory };
 
 runTest({
     name: 'simple provider',

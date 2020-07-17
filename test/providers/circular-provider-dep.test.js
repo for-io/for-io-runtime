@@ -55,7 +55,7 @@ function onDone() {
     expect(error).toHaveBeenCalledWith('Caught exception:', new Error("Detected circular dependency: foo -> bar -> foo"));
 }
 
-const testSetup = { modules: { api, loggerMod, circProvider }, onDone, appFactory, db: false, dir: __dirname };
+const testSetup = { modules: { api, loggerMod, circProvider }, onDone, appFactory };
 
 runTest({
     name: 'circular provider dependencies',

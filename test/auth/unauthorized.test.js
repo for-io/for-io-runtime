@@ -39,7 +39,7 @@ const api = {
     },
 };
 
-const testSetup = { modules: { api }, appFactory, db: false, dir: __dirname };
+const testSetup = { modules: { api }, appFactory };
 
 runTest({
     name: 'unauthorized with mock auth & without mock user',

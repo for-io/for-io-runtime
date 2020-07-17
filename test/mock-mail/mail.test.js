@@ -52,7 +52,7 @@ const api = {
     },
 };
 
-const testSetup = { modules: { api }, appFactory, db: false, dir: __dirname };
+const testSetup = { modules: { api }, appFactory };
 
 runTest({
     name: 'should use mock mail instead of real',

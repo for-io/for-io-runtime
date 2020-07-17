@@ -42,4 +42,4 @@ const moduleNames = [
     "./controllers/organizations_teams/listTeamsOfOrganizationImpl"
 ];
 
-module.exports = { moduleNames, appFactory, dir: __dirname };
+module.exports = { moduleNames, appFactory, db: 'mongodb', dir: __dirname };
