@@ -40,7 +40,9 @@ const { createAppContext } = require('./appcontext');
 async function createApp(opts = {}) {
   const config = initConfig(opts);
 
-  const modules = opts.modules;
+  const builtInModules = { auth };
+  const modules = Object.assign(builtInModules, opts.modules);
+
   const logger = opts.logger || console;
   const router = opts.router || express.Router();
   const database = opts.database || await connectToDb(config);
@@ -63,9 +65,6 @@ async function createApp(opts = {}) {
     require,
     useMocks: !!config.useMocks,
   });
-
-  // set up authentication
-  context.execute(auth.init);
 
   if (config.NODE_ENV === 'dev') {
     logger.info('Dependency injection context', context.info());

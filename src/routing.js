@@ -27,7 +27,7 @@
 const { sortRoutes } = require('./route-sorter');
 const utils = require('./utils');
 
-module.exports = (router, api, middleware, controllers, types, providers, exceptionHandler, logger, invoker, DependencyTracker) => {
+module.exports = (router, api, middleware, auth, controllers, types, providers, exceptionHandler, logger, invoker, DependencyTracker) => {
 
     async function run(name, controller, req, res, next, specification) {
 

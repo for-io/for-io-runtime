@@ -23,7 +23,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-exports.$controllers = (db, bcrypt, jwt, config, responses, _) => {
+exports.$controllers = (db, bcrypt, auth, responses, _) => {
 
     async function login(body) {
         const user = await db.users.findOne({ _id: body.username });
@@ -37,7 +37,7 @@ exports.$controllers = (db, bcrypt, jwt, config, responses, _) => {
             email: user.email,
         };
 
-        const token = jwt.sign({ user: userData }, config.JWT_SECRET);
+        const token = auth.signToken({ user: userData });
 
         return { token };
     }

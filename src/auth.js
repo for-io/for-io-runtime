@@ -23,11 +23,13 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
+
+const jwt = require('jsonwebtoken');
 const passport = require('passport');
 const { ExtractJwt } = require('passport-jwt');
 const JWTStrategy = require('passport-jwt').Strategy;
 
-function init(config) {
+function _init(config) {
     passport.use('jwt', new JWTStrategy({
 
         secretOrKey: config.JWT_SECRET,
@@ -46,4 +48,14 @@ function init(config) {
     }));
 }
 
-module.exports = { init };
+exports.$components = {
+    auth__default(config) {
+        _init(config);
+
+        return {
+            signToken(payload) {
+                return jwt.sign(payload, config.JWT_SECRET);
+            }
+        };
+    },
+};

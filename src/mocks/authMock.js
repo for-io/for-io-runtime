@@ -26,8 +26,8 @@
 
 exports.$mocks = {
 
-    jwt__default: {
-        sign(payload, secretOrPrivateKey, options) {
+    auth__default: {
+        signToken(payload) {
             return 'MOCK.SIGNED.TOKEN';
         },
     }

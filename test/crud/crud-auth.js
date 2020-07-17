@@ -24,14 +24,14 @@
  * SOFTWARE.
  */
 
-exports.$controllers = (jwt, config, responses, _) => {
+exports.$controllers = (auth, responses, _) => {
 
     async function login(body) {
         if (body.username !== body.password) throw responses.FORBIDDEN;
 
         const userData = { id: body.username };
 
-        const token = jwt.sign({ user: userData }, config.JWT_SECRET);
+        const token = auth.signToken({ user: userData });
 
         return { token };
     }
