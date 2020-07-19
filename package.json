@@ -6,7 +6,7 @@
     "start": "NODE_ENV=dev JWT_SECRET=X node ./src/server.js",
     "test": "jest --runInBand",
     "coverage": "jest --runInBand --coverage",
-    "build": "webpack --display-modules && ls -l dist/main.js"
+    "build": "webpack --display-modules && ls -l dist/ForIoRuntime.js"
   },
   "dependencies": {
     "bcrypt": "^5.0.0",
