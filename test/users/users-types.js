@@ -25,7 +25,7 @@
  */
 
 class User {
-    constructor(data = {}, err = undefined, prefix = '', types, util) {
+    constructor({ data = {}, prefix = '', types, err, util }) {
 
         // _id : string pkey autogen
         this._id = util._has(data._id) ? types.string(data._id, err, prefix + '_id') : null;
@@ -45,7 +45,7 @@ class User {
 }
 
 class UpdateUserProfileParams {
-    constructor(data = {}, err = undefined, prefix = '', types, util) {
+    constructor({ data = {}, prefix = '', types, err, util }) {
 
         // id : string
         this.id = util._has(data.id) ? types.string(data.id, err, prefix + 'id') : err.no(prefix + 'id');
@@ -53,7 +53,7 @@ class UpdateUserProfileParams {
 }
 
 class UpdateUserProfileBody {
-    constructor(data = {}, err = undefined, prefix = '', types, util) {
+    constructor({ data = {}, prefix = '', types, err, util }) {
 
         // firstName : string
         this.firstName = util._has(data.firstName) ? types.string(data.firstName, err, prefix + 'firstName') : err.no(prefix + 'firstName');
@@ -64,7 +64,7 @@ class UpdateUserProfileBody {
 }
 
 class DeleteUserParams {
-    constructor(data = {}, err = undefined, prefix = '', types, util) {
+    constructor({ data = {}, prefix = '', types, err, util }) {
 
         // id : string
         this.id = util._has(data.id) ? types.string(data.id, err, prefix + 'id') : err.no(prefix + 'id');
@@ -72,7 +72,7 @@ class DeleteUserParams {
 }
 
 class LoginBody {
-    constructor(data = {}, err = undefined, prefix = '', types, util) {
+    constructor({ data = {}, prefix = '', types, err, util }) {
 
         // username : string
         this.username = util._has(data.username) ? types.string(data.username, err, prefix + 'username') : err.no(prefix + 'username');
@@ -83,7 +83,7 @@ class LoginBody {
 }
 
 class GetUserProfileParams {
-    constructor(data = {}, err = undefined, prefix = '', types, util) {
+    constructor({ data = {}, prefix = '', types, err, util }) {
 
         // id : string
         this.id = util._has(data.id) ? types.string(data.id, err, prefix + 'id') : err.no(prefix + 'id');
@@ -91,7 +91,7 @@ class GetUserProfileParams {
 }
 
 class AddUserBody {
-    constructor(data = {}, err = undefined, prefix = '', types, util) {
+    constructor({ data = {}, prefix = '', types, err, util }) {
 
         // username : string
         this.username = util._has(data.username) ? types.string(data.username, err, prefix + 'username') : err.no(prefix + 'username');

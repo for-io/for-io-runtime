@@ -25,7 +25,7 @@
  */
 
 class Organization {
-    constructor(data = {}, err = undefined, prefix = '', types, util) {
+    constructor({ data = {}, prefix = '', types, err, util }) {
 
         // _id : string pkey autogen
         this._id = util._has(data._id) ? types.string(data._id, err, prefix + '_id') : null;
@@ -39,7 +39,7 @@ class Organization {
 }
 
 class Team {
-    constructor(data = {}, err = undefined, prefix = '', types, util) {
+    constructor({ data = {}, prefix = '', types, err, util }) {
 
         // _id : string pkey autogen
         this._id = util._has(data._id) ? types.string(data._id, err, prefix + '_id') : null;
@@ -53,7 +53,7 @@ class Team {
 }
 
 class AddOrganizationBody {
-    constructor(data = {}, err = undefined, prefix = '', types, util) {
+    constructor({ data = {}, prefix = '', types, err, util }) {
 
         // name : string
         this.name = util._has(data.name) ? types.string(data.name, err, prefix + 'name') : err.no(prefix + 'name');
@@ -61,7 +61,7 @@ class AddOrganizationBody {
 }
 
 class UpdateOrganizationParams {
-    constructor(data = {}, err = undefined, prefix = '', types, util) {
+    constructor({ data = {}, prefix = '', types, err, util }) {
 
         // organizationId : string
         this.organizationId = util._has(data.organizationId) ? types.string(data.organizationId, err, prefix + 'organizationId') : err.no(prefix + 'organizationId');
@@ -69,7 +69,7 @@ class UpdateOrganizationParams {
 }
 
 class UpdateOrganizationBody {
-    constructor(data = {}, err = undefined, prefix = '', types, util) {
+    constructor({ data = {}, prefix = '', types, err, util }) {
 
         // name : string
         this.name = util._has(data.name) ? types.string(data.name, err, prefix + 'name') : err.no(prefix + 'name');
@@ -77,7 +77,7 @@ class UpdateOrganizationBody {
 }
 
 class DeleteOrganizationParams {
-    constructor(data = {}, err = undefined, prefix = '', types, util) {
+    constructor({ data = {}, prefix = '', types, err, util }) {
 
         // organizationId : string
         this.organizationId = util._has(data.organizationId) ? types.string(data.organizationId, err, prefix + 'organizationId') : err.no(prefix + 'organizationId');
@@ -85,7 +85,7 @@ class DeleteOrganizationParams {
 }
 
 class GetOrganizationParams {
-    constructor(data = {}, err = undefined, prefix = '', types, util) {
+    constructor({ data = {}, prefix = '', types, err, util }) {
 
         // organizationId : string
         this.organizationId = util._has(data.organizationId) ? types.string(data.organizationId, err, prefix + 'organizationId') : err.no(prefix + 'organizationId');
@@ -93,7 +93,7 @@ class GetOrganizationParams {
 }
 
 class AddTeamToOrganizationParams {
-    constructor(data = {}, err = undefined, prefix = '', types, util) {
+    constructor({ data = {}, prefix = '', types, err, util }) {
 
         // organizationId : string
         this.organizationId = util._has(data.organizationId) ? types.string(data.organizationId, err, prefix + 'organizationId') : err.no(prefix + 'organizationId');
@@ -101,7 +101,7 @@ class AddTeamToOrganizationParams {
 }
 
 class AddTeamToOrganizationBody {
-    constructor(data = {}, err = undefined, prefix = '', types, util) {
+    constructor({ data = {}, prefix = '', types, err, util }) {
 
         // name : string
         this.name = util._has(data.name) ? types.string(data.name, err, prefix + 'name') : err.no(prefix + 'name');
@@ -112,7 +112,7 @@ class AddTeamToOrganizationBody {
 }
 
 class UpdateTeamOfOrganizationParams {
-    constructor(data = {}, err = undefined, prefix = '', types, util) {
+    constructor({ data = {}, prefix = '', types, err, util }) {
 
         // organizationId : string
         this.organizationId = util._has(data.organizationId) ? types.string(data.organizationId, err, prefix + 'organizationId') : err.no(prefix + 'organizationId');
@@ -123,7 +123,7 @@ class UpdateTeamOfOrganizationParams {
 }
 
 class UpdateTeamOfOrganizationBody {
-    constructor(data = {}, err = undefined, prefix = '', types, util) {
+    constructor({ data = {}, prefix = '', types, err, util }) {
 
         // name : string
         this.name = util._has(data.name) ? types.string(data.name, err, prefix + 'name') : err.no(prefix + 'name');
@@ -134,7 +134,7 @@ class UpdateTeamOfOrganizationBody {
 }
 
 class DeleteTeamOfOrganizationParams {
-    constructor(data = {}, err = undefined, prefix = '', types, util) {
+    constructor({ data = {}, prefix = '', types, err, util }) {
 
         // organizationId : string
         this.organizationId = util._has(data.organizationId) ? types.string(data.organizationId, err, prefix + 'organizationId') : err.no(prefix + 'organizationId');
@@ -145,7 +145,7 @@ class DeleteTeamOfOrganizationParams {
 }
 
 class GetTeamOfOrganizationParams {
-    constructor(data = {}, err = undefined, prefix = '', types, util) {
+    constructor({ data = {}, prefix = '', types, err, util }) {
 
         // organizationId : string
         this.organizationId = util._has(data.organizationId) ? types.string(data.organizationId, err, prefix + 'organizationId') : err.no(prefix + 'organizationId');
@@ -156,7 +156,7 @@ class GetTeamOfOrganizationParams {
 }
 
 class ListTeamsOfOrganizationParams {
-    constructor(data = {}, err = undefined, prefix = '', types, util) {
+    constructor({ data = {}, prefix = '', types, err, util }) {
 
         // organizationId : string
         this.organizationId = util._has(data.organizationId) ? types.string(data.organizationId, err, prefix + 'organizationId') : err.no(prefix + 'organizationId');

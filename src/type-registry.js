@@ -301,7 +301,13 @@ function addTypes(types) {
     for (const typeName in types) {
         if (types.hasOwnProperty(typeName)) {
             const typeClass = types[typeName];
-            _registerType(typeName, (data, err, name = '') => new typeClass(data, err, name, _types, _util));
+            _registerType(typeName, (data, err, name = '') => new typeClass({
+                data,
+                prefix: name,
+                types: _types,
+                err,
+                util: _util,
+            }));
         }
     }
 }
