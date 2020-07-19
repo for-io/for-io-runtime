@@ -392,15 +392,17 @@ class DependencyInjection {
 
         debug(`Importing segments of '${segmentKey}' into '${groupName}'`);
 
-        this._depInfo.enter(segmentKey);
+        const group = this._components[groupName] || {};
+        const segments = this._segmentsByKey[segmentKey] || [];
 
-        try {
-            const group = this._components[groupName] || {};
-            const segments = this._segmentsByKey[segmentKey] || [];
+        for (const segment of segments) {
+            const segmentName = segment.moduleName ? `${segment.moduleName}.${segmentKey}` : segmentKey;
 
-            for (const segment of segments) {
-                debug('Importing segment: ', segment);
+            debug(`Importing segment "${segmentName}"`, segment);
 
+            this._depInfo.enter(segmentName);
+
+            try {
                 const hasValue = ('value' in segment);
 
                 if (!hasValue) {
@@ -418,17 +420,17 @@ class DependencyInjection {
                     Object.assign(group, exportedMembers);
                 }
 
-                debug('Imported segment: ', segment);
+            } finally {
+                this._depInfo.leave(segmentName);
             }
 
-            // assign the group after it has been fully initialized, to prevent returning incomplete group
-            this._groups[groupName] = group;
-
-            return group;
-
-        } finally {
-            this._depInfo.leave(segmentKey);
+            debug('Imported segment: ', segmentName);
         }
+
+        // assign the group after it has been fully initialized, to prevent returning incomplete group
+        this._groups[groupName] = group;
+
+        return group;
     }
 
     getDependency(name) {
