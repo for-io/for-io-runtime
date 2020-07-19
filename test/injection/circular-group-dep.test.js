@@ -32,7 +32,7 @@ test('circular dependency of 2 groups across modules', () => {
         mod2: { $y: (x) => x },
     };
 
-    verifyDeps({ modules });
+    verifyDeps({ modules }, 'mod1.$x -> y -> mod2.$y -> x -> mod1.$x');
 });
 
 test('circular dependency of 2 groups inside module', () => {
@@ -43,10 +43,10 @@ test('circular dependency of 2 groups inside module', () => {
         },
     };
 
-    verifyDeps({ modules });
+    verifyDeps({ modules }, 'mod1.$x -> y -> mod1.$y -> x -> mod1.$x');
 });
 
-function verifyDeps(opts) {
+function verifyDeps(opts, chain) {
     expect(() => new container.DependencyInjection(opts))
-        .toThrow('Detected circular dependency: $x -> y -> $y -> x -> $x');
+        .toThrow('Detected circular dependency: ' + chain);
 }
