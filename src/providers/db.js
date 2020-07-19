@@ -43,7 +43,7 @@ exports.$components = {
             get: function (target, prop, receiver) {
                 switch (prop) {
                     case 'ObjectId':
-                        return mongo.ObjectId;
+                        return mongo.ObjectId.bind(mongo);
 
                     default:
                         return extendColl(database.collection(prop));
