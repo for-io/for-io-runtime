@@ -26,7 +26,7 @@
 
 exports.$components = {
 
-    db__default: (mongo, database, collectionExtensions) => {
+    db__default: (mongodb, database, collectionExtensions) => {
 
         function extendColl(coll) {
             for (const name in collectionExtensions) {
@@ -43,7 +43,7 @@ exports.$components = {
             get: function (target, prop, receiver) {
                 switch (prop) {
                     case 'ObjectId':
-                        return mongo.ObjectId.bind(mongo);
+                        return mongodb.ObjectId.bind(mongodb);
 
                     default:
                         return extendColl(database.collection(prop));

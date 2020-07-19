@@ -26,7 +26,7 @@
 
 const _ = require('lodash');
 const path = require('path');
-const mongo = require('mongodb');
+const mongodb = require('mongodb');
 const express = require('express');
 
 const middleware = require('./middleware');
@@ -53,7 +53,7 @@ async function createApp(opts = {}) {
 
   const components = {
     _, config,
-    mongo, database,
+    mongodb, database,
     router, middleware,
     logger__default: logger,
     HTTP_STATUS_CODES,
@@ -87,7 +87,7 @@ function initConfig(opts) {
 
 async function connectToDb(config) {
   const mongoUrl = config.MONGO_URL || process.env.MONGO_URL || 'mongodb://localhost:27017/test';
-  const mongoClient = new mongo.MongoClient(mongoUrl, { useNewUrlParser: true, useUnifiedTopology: true });
+  const mongoClient = new mongodb.MongoClient(mongoUrl, { useNewUrlParser: true, useUnifiedTopology: true });
   await mongoClient.connect();
   return mongoClient.db();
 }
