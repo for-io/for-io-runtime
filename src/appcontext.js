@@ -26,7 +26,6 @@
 
 const { DependencyTracker } = require('./dep-tracker');
 const invoker = require('./invoker');
-const routing = require('./routing');
 const container = require('./container');
 const typeRegistry = require('./type-registry');
 const builtInModules = require('./builtInModules');
@@ -55,8 +54,8 @@ function createAppContext({ modules, moduleNames, components = {}, useMocks = fa
         require,
     });
 
-    // set up routing
-    context.execute(routing);
+    // trigger initialization of the top-level component
+    context.getDependency('routing');
 
     return context;
 }

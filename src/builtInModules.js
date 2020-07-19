@@ -34,6 +34,7 @@ const builtInDbProviderModule = require("./providers/db");
 const builtInPageProviderModule = require("./providers/page");
 const builtInLogProviderModule = require("./providers/log");
 const builtInUserProviderModule = require("./providers/user");
+const builtInRoutingModule = require('./components/routing');
 
 module.exports = {
     builtInTypesModule,
@@ -46,4 +47,5 @@ module.exports = {
     builtInPageProviderModule,
     builtInLogProviderModule,
     builtInUserProviderModule,
+    builtInRoutingModule,
 };
