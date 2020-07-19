@@ -128,14 +128,9 @@ class DependencyInjection {
 
     _loadSegments(moduleNames) {
         for (let moduleName of moduleNames) {
-            try {
-                let importedModule = this._require(moduleName);
+            let importedModule = this._require(moduleName);
 
-                this._addModuleToSeg(importedModule, moduleName);
-
-            } catch (e) {
-                throw new Error(`The module '${moduleName}' could not be imported!`, e);
-            }
+            this._addModuleToSeg(importedModule, moduleName);
         }
     }
 
@@ -273,9 +268,7 @@ class DependencyInjection {
 
     // must be called through _findDependencyWithTracking()
     _findDependency(name) {
-        if (!utils.isValidName(name)) {
-            throw new Error(`Invalid name: '${name}'`);
-        }
+        if (!utils.isValidName(name)) throw new Error(`Invalid name: '${name}'`);
 
         const defaultName = name + DEFAULT_SUFFIX;
 
