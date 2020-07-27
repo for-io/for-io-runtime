@@ -24,19 +24,15 @@
  * SOFTWARE.
  */
 
-exports.$mocks = {
+exports['MOCK passwords__default'] = {
 
-    passwords__default: {
+    async hash(plaintextPassword) {
+        return `mock-hash-of-${plaintextPassword}`;
+    },
 
-        async hash(plaintextPassword) {
-            return `mock-hash-of-${plaintextPassword}`;
-        },
-
-        async compareWithHash(plaintextPassword, hash) {
-            let passHash = await this.hash(plaintextPassword);
-            return passHash === hash;
-        },
-
-    }
+    async compareWithHash(plaintextPassword, hash) {
+        let passHash = await this.hash(plaintextPassword);
+        return passHash === hash;
+    },
 
 };

@@ -27,219 +27,225 @@
 const { sortRoutes } = require('../route-sorter');
 const utils = require('../utils');
 
-exports.$components = {
+exports['SINGLETON routing'] = (router, api, middleware, auth, controllers, types, providers, exceptionHandler, logger, invoker, DependencyTracker) => {
 
-    routing(router, api, middleware, auth, controllers, types, providers, exceptionHandler, logger, invoker, DependencyTracker) {
+    async function run(name, controller, req, res, next, specification) {
 
-        async function run(name, controller, req, res, next, specification) {
+        let _exception; // will be set if the controller throws an exception
 
-            let _exception; // will be set if the controller throws an exception
+        let _dataObjs = {}; // a cache for data objects (params, query, body, headers, cookies)
 
-            let _dataObjs = {}; // a cache for data objects (params, query, body, headers, cookies)
+        function initDataObj(name) {
+            let typeName = specification.typeNames ? specification.typeNames[name] : undefined;
 
-            function initDataObj(name) {
-                let typeName = specification.typeNames ? specification.typeNames[name] : undefined;
-
-                if (typeName) {
-                    let type = types[typeName];
-                    if (type) {
-                        let data = type(req[name]);
-                        data.validate();
-                        return data;
-                    } else {
-                        throw new Error(`Unknown type: '${typeName}'`);
-                    }
+            if (typeName) {
+                let type = types[typeName];
+                if (type) {
+                    let data = type(req[name]);
+                    data.validate();
+                    return data;
                 } else {
-                    return req[name];
+                    throw new Error(`Unknown type: '${typeName}'`);
                 }
+            } else {
+                return req[name];
+            }
+        }
+
+        function provideDataObj(name) {
+            if (!(name in _dataObjs)) {
+                _dataObjs[name] = initDataObj(name);
             }
 
-            function provideDataObj(name) {
-                if (!(name in _dataObjs)) {
-                    _dataObjs[name] = initDataObj(name);
-                }
+            return _dataObjs[name];
+        }
 
-                return _dataObjs[name];
-            }
+        function getDataParam(name) {
+            if (req.body.hasOwnProperty(name)) return provideDataObj('body')[name];
+            if (req.params.hasOwnProperty(name)) return provideDataObj('params')[name];
+            if (req.query.hasOwnProperty(name)) return provideDataObj('query')[name];
 
-            function getDataParam(name) {
-                if (req.body.hasOwnProperty(name)) return provideDataObj('body')[name];
-                if (req.params.hasOwnProperty(name)) return provideDataObj('params')[name];
-                if (req.query.hasOwnProperty(name)) return provideDataObj('query')[name];
+            throw new Error(`Unknown parameter: '${name}'`);
+        }
 
-                throw new Error(`Unknown parameter: '${name}'`);
-            }
-
-            function provide(name, depTracker) {
-                depTracker.enter(name);
-
-                try {
-                    return _provide(name, depTracker);
-
-                } finally {
-                    depTracker.leave(name);
-                }
-            }
-
-            // must be called only by provide(...)
-            function _provide(name, depTracker) {
-                if (providers.hasOwnProperty(name)) {
-                    return invoker.invoke(providers[name], depName => provide(depName, depTracker))
-                }
-
-                switch (name) {
-                    case 'req':
-                        return req;
-
-                    case 'res':
-                        return res;
-
-                    case 'next':
-                        return next;
-
-                    case 'exception':
-                        return _exception;
-
-                    case 'params':
-                        return provideDataObj('params');
-
-                    case 'query':
-                        return provideDataObj('query');
-
-                    case 'body':
-                        return provideDataObj('body');
-
-                    case 'headers':
-                        return provideDataObj('headers');
-
-                    case 'cookies':
-                        return provideDataObj('cookies');
-
-                    case 'specification':
-                        return specification;
-
-                    default:
-                        return getDataParam(name);
-                }
-            }
-
-            let result;
-
-            const apiDepTracker = new DependencyTracker();
-            apiDepTracker.enter(name);
+        function provide(name, depTracker) {
+            depTracker.enter(name);
 
             try {
+                return _provide(name, depTracker);
 
-                if (!controller) {
-                    throw new Error(`Cannot find the controller for API endpoint '${name}'!`);
-                }
-
-                result = await invoker.invoke(controller, depName => provide(depName, apiDepTracker));
-
-            } catch (exception) {
-                res._exception = exception; // make the exception accessible through the response (needed for the IDE)
-                _exception = exception; // might be requested when invoking the exception handler
-
-                // no custom exception handling if the response headers were already sent
-                if (res.headersSent) {
-                    next(exception);
-                    return;
-                }
-
-                try {
-                    apiDepTracker.enter('exceptionHandler');
-                    result = await invoker.invoke(exceptionHandler, depName => provide(depName, apiDepTracker));
-                } catch (err) {
-                    logger.error('An error was thrown by the exception handler!', err);
-                    next(err);
-                    return;
-                }
-            }
-
-            if (result !== undefined) {
-                if (typeof result === 'string') {
-                    res.send(result);
-                } else {
-                    res.json(result);
-                }
+            } finally {
+                depTracker.leave(name);
             }
         }
 
-        function _getRoutes() {
-            const routes = [];
+        // must be called only by provide(...)
+        function _provide(name, depTracker) {
+            if (providers.hasOwnProperty(name)) {
+                return invoker.invoke(providers[name], depName => provide(depName, depTracker))
+            }
 
-            for (const name in api) {
-                if (api.hasOwnProperty(name)) {
-                    let route = api[name];
+            switch (name) {
+                case 'req':
+                    return req;
 
-                    if (utils.isFunction(route)) {
-                        const run = route;
-                        const { verb, path } = utils.extractRoute(name);
+                case 'res':
+                    return res;
 
-                        route = { name, verb, path, run };
+                case 'next':
+                    return next;
 
-                    } else if (utils.isObject(route)) {
-                        route.name = name;
+                case 'exception':
+                    return _exception;
 
+                case 'params':
+                    return provideDataObj('params');
+
+                case 'query':
+                    return provideDataObj('query');
+
+                case 'body':
+                    return provideDataObj('body');
+
+                case 'headers':
+                    return provideDataObj('headers');
+
+                case 'cookies':
+                    return provideDataObj('cookies');
+
+                case 'specification':
+                    return specification;
+
+                default:
+                    return getDataParam(name);
+            }
+        }
+
+        let result;
+
+        const apiDepTracker = new DependencyTracker();
+        apiDepTracker.enter(name);
+
+        try {
+
+            if (!controller) {
+                throw new Error(`Cannot find the controller for API endpoint '${name}'!`);
+            }
+
+            result = await invoker.invoke(controller, depName => provide(depName, apiDepTracker));
+
+        } catch (exception) {
+            res._exception = exception; // make the exception accessible through the response (needed for the IDE)
+            _exception = exception; // might be requested when invoking the exception handler
+
+            // no custom exception handling if the response headers were already sent
+            if (res.headersSent) {
+                next(exception);
+                return;
+            }
+
+            try {
+                apiDepTracker.enter('exceptionHandler');
+                result = await invoker.invoke(exceptionHandler, depName => provide(depName, apiDepTracker));
+            } catch (err) {
+                logger.error('An error was thrown by the exception handler!', err);
+                next(err);
+                return;
+            }
+        }
+
+        if (result !== undefined) {
+            if (typeof result === 'string') {
+                res.send(result);
+            } else {
+                res.json(result);
+            }
+        }
+    }
+
+    function _fnToRoute(name, fn) {
+        const { verb, path } = utils.extractRoute(name);
+
+        return { name, verb, path, run: fn };
+    }
+
+    function _getRoutes() {
+        const routes = [];
+
+        for (const name in api) {
+            if (api.hasOwnProperty(name)) {
+                let route = api[name];
+
+                if (utils.isFunction(route)) {
+                    route = _fnToRoute(name, route);
+
+                } else if (utils.isObject(route)) {
+                    let keys = Object.keys(route);
+
+                    if (keys.length === 1 && utils.isFunction(route[keys[0]])) {
+                        route = _fnToRoute(keys[0], route[keys[0]]);
                     } else {
-                        throw new Error('The route must be an object or function: ' + route);
+                        route.name = name;
                     }
 
-                    routes.push(route);
-                }
-            }
-
-            return routes;
-        }
-
-        function initRoutes() {
-            const routes = _getRoutes();
-
-            sortRoutes(routes);
-
-            for (const route of routes) {
-
-                utils.def(route.name, 'route.name');
-                utils.def(route.verb, 'route.verb');
-                utils.def(route.path, 'route.path');
-
-                const method = router[route.verb.toLowerCase()].bind(router);
-                const args = [route.path];
-
-                for (const middName of route.middleware || []) {
-                    const middlewareFactory = middleware[middName];
-
-                    if (!middlewareFactory) throw new Error(`Cannot find middleware factory with name: "${middName}"`);
-
-                    args.push(middlewareFactory(route));
+                } else {
+                    throw new Error('The route must be an object or function: ' + route);
                 }
 
-                const controller = _findController(route, controllers);
-                if (!controller) throw new Error(`Cannot find a controller for API endpoint: "${route.name}"`);
-
-                args.push(async (req, res, next) => {
-                    await run(route.name, controller, req, res, next, route);
-                });
-
-                method(...args);
+                routes.push(route);
             }
         }
 
-        function _findController(route, controllers) {
-            if (route.run) {
-                return route.run;
-            } else {
-                return controllers[route.name];
-            }
-        }
-
-        function dispatch(request, callbacks) {
-            router._dispatch(request, callbacks);
-        }
-
-        initRoutes();
-
-        return { dispatch };
+        return routes;
     }
+
+    function initRoutes() {
+        const routes = _getRoutes();
+
+        sortRoutes(routes);
+
+        for (const route of routes) {
+
+            utils.def(route.name, 'route.name');
+            utils.def(route.verb, 'route.verb');
+            utils.def(route.path, 'route.path');
+
+            const method = router[route.verb.toLowerCase()].bind(router);
+            const args = [route.path];
+
+            for (const middName of route.middleware || []) {
+                const middlewareFactory = middleware[middName];
+
+                if (!middlewareFactory) throw new Error(`Cannot find middleware factory with name: "${middName}"`);
+
+                args.push(middlewareFactory(route));
+            }
+
+            const controller = _findController(route, controllers);
+            if (!controller) throw new Error(`Cannot find a controller for API endpoint: "${route.name}"`);
+
+            args.push(async (req, res, next) => {
+                await run(route.name, controller, req, res, next, route);
+            });
+
+            method(...args);
+        }
+    }
+
+    function _findController(route, controllers) {
+        if (route.run) {
+            return route.run;
+        } else {
+            return controllers[route.name];
+        }
+    }
+
+    function dispatch(request, callbacks) {
+        router._dispatch(request, callbacks);
+    }
+
+    initRoutes();
+
+    return { dispatch };
 
 };

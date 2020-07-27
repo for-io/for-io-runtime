@@ -27,18 +27,18 @@
 const { runTest } = require('api-diligence');
 const appFactory = require('../../src/appFactory');
 
-const api = {
-    $api: {
-        hello: { verb: "GET", path: "/hello", run: (foo) => foo },
+const mod1 = {
+    'API hello': {
+        verb: "GET",
+        path: "/hello",
+        run: (foo) => foo,
     },
 };
 
 const error = jest.fn(() => { });
 
-const loggerMod = {
-    $components: {
-        logger: { error },
-    },
+const mod2 = {
+    'SINGLETON logger': { error },
 };
 
 function onDone() {
@@ -46,7 +46,7 @@ function onDone() {
     expect(error).toHaveBeenCalledWith('Caught exception:', new Error("Unknown parameter: 'foo'"));
 }
 
-const testSetup = { modules: { api, loggerMod }, onDone, appFactory };
+const testSetup = { modules: { mod1, mod2 }, onDone, appFactory };
 
 runTest({
     name: 'unknown param',

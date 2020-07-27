@@ -23,16 +23,15 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-exports.$controllers = (db, types, responses, _) => {
 
-    async function addOrganization(body, userId, log) {
+exports['CONTROLLER addOrganization'] = (db, types, responses, _) => {
+
+    return async function addOrganization(body, userId, log) {
         let organization = types.Organization(body);
 
         let res = await db.organizations.insertOne(organization);
 
         return { _id: res.insertedId };
     }
-
-    return { addOrganization };
 
 }

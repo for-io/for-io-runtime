@@ -27,20 +27,18 @@
 const { runTest } = require('api-diligence');
 const appFactory = require('../../src/appFactory');
 
-const api = {
-    $api: {
-        hello: {
-            verb: "GET",
-            path: "/hello",
-            middleware: ['authenticate'],
-            run(userId) {
-                return { msg: `Hello, ${userId}!` };
-            }
-        },
+const mod = {
+    'API hello': {
+        verb: "GET",
+        path: "/hello",
+        middleware: ['authenticate'],
+        run(userId) {
+            return { msg: `Hello, ${userId}!` };
+        }
     },
 };
 
-const testSetup = { modules: { api }, appFactory };
+const testSetup = { modules: { mod }, appFactory };
 
 runTest({
     name: 'unauthorized with mock auth & without mock user',

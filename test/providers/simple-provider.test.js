@@ -27,25 +27,24 @@
 const { runTest } = require('api-diligence');
 const appFactory = require('../../src/appFactory');
 
-const api = {
-    $controllers: {
-        hello(name) {
-            return { msg: `Hello, ${name}!` }
-        },
+const mod1 = {
+    'CONTROLLER hello': () => {
+        return (name) => ({ msg: `Hello, ${name}!` })
     },
 
-    $api: {
-        hello: { verb: "GET", path: "/hello" },
+    'API hello': {
+        verb: "GET",
+        path: "/hello",
     },
 };
 
-const nameProvider = {
-    $providers() {
-        return { name: (query) => query.name.toUpperCase() };
+const mod2 = {
+    'PROVIDER name'() {
+        return (query) => query.name.toUpperCase();
     }
 }
 
-const testSetup = { modules: { api, nameProvider }, appFactory };
+const testSetup = { modules: { mod1, mod2 }, appFactory };
 
 runTest({
     name: 'simple provider',

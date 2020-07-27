@@ -24,11 +24,11 @@
  * SOFTWARE.
  */
 
-exports.$providers = (logger) => ({
+exports['PROVIDER log'] = (logger) => {
 
-    log() {
-        // can be customized to retrieve request-specific logger for tracing
+    return function log() {
+        // can be customized to retrieve request-scoped logger for tracing
         return logger;
-    },
+    }
 
-});
+};

@@ -27,27 +27,26 @@
 const { runTest } = require('api-diligence');
 const appFactory = require('../../src/appFactory');
 
-const api = {
-    $api: {
-        hello: { verb: "GET", path: "/hello", run: (foo) => foo },
+const mod1 = {
+    'API hello': {
+        verb: "GET", path: "/hello", run: (foo) => foo,
     },
 };
 
-const circProvider = {
-    $providers() {
-        return {
-            foo: (bar) => bar + 'x',
-            bar: (foo) => foo + 'y',
-        };
-    }
+const mod2 = {
+    'PROVIDER foo'() {
+        return (bar) => bar + 'x';
+    },
+
+    'PROVIDER bar'() {
+        return (foo) => foo + 'y';
+    },
 }
 
 const error = jest.fn(() => { });
 
-const loggerMod = {
-    $components: {
-        logger: { error },
-    },
+const mod3 = {
+    'SINGLETON logger': { error },
 };
 
 function onDone() {
@@ -55,7 +54,7 @@ function onDone() {
     expect(error).toHaveBeenCalledWith('Caught exception:', new Error("Detected circular dependency: foo -> bar -> foo"));
 }
 
-const testSetup = { modules: { api, loggerMod, circProvider }, onDone, appFactory };
+const testSetup = { modules: { mod1, mod2, mod3 }, onDone, appFactory };
 
 runTest({
     name: 'circular provider dependencies',

@@ -24,12 +24,10 @@
  * SOFTWARE.
  */
 
-exports.$mocks = {
+exports['MOCK auth__default'] = {
 
-    auth__default: {
-        signToken(payload) {
-            return 'MOCK.SIGNED.TOKEN';
-        },
-    }
+    signToken(payload) {
+        return 'MOCK.SIGNED.TOKEN';
+    },
 
 };

@@ -23,9 +23,10 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-exports.$controllers = (db, types, responses, _) => {
 
-    async function deleteUser(id, userId, log) {
+exports['CONTROLLER deleteUser'] = (db, types, responses, _) => {
+
+    return async function deleteUser(id, userId, log) {
         // users can delete only their own profile
         if (id !== userId) throw responses.FORBIDDEN;
 
@@ -35,7 +36,5 @@ exports.$controllers = (db, types, responses, _) => {
 
         return responses.OK;
     }
-
-    return { deleteUser };
 
 }

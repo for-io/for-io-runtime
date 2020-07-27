@@ -24,37 +24,34 @@
  * SOFTWARE.
  */
 
-exports.$components = {
+exports['SINGLETON responses__default'] = {
 
-    responses__default: {
+    OK: {
+        success: true,
+    },
 
-        OK: {
-            success: true,
-        },
+    FORBIDDEN: {
+        statusCode: 403,
+        body: {
+            success: false,
+            status: 'Access denied!',
+        }
+    },
 
-        FORBIDDEN: {
-            statusCode: 403,
-            body: {
-                success: false,
-                status: 'Access denied!',
-            }
-        },
+    NOT_FOUND: {
+        statusCode: 404,
+        body: {
+            success: false,
+            status: 'Not found!',
+        }
+    },
 
-        NOT_FOUND: {
-            statusCode: 404,
-            body: {
-                success: false,
-                status: 'Not found!',
-            }
-        },
-
-        INTERNAL_ERROR: {
-            statusCode: 500,
-            body: {
-                success: false,
-                status: 'Internal server error!',
-            }
-        },
+    INTERNAL_ERROR: {
+        statusCode: 500,
+        body: {
+            success: false,
+            status: 'Internal server error!',
+        }
     },
 
 };

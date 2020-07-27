@@ -23,9 +23,10 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-exports.$controllers = (db, responses, _) => {
 
-    async function getUserProfile(id, log) {
+exports['CONTROLLER getUserProfile'] = (db, responses, _) => {
+
+    return async function getUserProfile(id, log) {
         let profile = await db.users.findOne({ _id: id });
 
         delete profile.passwordHash;
@@ -34,7 +35,5 @@ exports.$controllers = (db, responses, _) => {
 
         return profile;
     }
-
-    return { getUserProfile };
 
 }

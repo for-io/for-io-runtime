@@ -163,7 +163,7 @@ class ListTeamsOfOrganizationParams {
     }
 }
 
-exports.$typedefs = {
+exports['SINGLETON typedefs'] = {
     Organization,
     Team,
     AddOrganizationBody,

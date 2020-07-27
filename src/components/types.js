@@ -24,12 +24,10 @@
  * SOFTWARE.
  */
 
-exports.$components = {
+exports['SINGLETON types__default'] = (typeRegistry, typedefs) => {
 
-    types__default(typeRegistry, typedefs) {
-        typeRegistry.addTypes(typedefs);
+    typeRegistry.addTypes(typedefs);
 
-        return typeRegistry.getTypes();
-    },
+    return typeRegistry.getTypes();
 
 };

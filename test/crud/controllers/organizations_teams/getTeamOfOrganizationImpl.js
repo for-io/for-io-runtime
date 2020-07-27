@@ -23,9 +23,10 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-exports.$controllers = (db, types, responses, _) => {
 
-    async function getTeamOfOrganization(organizationId, teamId2) {
+exports['CONTROLLER getTeamOfOrganization'] = (db, types, responses, _) => {
+
+    return async function getTeamOfOrganization(organizationId, teamId2) {
         let organization = await db.organizations.findOne({ _id: organizationId })
         if (!organization) throw responses.NOT_FOUND;
 
@@ -34,7 +35,5 @@ exports.$controllers = (db, types, responses, _) => {
 
         return types.Team(nestedTeam);
     }
-
-    return { getTeamOfOrganization };
 
 }

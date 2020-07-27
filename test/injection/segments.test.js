@@ -28,9 +28,9 @@ const container = require('../../src/container');
 
 test('should merge multiple segments', () => {
     verify({
-        mod1: { $x: { foo: 1 } },
-        mod2: { $x: { bar: 2 } },
-        mod3: { $y: { baz: 3 } },
+        mod1: { 'MEMBER x.foo': 1 },
+        mod2: { 'MEMBER x.bar': 2 },
+        mod3: { 'MEMBER y.baz': 3 },
     });
 });
 

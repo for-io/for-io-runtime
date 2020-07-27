@@ -23,9 +23,10 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-exports.$controllers = (db, types, responses, _) => {
 
-    async function updateUserProfile(id, body, userId, log) {
+exports['CONTROLLER updateUserProfile'] = (db, types, responses, _) => {
+
+    return async function updateUserProfile(id, body, userId, log) {
         // users can update only their own profile
         if (id !== userId) throw responses.FORBIDDEN;
 
@@ -42,7 +43,5 @@ exports.$controllers = (db, types, responses, _) => {
 
         return responses.OK;
     }
-
-    return { updateUserProfile };
 
 }

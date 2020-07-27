@@ -24,43 +24,38 @@
  * SOFTWARE.
  */
 
-exports.$components = {
+exports['SINGLETON db__default'] = (mongodb, database, collectionExtensions) => {
 
-    db__default: (mongodb, database, collectionExtensions) => {
-
-        function extendColl(coll) {
-            for (const name in collectionExtensions) {
-                if (collectionExtensions.hasOwnProperty(name)) {
-                    const fn = collectionExtensions[name];
-                    coll[name] = fn.bind(coll);
-                }
+    function extendColl(coll) {
+        for (const name in collectionExtensions) {
+            if (collectionExtensions.hasOwnProperty(name)) {
+                const fn = collectionExtensions[name];
+                coll[name] = fn.bind(coll);
             }
-
-            return coll;
         }
 
-        return new Proxy({}, {
-            get: function (target, prop, receiver) {
-                switch (prop) {
-                    case 'ObjectId':
-                        return mongodb.ObjectId.bind(mongodb);
+        return coll;
+    }
 
-                    default:
-                        return extendColl(database.collection(prop));
-                }
+    return new Proxy({}, {
+        get: function (target, prop, receiver) {
+            switch (prop) {
+                case 'ObjectId':
+                    return mongodb.ObjectId.bind(mongodb);
+
+                default:
+                    return extendColl(database.collection(prop));
             }
-        });
-    },
+        }
+    });
 
 };
 
-exports.$collectionExtensions = {
+exports['MEMBER collectionExtensions.exists'] = () => {
 
-    exists: () => {
-        return async function exists(filter) {
-            let count = await this.countDocuments(filter, { limit: 1 });
-            return count === 0;
-        };
-    },
+    return async function exists(filter) {
+        let count = await this.countDocuments(filter, { limit: 1 });
+        return count === 1;
+    }
 
 };

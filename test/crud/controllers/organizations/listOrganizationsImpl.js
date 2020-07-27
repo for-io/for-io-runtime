@@ -23,9 +23,10 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-exports.$controllers = (db, types, responses, _) => {
 
-    async function listOrganizations(userId, page, log) {
+exports['CONTROLLER listOrganizations'] = (db, types, responses, _) => {
+
+    return async function listOrganizations(userId, page, log) {
         let query = {};
 
         let options = {
@@ -39,7 +40,5 @@ exports.$controllers = (db, types, responses, _) => {
 
         return await db.organizations.find(query, options).toArray();
     }
-
-    return { listOrganizations };
 
 }

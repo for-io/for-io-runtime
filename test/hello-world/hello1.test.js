@@ -27,15 +27,15 @@
 const { runTest } = require('api-diligence');
 const appFactory = require('../../src/appFactory');
 
-const api = {
-    $api: {
+const mod1 = {
+    'API hello': {
         'GET /hello'(name) {
             return { msg: `Hello, ${name}!` };
         },
     },
 };
 
-const testSetup = { modules: { api }, appFactory };
+const testSetup = { modules: { mod1 }, appFactory };
 
 runTest({
     name: 'hello',

@@ -24,249 +24,246 @@
  * SOFTWARE.
  */
 
-exports.$api = {
-
-    addOrganization: {
-        route: "POST /organizations",
-        verb: "POST",
-        path: "/organizations",
-        title: "Create organization",
-        description: "",
-        params: {},
-        query: {},
-        body: {
-            name: "string"
-        },
-        headers: {},
-        cookies: {},
-        roles: [],
-        responses: [200, 403, 422],
-        middleware: ["authenticate"],
-        tags: [],
-        typeNames: {
-            body: "AddOrganizationBody"
-        },
-        model: "Organization:add",
-        cache: {}
+exports['API addOrganization'] = {
+    route: "POST /organizations",
+    verb: "POST",
+    path: "/organizations",
+    title: "Create organization",
+    description: "",
+    params: {},
+    query: {},
+    body: {
+        name: "string"
     },
-
-    updateOrganization: {
-        route: "PATCH /organizations/:organizationId",
-        verb: "PATCH",
-        path: "/organizations/:organizationId",
-        title: "Update organization",
-        description: "",
-        params: {
-            organizationId: "string"
-        },
-        query: {},
-        body: {
-            name: "string"
-        },
-        headers: {},
-        cookies: {},
-        roles: [],
-        responses: [200, 403, 404, 422],
-        middleware: ["authenticate"],
-        tags: [],
-        typeNames: {
-            params: "UpdateOrganizationParams",
-            body: "UpdateOrganizationBody"
-        },
-        model: "Organization:update",
-        cache: {}
+    headers: {},
+    cookies: {},
+    roles: [],
+    responses: [200, 403, 422],
+    middleware: ["authenticate"],
+    tags: [],
+    typeNames: {
+        body: "AddOrganizationBody"
     },
+    model: "Organization:add",
+    cache: {}
+};
 
-    deleteOrganization: {
-        route: "DELETE /organizations/:organizationId",
-        verb: "DELETE",
-        path: "/organizations/:organizationId",
-        title: "Delete organization",
-        description: "",
-        params: {
-            organizationId: "string"
-        },
-        query: {},
-        body: {},
-        headers: {},
-        cookies: {},
-        roles: [],
-        responses: [200, 403, 404],
-        middleware: ["authenticate"],
-        tags: [],
-        typeNames: {
-            params: "DeleteOrganizationParams"
-        },
-        model: "Organization:remove"
+exports['API updateOrganization'] = {
+    route: "PATCH /organizations/:organizationId",
+    verb: "PATCH",
+    path: "/organizations/:organizationId",
+    title: "Update organization",
+    description: "",
+    params: {
+        organizationId: "string"
     },
-
-    getOrganization: {
-        route: "GET /organizations/:organizationId",
-        verb: "GET",
-        path: "/organizations/:organizationId",
-        title: "Get organization",
-        description: "",
-        params: {
-            organizationId: "string"
-        },
-        query: {},
-        body: {},
-        headers: {},
-        cookies: {},
-        roles: [],
-        responses: [200, 403, 404],
-        middleware: ["authenticate"],
-        tags: [],
-        typeNames: {
-            params: "GetOrganizationParams"
-        },
-        model: "Organization:read"
+    query: {},
+    body: {
+        name: "string"
     },
-
-    listOrganizations: {
-        route: "GET /organizations",
-        verb: "GET",
-        path: "/organizations",
-        title: "List organizations",
-        description: "",
-        params: {},
-        query: {},
-        body: {},
-        headers: {},
-        cookies: {},
-        roles: [],
-        responses: [200, 403],
-        middleware: ["authenticate"],
-        tags: [],
-        typeNames: {},
-        model: "Organization:list"
+    headers: {},
+    cookies: {},
+    roles: [],
+    responses: [200, 403, 404, 422],
+    middleware: ["authenticate"],
+    tags: [],
+    typeNames: {
+        params: "UpdateOrganizationParams",
+        body: "UpdateOrganizationBody"
     },
+    model: "Organization:update",
+    cache: {}
+};
 
-    addTeamToOrganization: {
-        route: "POST /organizations/:organizationId/teams",
-        verb: "POST",
-        path: "/organizations/:organizationId/teams",
-        title: "Add new team to organization",
-        description: "",
-        params: {
-            organizationId: "string"
-        },
-        query: {},
-        body: {
-            name: "string",
-            members: "object"
-        },
-        headers: {},
-        cookies: {},
-        roles: [],
-        responses: [200, 403, 404, 422],
-        middleware: ["authenticate"],
-        tags: [],
-        typeNames: {
-            params: "AddTeamToOrganizationParams",
-            body: "AddTeamToOrganizationBody"
-        },
-        model: "Organization#teams:add",
-        cache: {}
+exports['API deleteOrganization'] = {
+    route: "DELETE /organizations/:organizationId",
+    verb: "DELETE",
+    path: "/organizations/:organizationId",
+    title: "Delete organization",
+    description: "",
+    params: {
+        organizationId: "string"
     },
-
-    updateTeamOfOrganization: {
-        route: "PATCH /organizations/:organizationId/teams/:teamId2",
-        verb: "PATCH",
-        path: "/organizations/:organizationId/teams/:teamId2",
-        title: "Update team of organization",
-        description: "",
-        params: {
-            organizationId: "string",
-            teamId2: "string"
-        },
-        query: {},
-        body: {
-            name: "string",
-            members: "object"
-        },
-        headers: {},
-        cookies: {},
-        roles: [],
-        responses: [200, 403, 404, 422],
-        middleware: ["authenticate"],
-        tags: [],
-        typeNames: {
-            params: "UpdateTeamOfOrganizationParams",
-            body: "UpdateTeamOfOrganizationBody"
-        },
-        model: "Organization#teams:update",
-        cache: {}
+    query: {},
+    body: {},
+    headers: {},
+    cookies: {},
+    roles: [],
+    responses: [200, 403, 404],
+    middleware: ["authenticate"],
+    tags: [],
+    typeNames: {
+        params: "DeleteOrganizationParams"
     },
+    model: "Organization:remove"
+};
 
-    deleteTeamOfOrganization: {
-        route: "DELETE /organizations/:organizationId/teams/:teamId2",
-        verb: "DELETE",
-        path: "/organizations/:organizationId/teams/:teamId2",
-        title: "Delete team of organization",
-        description: "",
-        params: {
-            organizationId: "string",
-            teamId2: "string"
-        },
-        query: {},
-        body: {},
-        headers: {},
-        cookies: {},
-        roles: [],
-        responses: [200, 403, 404],
-        middleware: ["authenticate"],
-        tags: [],
-        typeNames: {
-            params: "DeleteTeamOfOrganizationParams"
-        },
-        model: "Organization#teams:remove"
+exports['API getOrganization'] = {
+    route: "GET /organizations/:organizationId",
+    verb: "GET",
+    path: "/organizations/:organizationId",
+    title: "Get organization",
+    description: "",
+    params: {
+        organizationId: "string"
     },
-
-    getTeamOfOrganization: {
-        route: "GET /organizations/:organizationId/teams/:teamId2",
-        verb: "GET",
-        path: "/organizations/:organizationId/teams/:teamId2",
-        title: "Get single team of organization",
-        description: "",
-        params: {
-            organizationId: "string",
-            teamId2: "string"
-        },
-        query: {},
-        body: {},
-        headers: {},
-        cookies: {},
-        roles: [],
-        responses: [200, 403, 404],
-        middleware: ["authenticate"],
-        tags: [],
-        typeNames: {
-            params: "GetTeamOfOrganizationParams"
-        },
-        model: "Organization#teams:read"
+    query: {},
+    body: {},
+    headers: {},
+    cookies: {},
+    roles: [],
+    responses: [200, 403, 404],
+    middleware: ["authenticate"],
+    tags: [],
+    typeNames: {
+        params: "GetOrganizationParams"
     },
+    model: "Organization:read"
+};
 
-    listTeamsOfOrganization: {
-        route: "GET /organizations/:organizationId/teams",
-        verb: "GET",
-        path: "/organizations/:organizationId/teams",
-        title: "List teams of organization",
-        description: "",
-        params: {
-            organizationId: "string"
-        },
-        query: {},
-        body: {},
-        headers: {},
-        cookies: {},
-        roles: [],
-        responses: [200, 403, 404],
-        middleware: ["authenticate"],
-        tags: [],
-        typeNames: {
-            params: "ListTeamsOfOrganizationParams"
-        },
-        model: "Organization#teams:list"
-    }
+exports['API listOrganizations'] = {
+    route: "GET /organizations",
+    verb: "GET",
+    path: "/organizations",
+    title: "List organizations",
+    description: "",
+    params: {},
+    query: {},
+    body: {},
+    headers: {},
+    cookies: {},
+    roles: [],
+    responses: [200, 403],
+    middleware: ["authenticate"],
+    tags: [],
+    typeNames: {},
+    model: "Organization:list"
+};
+
+exports['API addTeamToOrganization'] = {
+    route: "POST /organizations/:organizationId/teams",
+    verb: "POST",
+    path: "/organizations/:organizationId/teams",
+    title: "Add new team to organization",
+    description: "",
+    params: {
+        organizationId: "string"
+    },
+    query: {},
+    body: {
+        name: "string",
+        members: "object"
+    },
+    headers: {},
+    cookies: {},
+    roles: [],
+    responses: [200, 403, 404, 422],
+    middleware: ["authenticate"],
+    tags: [],
+    typeNames: {
+        params: "AddTeamToOrganizationParams",
+        body: "AddTeamToOrganizationBody"
+    },
+    model: "Organization#teams:add",
+    cache: {}
+};
+
+exports['API updateTeamOfOrganization'] = {
+    route: "PATCH /organizations/:organizationId/teams/:teamId2",
+    verb: "PATCH",
+    path: "/organizations/:organizationId/teams/:teamId2",
+    title: "Update team of organization",
+    description: "",
+    params: {
+        organizationId: "string",
+        teamId2: "string"
+    },
+    query: {},
+    body: {
+        name: "string",
+        members: "object"
+    },
+    headers: {},
+    cookies: {},
+    roles: [],
+    responses: [200, 403, 404, 422],
+    middleware: ["authenticate"],
+    tags: [],
+    typeNames: {
+        params: "UpdateTeamOfOrganizationParams",
+        body: "UpdateTeamOfOrganizationBody"
+    },
+    model: "Organization#teams:update",
+    cache: {}
+};
+
+exports['API deleteTeamOfOrganization'] = {
+    route: "DELETE /organizations/:organizationId/teams/:teamId2",
+    verb: "DELETE",
+    path: "/organizations/:organizationId/teams/:teamId2",
+    title: "Delete team of organization",
+    description: "",
+    params: {
+        organizationId: "string",
+        teamId2: "string"
+    },
+    query: {},
+    body: {},
+    headers: {},
+    cookies: {},
+    roles: [],
+    responses: [200, 403, 404],
+    middleware: ["authenticate"],
+    tags: [],
+    typeNames: {
+        params: "DeleteTeamOfOrganizationParams"
+    },
+    model: "Organization#teams:remove"
+};
+
+exports['API getTeamOfOrganization'] = {
+    route: "GET /organizations/:organizationId/teams/:teamId2",
+    verb: "GET",
+    path: "/organizations/:organizationId/teams/:teamId2",
+    title: "Get single team of organization",
+    description: "",
+    params: {
+        organizationId: "string",
+        teamId2: "string"
+    },
+    query: {},
+    body: {},
+    headers: {},
+    cookies: {},
+    roles: [],
+    responses: [200, 403, 404],
+    middleware: ["authenticate"],
+    tags: [],
+    typeNames: {
+        params: "GetTeamOfOrganizationParams"
+    },
+    model: "Organization#teams:read"
+};
+
+exports['API listTeamsOfOrganization'] = {
+    route: "GET /organizations/:organizationId/teams",
+    verb: "GET",
+    path: "/organizations/:organizationId/teams",
+    title: "List teams of organization",
+    description: "",
+    params: {
+        organizationId: "string"
+    },
+    query: {},
+    body: {},
+    headers: {},
+    cookies: {},
+    roles: [],
+    responses: [200, 403, 404],
+    middleware: ["authenticate"],
+    tags: [],
+    typeNames: {
+        params: "ListTeamsOfOrganizationParams"
+    },
+    model: "Organization#teams:list"
 };

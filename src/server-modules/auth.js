@@ -48,14 +48,14 @@ function _init(config) {
     }));
 }
 
-exports.$components = {
-    auth__default(config) {
-        _init(config);
+exports['SINGLETON auth__default'] = (config) => {
 
-        return {
-            signToken(payload) {
-                return jwt.sign(payload, config.JWT_SECRET);
-            }
-        };
-    },
+    _init(config);
+
+    return {
+        signToken(payload) {
+            return jwt.sign(payload, config.JWT_SECRET);
+        }
+    }
+
 };

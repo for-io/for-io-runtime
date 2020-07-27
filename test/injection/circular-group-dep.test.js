@@ -28,22 +28,22 @@ const container = require('../../src/container');
 
 test('circular dependency of 2 groups across modules', () => {
     const modules = {
-        mod1: { $x: (y) => y },
-        mod2: { $y: (x) => x },
+        mod1: { 'MEMBER x.a': (y) => y },
+        mod2: { 'MEMBER y.b': (x) => x },
     };
 
-    verifyDeps({ modules }, 'mod1.$x -> y -> mod2.$y -> x -> mod1.$x');
+    verifyDeps({ modules }, 'mod1/x.a -> y -> mod2/y.b -> x -> mod1/x.a');
 });
 
 test('circular dependency of 2 groups inside module', () => {
     const modules = {
         mod1: {
-            $x: (y) => y,
-            $y: (x) => x,
+            'MEMBER x.a': (y) => y,
+            'MEMBER y.b': (x) => x,
         },
     };
 
-    verifyDeps({ modules }, 'mod1.$x -> y -> mod1.$y -> x -> mod1.$x');
+    verifyDeps({ modules }, 'mod1/x.a -> y -> mod1/y.b -> x -> mod1/x.a');
 });
 
 function verifyDeps(opts, chain) {

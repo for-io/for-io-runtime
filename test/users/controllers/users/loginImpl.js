@@ -23,9 +23,10 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-exports.$controllers = (db, passwords, auth, responses, _) => {
 
-    async function login(body) {
+exports['CONTROLLER login'] = (db, passwords, auth, responses, _) => {
+
+    return async function login(body) {
         const user = await db.users.findOne({ _id: body.username });
         if (!user) throw responses.NOT_FOUND;
 
@@ -41,7 +42,5 @@ exports.$controllers = (db, passwords, auth, responses, _) => {
 
         return { token };
     }
-
-    return { login };
 
 }

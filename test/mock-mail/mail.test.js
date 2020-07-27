@@ -27,32 +27,30 @@
 const { runTest } = require('api-diligence');
 const appFactory = require('../../src/appFactory');
 
-const api = {
+const mod = {
 
-    $api: (mail) => ({
-        'POST /mail'() {
-            return { mail: mail.send() };
-        },
-    }),
-
-    $components: {
-        mail: {
-            send() {
-                return 'REAL';
+    'API mailer'(mail) {
+        return {
+            'POST /mail'() {
+                return { mail: mail.send() };
             }
+        };
+    },
+
+    'SINGLETON mail': {
+        send() {
+            return 'REAL';
         }
     },
 
-    $mocks: {
-        mail: {
-            send() {
-                return 'MOCK';
-            }
+    'MOCK mail': {
+        send() {
+            return 'MOCK';
         }
     },
 };
 
-const testSetup = { modules: { api }, appFactory };
+const testSetup = { modules: { mod }, appFactory };
 
 runTest({
     name: 'should use mock mail instead of real',

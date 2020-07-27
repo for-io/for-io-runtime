@@ -51,6 +51,8 @@ module.exports = {
     },
 
     isFunction(x) {
+        if (typeof x === 'function') return true;
+
         let s = Object.prototype.toString.call(x);
         return s === '[object Function]' || s === '[object AsyncFunction]';
     },
@@ -76,5 +78,6 @@ module.exports = {
             verb: parts[0],
             path: parts[1],
         };
-    }
+    },
+
 };

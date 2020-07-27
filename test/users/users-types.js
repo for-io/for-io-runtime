@@ -110,12 +110,14 @@ class AddUserBody {
     }
 }
 
-exports.$typedefs = {
-    User,
+exports['TYPE User'] = () => User;
+
+exports['SINGLETON typedefs'] = {
     UpdateUserProfileParams,
     UpdateUserProfileBody,
     DeleteUserParams,
     GetUserProfileParams,
     AddUserBody,
-    LoginBody,
 };
+
+exports['TYPE LoginBody'] = () => LoginBody;

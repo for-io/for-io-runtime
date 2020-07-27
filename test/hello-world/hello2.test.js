@@ -27,21 +27,19 @@
 const { runTest } = require('api-diligence');
 const appFactory = require('../../src/appFactory');
 
-const api = {
+const mod = {
 
-    $api: {
-        helloWorld: {
-            verb: "GET",
-            path: "/hello",
-            run(query) {
-                return { msg: `Hello, ${query.name}!` };
-            }
-        },
+    'API helloWorld': {
+        verb: "GET",
+        path: "/hello",
+        run(query) {
+            return { msg: `Hello, ${query.name}!` };
+        }
     },
 
 };
 
-const testSetup = { modules: { api }, appFactory };
+const testSetup = { modules: { mod }, appFactory };
 
 runTest({
     name: 'hello',

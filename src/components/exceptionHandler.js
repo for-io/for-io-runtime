@@ -24,39 +24,37 @@
  * SOFTWARE.
  */
 
-exports.$components = {
+exports['SINGLETON exceptionHandler__default'] = (logger, HTTP_STATUS_CODES) => {
 
-    exceptionHandler__default(logger, HTTP_STATUS_CODES) {
-        return (res, exception) => {
-            let status;
+    return (res, exception) => {
+        let status;
 
-            if (typeof exception === 'number') {
-                status = exception;
-            } else if (typeof exception === 'object' && typeof exception.statusCode === 'number') {
-                status = exception.statusCode;
-            } else {
-                status = 500;
-            }
+        if (typeof exception === 'number') {
+            status = exception;
+        } else if (typeof exception === 'object' && typeof exception.statusCode === 'number') {
+            status = exception.statusCode;
+        } else {
+            status = 500;
+        }
 
-            if (!HTTP_STATUS_CODES[status + '']) {
-                logger.error('Invalid status code:', status);
-                status = 500;
-            }
+        if (!HTTP_STATUS_CODES[status + '']) {
+            logger.error('Invalid status code:', status);
+            status = 500;
+        }
 
-            let body = exception.body || { status: HTTP_STATUS_CODES[status + ''] };
+        let body = exception.body || { status: HTTP_STATUS_CODES[status + ''] };
 
-            if (status >= 500) {
-                logger.error('Caught exception:', exception);
-            }
+        if (status >= 500) {
+            logger.error('Caught exception:', exception);
+        }
 
-            res.status(status);
+        res.status(status);
 
-            if (typeof body === 'string') {
-                res.send(body);
-            } else {
-                res.json(body);
-            }
-        };
-    },
+        if (typeof body === 'string') {
+            res.send(body);
+        } else {
+            res.json(body);
+        }
+    };
 
 };

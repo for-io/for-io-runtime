@@ -23,9 +23,10 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-exports.$controllers = (db, passwords, types) => {
 
-    async function addUser(body) {
+exports['CONTROLLER addUser'] = (db, passwords, types) => {
+
+    return async function addUser(body) {
         let user = types.User(body);
 
         user._id = body.username;
@@ -35,7 +36,5 @@ exports.$controllers = (db, passwords, types) => {
 
         return { _id: res.insertedId };
     }
-
-    return { addUser };
 
 }

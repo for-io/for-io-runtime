@@ -24,18 +24,20 @@
  * SOFTWARE.
  */
 
-exports.$providers = (responses) => ({
+exports['PROVIDER user'] = () => {
 
-    user(req) {
-        return req.user;
-    },
+    return (req) => req.user;
 
-    userId(user) {
+};
+
+exports['PROVIDER userId'] = (responses) => {
+
+    return function userId(user) {
         let userId = user ? user.id : undefined;
 
         if (!userId) throw responses.FORBIDDEN;
 
         return userId;
-    },
+    }
 
-});
+};

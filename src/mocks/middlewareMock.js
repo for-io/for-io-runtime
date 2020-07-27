@@ -24,24 +24,20 @@
  * SOFTWARE.
  */
 
-exports.$mocks = {
+exports['MOCK middleware'] = {
 
-    middleware: {
+    authenticate(apiSpec) {
+        return function (req, res, next) {
+            let userId = req.headers['x-mock-user'] || req.query['mock-user'];
 
-        authenticate(apiSpec) {
-            return function (req, res, next) {
-                let userId = req.headers['x-mock-user'] || req.query['mock-user'];
+            if (!userId) throw { status: 401, body: {} };
 
-                if (!userId) throw { status: 401, body: {} };
+            let email = `${userId}@example.com`;
 
-                let email = `${userId}@example.com`;
+            req.user = { id: userId, email };
 
-                req.user = { id: userId, email };
-
-                next();
-            };
-        },
-
+            next();
+        };
     },
 
 };

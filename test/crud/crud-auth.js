@@ -24,7 +24,7 @@
  * SOFTWARE.
  */
 
-exports.$api = (auth, responses, _) => ({
+exports['API login'] = (auth, responses, _) => ({
 
     async 'POST /login'(body) {
         if (body.username !== body.password) throw responses.FORBIDDEN;

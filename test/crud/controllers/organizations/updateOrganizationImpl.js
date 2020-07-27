@@ -23,9 +23,10 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-exports.$controllers = (db, types, responses, _) => {
 
-    async function updateOrganization(organizationId, body, userId, log) {
+exports['CONTROLLER updateOrganization'] = (db, types, responses, _) => {
+
+    return async function updateOrganization(organizationId, body, userId, log) {
         // check if the organization exists
         if (!await db.organizations.exists({ _id: organizationId })) throw responses.NOT_FOUND;
 
@@ -45,7 +46,5 @@ exports.$controllers = (db, types, responses, _) => {
 
         return responses.OK;
     }
-
-    return { updateOrganization };
 
 }

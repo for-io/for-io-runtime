@@ -28,16 +28,16 @@ const container = require('../../src/container');
 
 test('mock instead of real (across modules)', () => {
     verify({
-        mod1: { $components: { foo: 'R' } },
-        mod2: { $mocks: { foo: 'M' } },
+        mod1: { 'SINGLETON foo': 'R' },
+        mod2: { 'MOCK foo': 'M' },
     });
 });
 
 test('mock instead of real (inside module)', () => {
     verify({
         mod1: {
-            $components: { foo: 'R' },
-            $mocks: { foo: 'M' }
+            'SINGLETON foo': 'R',
+            'MOCK foo': 'M',
         },
     });
 });
