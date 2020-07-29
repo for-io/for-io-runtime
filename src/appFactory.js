@@ -38,18 +38,18 @@ const passwords = require('./server-modules/passwords');
 const { createExpressApp } = require('./app');
 const { createAppContext } = require('./appcontext');
 
-async function createApp(opts = {}) {
-  const config = initConfig(opts);
+async function createApp(appSetup = {}) {
+  const config = initConfig(appSetup);
 
   const builtInModules = { auth, passwords };
-  const modules = Object.assign(builtInModules, opts.modules);
+  const modules = Object.assign(builtInModules, appSetup.modules);
 
-  const logger = opts.logger || console;
-  const router = opts.router || express.Router();
-  const database = opts.database || await connectToDb(config);
+  const logger = appSetup.logger || console;
+  const router = appSetup.router || express.Router();
+  const database = appSetup.database || await connectToDb(config);
 
-  const dir = opts.dir;
-  const moduleNames = opts.moduleNames ? opts.moduleNames.map(name => dir ? path.join(dir, name) : name) : undefined;
+  const dir = appSetup.dir;
+  const moduleNames = appSetup.moduleNames ? appSetup.moduleNames.map(name => dir ? path.join(dir, name) : name) : undefined;
 
   const components = {
     _, config,
