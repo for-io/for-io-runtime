@@ -40,16 +40,24 @@ const mod1 = {
 
 const mod2 = {
     'PROVIDER name'() {
-        return (query) => query.name.toUpperCase();
+        return async (query) => await upper(query.name);
     }
+}
+
+async function upper(s) {
+    return new Promise((resolve, reject) => {
+        setTimeout(function () {
+            resolve(s.toUpperCase());
+        }, 100)
+    })
 }
 
 const testSetup = { modules: { mod1, mod2 }, appFactory };
 
 runTest({
-    name: 'simple provider',
+    name: 'async provider',
     cases: [{
-        name: 'get param "name" from provider',
+        name: 'get param "name" from async provider',
         steps: [{
             request: 'GET /hello?name=spock',
             200: { msg: 'Hello, SPOCK!' },

@@ -30,7 +30,10 @@ const STRIP_COMMENTS_REGEX = /((\/\/.*$)|(\/\*[\S\s]*?\*\/))/mg;
 const ARGUMENT_NAMES_REGEX = /([^\s,]+)/g;
 
 function getParamNames(func) {
-    const fnStr = func.toString().replace(STRIP_COMMENTS_REGEX, '').trim();
+    let fnStr = func.toString().replace(STRIP_COMMENTS_REGEX, '').trim();
+    if (fnStr.startsWith('async ')) {
+        fnStr = fnStr.substring(6);
+    }
 
     let leftParPos = fnStr.indexOf('(');
     let rightParPos = fnStr.indexOf(')');
@@ -59,8 +62,8 @@ function getParamNames(func) {
 }
 
 function invoke(func, argProvider, thiz) {
-    if (!func) throw new Error('Invalid func: ' + func);
-    if (!argProvider) throw new Error('Invalid argProvider: ' + argProvider);
+    if (!func) throw new Error('Invalid function: ' + func);
+    if (!argProvider) throw new Error('Invalid arg provider: ' + argProvider);
 
     thiz = thiz || func;
 
@@ -70,4 +73,20 @@ function invoke(func, argProvider, thiz) {
     return func.apply(thiz, args);
 }
 
-module.exports = { getParamNames, invoke };
+async function invokeAsync(func, asyncArgProvider, thiz) {
+    if (!func) throw new Error('Invalid function: ' + func);
+    if (!asyncArgProvider) throw new Error('Invalid arg provider: ' + asyncArgProvider);
+
+    thiz = thiz || func;
+
+    const paramNames = getParamNames(func);
+    const args = [];
+
+    for (const paramName of paramNames) {
+        args.push(await asyncArgProvider(paramName));
+    }
+
+    return await func.apply(thiz, args);
+}
+
+module.exports = { getParamNames, invoke, invokeAsync };

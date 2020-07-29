@@ -68,11 +68,11 @@ exports['SINGLETON routing'] = (router, api, middleware, auth, controllers, type
             throw new Error(`Unknown parameter: '${name}'`);
         }
 
-        function provide(name, depTracker) {
+        async function provide(name, depTracker) {
             depTracker.enter(name);
 
             try {
-                return _provide(name, depTracker);
+                return await _provide(name, depTracker);
 
             } finally {
                 depTracker.leave(name);
@@ -80,9 +80,9 @@ exports['SINGLETON routing'] = (router, api, middleware, auth, controllers, type
         }
 
         // must be called only by provide(...)
-        function _provide(name, depTracker) {
+        async function _provide(name, depTracker) {
             if (providers.hasOwnProperty(name)) {
-                return invoker.invoke(providers[name], depName => provide(depName, depTracker))
+                return await invoker.invokeAsync(providers[name], async depName => await provide(depName, depTracker))
             }
 
             switch (name) {
@@ -132,7 +132,7 @@ exports['SINGLETON routing'] = (router, api, middleware, auth, controllers, type
                 throw new Error(`Cannot find the controller for API endpoint '${name}'!`);
             }
 
-            result = await invoker.invoke(controller, depName => provide(depName, apiDepTracker));
+            result = await invoker.invokeAsync(controller, async depName => await provide(depName, apiDepTracker));
 
         } catch (exception) {
             res._exception = exception; // make the exception accessible through the response (needed for the IDE)
@@ -146,7 +146,7 @@ exports['SINGLETON routing'] = (router, api, middleware, auth, controllers, type
 
             try {
                 apiDepTracker.enter('exceptionHandler');
-                result = await invoker.invoke(exceptionHandler, depName => provide(depName, apiDepTracker));
+                result = await invoker.invokeAsync(exceptionHandler, async depName => await provide(depName, apiDepTracker));
             } catch (err) {
                 logger.error('An error was thrown by the exception handler!', err);
                 next(err);
