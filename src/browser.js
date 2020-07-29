@@ -24,15 +24,8 @@
  * SOFTWARE.
  */
 
-const path = require("path");
+const container = require('./container');
+const typeRegistry = require('./type-registry');
+const appcontext = require('./appcontext');
 
-module.exports = {
-    mode: 'development',
-    entry: { index: path.resolve(__dirname, "src", "browser.js") },
-    output: {
-        path: path.resolve(__dirname, 'dist'),
-        filename: 'ForIoRuntime.js',
-        library: 'ForIoRuntime',
-        libraryTarget: 'umd',
-    },
-};
+module.exports = { container, typeRegistry, appcontext };

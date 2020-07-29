@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "config": {},
   "scripts": {
-    "start": "NODE_ENV=dev JWT_SECRET=X node ./src/server.js",
+    "start": "NODE_ENV=dev JWT_SECRET=X node /src/run.js",
     "test": "jest --runInBand",
     "coverage": "jest --runInBand --coverage",
     "build": "webpack --display-modules && ls -l dist/ForIoRuntime.js"

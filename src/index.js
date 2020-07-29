@@ -24,8 +24,20 @@
  * SOFTWARE.
  */
 
-const container = require('./container');
-const typeRegistry = require('./type-registry');
-const appcontext = require('./appcontext');
+const { DependencyInjection } = require('./container');
+const appFactory = require('./appFactory');
+const server = require('./server');
 
-module.exports = { container, typeRegistry, appcontext };
+async function initAndStartServer(opts) {
+    const app = opts.app || await appFactory(opts);
+
+    server.listen({ app, port: opts.port });
+}
+
+module.exports = {
+    DependencyInjection,
+
+    start(opts) {
+        initAndStartServer(opts).catch(e => console.log('Error while starting the server!', e));
+    }
+};

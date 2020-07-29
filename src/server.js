@@ -25,16 +25,12 @@
  */
 
 const http = require('http');
-const appFactory = require('./appFactory');
 
-async function start() {
-  const app = await appFactory();
-
-  let port = normalizePort(process.env.PORT || '3000');
+function listen({ app, port }) {
+  port = normalizePort(port || process.env.PORT || '3000');
   app.set('port', port);
 
   let server = http.createServer(app);
-
   server.listen(port);
 
   server.on('error', onError);
@@ -100,4 +96,4 @@ async function start() {
 
 }
 
-start().catch(e => console.log('Could not start the application!', e));
+module.exports = { listen };
