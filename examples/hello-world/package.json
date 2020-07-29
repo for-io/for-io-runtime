@@ -1,0 +1,11 @@
+{
+  "name": "hello-world-example",
+  "version": "1.0.0",
+  "scripts": {
+    "start": "NODE_ENV=dev PORT=4040 JWT_SECRET=X node ./main.js",
+    "test": "jest --runInBand"
+  },
+  "devDependencies": {
+    "jest": "^26.0.1"
+  }
+}
