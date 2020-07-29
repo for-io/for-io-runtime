@@ -24,12 +24,12 @@
  * SOFTWARE.
  */
 
-exports['SINGLETON db__default'] = (mongodb, database, collectionExtensions) => {
+exports['SINGLETON db__default'] = (mongodb, database, mongoCollectionExtensions) => {
 
     function extendColl(coll) {
-        for (const name in collectionExtensions) {
-            if (collectionExtensions.hasOwnProperty(name)) {
-                const fn = collectionExtensions[name];
+        for (const name in mongoCollectionExtensions) {
+            if (mongoCollectionExtensions.hasOwnProperty(name)) {
+                const fn = mongoCollectionExtensions[name];
                 coll[name] = fn.bind(coll);
             }
         }
@@ -51,7 +51,7 @@ exports['SINGLETON db__default'] = (mongodb, database, collectionExtensions) => 
 
 };
 
-exports['MEMBER collectionExtensions.exists'] = () => {
+exports['MEMBER mongoCollectionExtensions.exists'] = () => {
 
     return async function exists(filter) {
         let count = await this.countDocuments(filter, { limit: 1 });
