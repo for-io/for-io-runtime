@@ -26,7 +26,7 @@
 
 exports['SINGLETON exceptionHandler__default'] = (logger, HTTP_STATUS_CODES) => {
 
-    return (res, exception) => {
+    return async (res, exception) => {
         let status;
 
         if (typeof exception === 'number') {

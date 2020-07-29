@@ -25,7 +25,7 @@
  */
 
 const utils = require('./utils');
-const invoker = require('./invoker');
+const invokers = require('./invokers');
 
 const { DependencyTracker } = require('./dep-tracker');
 
@@ -197,7 +197,7 @@ class DependencyInjection {
                 let segmentKey = m[1];
                 let name = m[2];
 
-                let dependencies = utils.isFunction(exportedVal) ? invoker.getParamNames(exportedVal) : [];
+                let dependencies = utils.isFunction(exportedVal) ? invokers.getParamNames(exportedVal) : [];
 
                 let segment = {
                     name,
@@ -445,7 +445,7 @@ class DependencyInjection {
     }
 
     _produce(factory) {
-        return invoker.invoke(factory, name => this._findDependencyWithTracking(name));
+        return invokers.invoke(factory, name => this._findDependencyWithTracking(name));
     }
 
     _isInitialized(segment) {
@@ -560,7 +560,7 @@ class DependencyInjection {
     }
 
     execute(func) {
-        invoker.invoke(func, name => this._findDependencyWithTracking(name));
+        invokers.invoke(func, name => this._findDependencyWithTracking(name));
     }
 
 }

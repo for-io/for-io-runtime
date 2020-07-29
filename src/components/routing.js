@@ -27,7 +27,7 @@
 const { sortRoutes } = require('../route-sorter');
 const utils = require('../utils');
 
-exports['SINGLETON routing'] = (router, api, middleware, auth, controllers, types, providers, exceptionHandler, logger, invoker, DependencyTracker) => {
+exports['SINGLETON routing'] = (router, api, middleware, auth, controllers, types, providers, exceptionHandler, logger, invokers, DependencyTracker) => {
 
     async function run(name, controller, req, res, next, specification) {
 
@@ -82,7 +82,7 @@ exports['SINGLETON routing'] = (router, api, middleware, auth, controllers, type
         // must be called only by provide(...)
         async function _provide(name, depTracker) {
             if (providers.hasOwnProperty(name)) {
-                return await invoker.invokeAsync(providers[name], async depName => await provide(depName, depTracker))
+                return await invokers.invokeAsync(providers[name], async depName => await provide(depName, depTracker))
             }
 
             switch (name) {
@@ -132,7 +132,7 @@ exports['SINGLETON routing'] = (router, api, middleware, auth, controllers, type
                 throw new Error(`Cannot find the controller for API endpoint '${name}'!`);
             }
 
-            result = await invoker.invokeAsync(controller, async depName => await provide(depName, apiDepTracker));
+            result = await invokers.invokeAsync(controller, async depName => await provide(depName, apiDepTracker));
 
         } catch (exception) {
             res._exception = exception; // make the exception accessible through the response (needed for the IDE)
@@ -146,7 +146,7 @@ exports['SINGLETON routing'] = (router, api, middleware, auth, controllers, type
 
             try {
                 apiDepTracker.enter('exceptionHandler');
-                result = await invoker.invokeAsync(exceptionHandler, async depName => await provide(depName, apiDepTracker));
+                result = await invokers.invokeAsync(exceptionHandler, async depName => await provide(depName, apiDepTracker));
             } catch (err) {
                 logger.error('An error was thrown by the exception handler!', err);
                 next(err);

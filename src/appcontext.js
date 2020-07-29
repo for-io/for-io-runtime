@@ -25,7 +25,7 @@
  */
 
 const { DependencyTracker } = require('./dep-tracker');
-const invoker = require('./invoker');
+const invokers = require('./invokers');
 const container = require('./container');
 const typeRegistry = require('./type-registry');
 const builtInModules = require('./builtInModules');
@@ -33,7 +33,7 @@ const builtInModules = require('./builtInModules');
 function createAppContext({ modules, moduleNames, components = {}, useMocks = false, require }) {
 
     const builtInComponents = {
-        invoker,
+        invokers,
         typeRegistry,
         DependencyTracker,
         typedefs__default: {},
