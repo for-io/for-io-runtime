@@ -72,7 +72,9 @@ async function createApp(appSetup = {}) {
     logger.info('Dependency injection context', context.info());
   }
 
-  return createExpressApp({ router, config });
+  const app = createExpressApp({ router, config });
+
+  return { app, config };
 }
 
 function getModuleNames(appSetup) {
@@ -85,6 +87,7 @@ function getModuleNames(appSetup) {
 
 function initConfig(opts) {
   const defaultConfig = {
+    PORT: process.env.PORT || 3000,
     NODE_ENV: process.env.NODE_ENV || 'production',
     JWT_SECRET: process.env.JWT_SECRET,
     DB_TYPE: process.env.DB_TYPE || 'none',

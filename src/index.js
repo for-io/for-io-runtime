@@ -29,9 +29,9 @@ const appFactory = require('./appFactory');
 const server = require('./server');
 
 async function initAndStartServer(opts) {
-    const app = opts.app || await appFactory(opts);
+    const { app, config } = opts.app ? opts : await appFactory(opts);
 
-    server.listen({ app, port: opts.port });
+    server.listen({ app, config });
 }
 
 module.exports = {

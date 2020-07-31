@@ -26,11 +26,11 @@
 
 const http = require('http');
 
-function listen({ app, port }) {
-  port = normalizePort(port || process.env.PORT || '3000');
+function listen({ app, config = {} }) {
+  const port = normalizePort(config.PORT || 3000);
   app.set('port', port);
 
-  let server = http.createServer(app);
+  const server = http.createServer(app);
   server.listen(port);
 
   server.on('error', onError);
@@ -87,9 +87,11 @@ function listen({ app, port }) {
   function onListening() {
     let addr = server.address();
 
+    let prefix = config.NODE_ENV === 'dev' ? 'http://localhost:' : 'port ';
+
     let bind = typeof addr === 'string'
       ? 'pipe ' + addr
-      : 'http://localhost:' + addr.port;
+      : prefix + addr.port;
 
     console.log('Listening on ' + bind);
   }
