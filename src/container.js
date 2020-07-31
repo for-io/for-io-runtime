@@ -40,6 +40,7 @@ const MEMBER = 'MEMBER';
 
 const GETTER_SUFFIX = '__getter';
 const DEFAULT_SUFFIX = '__default';
+const OPTIONAL_SUFFIX = '__optional';
 
 function debug(...args) {
     // console.debug(...args)
@@ -320,6 +321,9 @@ class DependencyInjection {
 
     // must be called through _findDependencyWithTracking()
     _findDependency(name) {
+        let isOptional = name.endsWith(OPTIONAL_SUFFIX);
+        if (isOptional) name = name.substring(0, name.length - OPTIONAL_SUFFIX.length);
+
         if (!utils.isValidName(name)) throw new Error(`Invalid name: '${name}'`);
 
         const defaultName = name + DEFAULT_SUFFIX;
@@ -408,8 +412,12 @@ class DependencyInjection {
             return this._produceComponent(defaultName);
         }
 
-        const chain = this._depInfo.getChain();
-        throw new Error(`Cannot find dependency '${name}' (dependency chain: ${chain})`);
+        if (isOptional) {
+            return undefined;
+        } else {
+            const chain = this._depInfo.getChain();
+            throw new Error(`Cannot find dependency '${name}' (dependency chain: ${chain})`);
+        }
     }
 
     _produceComponent(name) {
