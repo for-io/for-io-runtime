@@ -26,14 +26,15 @@
 
 const _ = require('lodash');
 const path = require('path');
-const mongodb = require('mongodb');
 const express = require('express');
 
+const utils = require('./utils');
 const middleware = require('./middleware');
 const HTTP_STATUS_CODES = require('http').STATUS_CODES;
 
 const auth = require('./server-modules/auth');
 const passwords = require('./server-modules/passwords');
+const { connectToDb } = require('./server-modules/dbconn');
 
 const { createExpressApp } = require('./app');
 const { createAppContext } = require('./appcontext');
@@ -46,18 +47,18 @@ async function createApp(appSetup = {}) {
 
   const logger = appSetup.logger || console;
   const router = appSetup.router || express.Router();
-  const database = appSetup.database || await connectToDb(config);
 
-  const dir = appSetup.dir;
-  const moduleNames = appSetup.moduleNames ? appSetup.moduleNames.map(name => dir ? path.join(dir, name) : name) : undefined;
+  const moduleNames = getModuleNames(appSetup);
 
-  const components = {
-    _, config,
-    mongodb, database,
-    router, middleware,
+  const components = Object.assign({
+    _, config, router, middleware,
     logger__default: logger,
     HTTP_STATUS_CODES,
-  };
+  }, appSetup.components);
+
+  if (!components.database) {
+    Object.assign(components, await connectToDb(config));
+  }
 
   const context = createAppContext({
     modules,
@@ -74,6 +75,11 @@ async function createApp(appSetup = {}) {
   return createExpressApp({ router, config });
 }
 
+function getModuleNames(appSetup) {
+  const dir = appSetup.dir;
+  return appSetup.moduleNames ? appSetup.moduleNames.map(name => dir ? path.join(dir, name) : name) : undefined;
+}
+
 function initConfig(opts) {
   const config = {
     NODE_ENV: process.env.NODE_ENV,
@@ -83,13 +89,6 @@ function initConfig(opts) {
   if (opts.config) Object.assign(config, opts.config);
 
   return config;
-}
-
-async function connectToDb(config) {
-  const mongoUrl = config.MONGO_URL || process.env.MONGO_URL || 'mongodb://localhost:27017/test';
-  const mongoClient = new mongodb.MongoClient(mongoUrl, { useNewUrlParser: true, useUnifiedTopology: true });
-  await mongoClient.connect();
-  return mongoClient.db();
 }
 
 module.exports = createApp;

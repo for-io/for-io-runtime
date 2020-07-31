@@ -24,17 +24,29 @@
  * SOFTWARE.
  */
 
-const appFactory = require('../../src/appFactory');
+async function connectToDb(config) {
+    switch (config.DB_TYPE) {
+        case 'none':
+            return {};
 
-const moduleNames = [
-    './users-routes',
-    './users-types',
-    "./controllers/users/getUserProfileImpl",
-    "./controllers/users/updateUserImpl",
-    "./controllers/users/deleteUserImpl",
-    "./controllers/users/listUsersImpl",
-    "./controllers/users/loginImpl",
-    "./controllers/users/addUserImpl",
-]
+        case 'mongodb':
+            return await connectToMongoDB(config);
 
-module.exports = { moduleNames, appFactory, dbType: 'mongodb', dir: __dirname };
+        default:
+            throw new Error(`Unsupported database type (DB_TYPE='${config.DB_TYPE}') for automatic initialization! Expected 'mongodb', 'none', or else you can provide a pre-initialized db instead.`)
+    }
+}
+
+async function connectToMongoDB(config) {
+    const mongodb = require('mongodb');
+
+    const mongoUrl = config.MONGO_URL || process.env.MONGO_URL;
+    const mongoClient = new mongodb.MongoClient(mongoUrl, { useNewUrlParser: true, useUnifiedTopology: true });
+
+    await mongoClient.connect();
+    const database = mongoClient.db();
+
+    return { mongodb, database };
+}
+
+module.exports = { connectToDb };

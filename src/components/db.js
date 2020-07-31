@@ -24,30 +24,41 @@
  * SOFTWARE.
  */
 
-exports['SINGLETON db__default'] = (mongodb, database, mongoCollectionExtensions) => {
+exports['SINGLETON db__default'] = (config, database, mongodb__optional, mongoCollectionExtensions__optional) => {
 
-    function extendColl(coll) {
-        for (const name in mongoCollectionExtensions) {
-            if (mongoCollectionExtensions.hasOwnProperty(name)) {
-                const fn = mongoCollectionExtensions[name];
-                coll[name] = fn.bind(coll);
-            }
-        }
+    switch (config.DB_TYPE) {
+        case 'mongodb':
+            return createMongoProxy(mongodb__optional, mongoCollectionExtensions__optional);
 
-        return coll;
+        default:
+            return null;
     }
 
-    return new Proxy({}, {
-        get: function (target, prop, receiver) {
-            switch (prop) {
-                case 'ObjectId':
-                    return mongodb.ObjectId.bind(mongodb);
+    function createMongoProxy(mongodb, mongoCollectionExtensions) {
 
-                default:
-                    return extendColl(database.collection(prop));
+        function extendColl(coll) {
+            for (const name in mongoCollectionExtensions) {
+                if (mongoCollectionExtensions.hasOwnProperty(name)) {
+                    const fn = mongoCollectionExtensions[name];
+                    coll[name] = fn.bind(coll);
+                }
             }
+
+            return coll;
         }
-    });
+
+        return new Proxy({}, {
+            get: function (target, prop, receiver) {
+                switch (prop) {
+                    case 'ObjectId':
+                        return mongodb.ObjectId.bind(mongodb);
+
+                    default:
+                        return extendColl(database.collection(prop));
+                }
+            }
+        });
+    }
 
 };
 
