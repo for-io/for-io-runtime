@@ -1,5 +1,5 @@
 {
-  "name": "hello-world-example",
+  "name": "custom-router-example",
   "scripts": {
     "start": "NODE_ENV=dev JWT_SECRET=X node ./main.js",
     "test": "jest"
