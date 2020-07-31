@@ -38,7 +38,10 @@ function createExpressApp({ router, config }) {
     app.use(morgan(config.httpLogging)); // e.g. dev, combined
   }
 
-  app.use(express.static(path.join(__dirname, 'public')));
+  if (config.STATIC_DIR) {
+    app.use(express.static(path.join(__dirname, config.STATIC_DIR)));
+  }
+
   app.use(express.json());
   app.use(express.urlencoded({ extended: false }));
   app.use(cookieParser());
