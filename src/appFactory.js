@@ -77,18 +77,22 @@ async function createApp(appSetup = {}) {
 
 function getModuleNames(appSetup) {
   const dir = appSetup.dir;
-  return appSetup.moduleNames ? appSetup.moduleNames.map(name => dir ? path.join(dir, name) : name) : undefined;
+
+  return appSetup.moduleNames
+    ? appSetup.moduleNames.map(name => dir ? path.join(dir, name) : name)
+    : undefined;
 }
 
 function initConfig(opts) {
-  const config = {
-    NODE_ENV: process.env.NODE_ENV,
+  const defaultConfig = {
+    NODE_ENV: process.env.NODE_ENV || 'production',
     JWT_SECRET: process.env.JWT_SECRET,
+    DB_TYPE: process.env.DB_TYPE || 'none',
   };
 
-  if (opts.config) Object.assign(config, opts.config);
+  if (opts.config) Object.assign(defaultConfig, opts.config);
 
-  return config;
+  return defaultConfig;
 }
 
 module.exports = createApp;
