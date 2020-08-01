@@ -26,11 +26,12 @@
 
 const path = require('path');
 const { runApiDiligence } = require('api-diligence');
-const testSetup = require('./testSetup');
-
-const setup = Object.assign({}, testSetup, { mockAuth: true });
+const appFactory = require('../../src/appFactory');
+const appSetup = require('./appSetup');
 
 runApiDiligence({
     testsRoot: path.join(__dirname, 'api-diligence'),
-    setup,
+    test: {
+        opts: { appSetup, appFactory, mockAuth: true },
+    },
 });

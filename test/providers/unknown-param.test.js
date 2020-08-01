@@ -46,10 +46,11 @@ function onDone() {
     expect(error).toHaveBeenCalledWith('Caught exception:', new Error("Unknown parameter: 'foo'"));
 }
 
-const testSetup = { modules: { mod1, mod2 }, onDone, appFactory };
+const appSetup = { modules: { mod1, mod2 } };
 
 runTest({
     name: 'unknown param',
+    opts: { appSetup, appFactory, onDone },
     precondition: {},
     cases: [{
         name: 'should fail on unknown param "foo"',
@@ -58,4 +59,4 @@ runTest({
             500: { status: 'Internal Server Error' },
         }],
     }],
-}, testSetup);
+});

@@ -39,10 +39,11 @@ const mod = {
 
 };
 
-const testSetup = { modules: { mod }, appFactory };
+const appSetup = { modules: { mod } };
 
 runTest({
     name: 'hello',
+    opts: { appSetup, appFactory },
     cases: [{
         name: 'say hello',
         steps: [{
@@ -50,4 +51,4 @@ runTest({
             200: { msg: 'Hello, spock!' },
         }],
     }],
-}, testSetup);
+});

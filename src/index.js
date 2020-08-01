@@ -36,6 +36,7 @@ async function initAndStartServer(opts) {
 
 module.exports = {
     DependencyInjection,
+    appFactory,
 
     start(opts) {
         initAndStartServer(opts).catch(e => console.log('Error while starting the server!', e));

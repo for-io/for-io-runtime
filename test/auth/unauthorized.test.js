@@ -38,10 +38,11 @@ const mod = {
     },
 };
 
-const testSetup = { modules: { mod }, appFactory };
+const appSetup = { modules: { mod } };
 
 runTest({
     name: 'unauthorized with mock auth & without mock user',
+    opts: { appSetup, appFactory },
     config: {
         useMocks: true,
         JWT_SECRET: 'jwt_secret'
@@ -53,10 +54,11 @@ runTest({
             401: {},
         }],
     }],
-}, testSetup);
+});
 
 runTest({
     name: 'unauthorized without mock auth & without mock user',
+    opts: { appSetup, appFactory },
     config: {
         useMocks: false,
         JWT_SECRET: 'jwt_secret'
@@ -68,10 +70,11 @@ runTest({
             401: {},
         }],
     }],
-}, testSetup);
+});
 
 runTest({
     name: 'unauthorized without mock auth & with mock user',
+    opts: { appSetup, appFactory },
     config: {
         useMocks: false,
         JWT_SECRET: 'jwt_secret'
@@ -84,10 +87,11 @@ runTest({
             401: {},
         }],
     }],
-}, testSetup);
+});
 
 runTest({
     name: 'authorized with mock auth & with mock user',
+    opts: { appSetup, appFactory, mockAuth: true },
     config: {
         useMocks: true,
         JWT_SECRET: 'jwt_secret'
@@ -100,4 +104,4 @@ runTest({
             200: { msg: 'Hello, spock!' },
         }],
     }],
-}, Object.assign({}, testSetup, { mockAuth: true }));
+});

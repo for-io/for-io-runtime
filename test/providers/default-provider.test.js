@@ -35,10 +35,11 @@ const mod = {
     },
 };
 
-const testSetup = { modules: { api: mod }, appFactory };
+const appSetup = { modules: { api: mod } };
 
 runTest({
     name: 'default provider',
+    opts: { appSetup, appFactory },
     cases: [{
         name: 'should provide the value for the "name" provider ',
         steps: [{
@@ -46,4 +47,4 @@ runTest({
             200: { msg: 'Hello, kirk!' },
         }],
     }],
-}, testSetup);
+});

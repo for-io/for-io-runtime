@@ -2,10 +2,9 @@ const { runTest } = require('api-diligence');
 const appFactory = require('../../src/appFactory');
 const appSetup = require('./app.setup');
 
-const testSetup = { appFactory, appSetup };
-
 runTest({
     name: 'hello',
+    opts: { appSetup, appFactory },
     cases: [{
         name: 'say hello to spock',
         steps: [{
@@ -19,4 +18,4 @@ runTest({
             200: { msg: 'Hello, kirk!' },
         }],
     }],
-}, testSetup);
+});

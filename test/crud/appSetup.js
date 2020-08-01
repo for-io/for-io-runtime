@@ -24,8 +24,6 @@
  * SOFTWARE.
  */
 
-const appFactory = require('../../src/appFactory');
-
 const moduleNames = [
     './crud-auth',
     './crud-routes',
@@ -42,4 +40,8 @@ const moduleNames = [
     "./controllers/organizations_teams/listTeamsOfOrganizationImpl"
 ];
 
-module.exports = { moduleNames, appFactory, dbType: 'mongodb', dir: __dirname };
+module.exports = {
+    moduleNames,
+    config: { DB_TYPE: 'mongodb' },
+    dir: __dirname,
+};

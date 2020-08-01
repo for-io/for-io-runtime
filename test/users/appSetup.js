@@ -24,8 +24,6 @@
  * SOFTWARE.
  */
 
-const appFactory = require('../../src/appFactory');
-
 const moduleNames = [
     './users-routes',
     './users-types',
@@ -37,4 +35,8 @@ const moduleNames = [
     "./controllers/users/addUserImpl",
 ]
 
-module.exports = { moduleNames, appFactory, dbType: 'mongodb', dir: __dirname };
+module.exports = {
+    moduleNames,
+    config: { DB_TYPE: 'mongodb' },
+    dir: __dirname,
+};

@@ -54,10 +54,11 @@ function onDone() {
     expect(error).toHaveBeenCalledWith('Caught exception:', new Error("Detected circular dependency: foo -> bar -> foo"));
 }
 
-const testSetup = { modules: { mod1, mod2, mod3 }, onDone, appFactory };
+const appSetup = { modules: { mod1, mod2, mod3 } };
 
 runTest({
     name: 'circular provider dependencies',
+    opts: { appSetup, appFactory, onDone },
     cases: [{
         name: 'should fail on circular provider dependencies',
         steps: [{
@@ -65,4 +66,4 @@ runTest({
             500: { status: 'Internal Server Error' },
         }],
     }],
-}, testSetup);
+});

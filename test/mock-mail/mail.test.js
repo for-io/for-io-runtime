@@ -50,10 +50,11 @@ const mod = {
     },
 };
 
-const testSetup = { modules: { mod }, appFactory };
+const appSetup = { modules: { mod } };
 
 runTest({
     name: 'should use mock mail instead of real',
+    opts: { appSetup, appFactory },
     cases: [{
         name: 'send mail',
         steps: [{
@@ -61,4 +62,4 @@ runTest({
             200: { mail: 'MOCK' },
         }],
     }],
-}, testSetup);
+});

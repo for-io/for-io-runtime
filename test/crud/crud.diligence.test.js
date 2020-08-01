@@ -25,8 +25,9 @@
  */
 
 const path = require('path');
+const appFactory = require('../../src/appFactory');
 const { runApiDiligence } = require('api-diligence');
-const testSetup = require('./testSetup');
+const appSetup = require('./appSetup');
 
 const tokens = {};
 async function getAuthToken({ username, agent }) {
@@ -47,19 +48,23 @@ async function getAuthToken({ username, agent }) {
 }
 
 // run tests with mock auth
-const setup1 = Object.assign({}, testSetup, { mockAuth: true });
 runApiDiligence({
     testsRoot: path.join(__dirname, 'api-diligence'),
-    test: { tags: ['mock-auth'], username: 'spock' },
-    setup: setup1,
-    config: { useMocks: true },
+    test: {
+        tags: ['mock-auth'],
+        username: 'spock',
+        opts: { appSetup, appFactory, mockAuth: true },
+        config: { useMocks: true },
+    },
 });
 
 // run tests with real auth
-const setup2 = Object.assign({}, testSetup, { getAuthToken });
 runApiDiligence({
     testsRoot: path.join(__dirname, 'api-diligence'),
-    test: { tags: ['real-auth'], username: 'spock' },
-    setup: setup2,
-    config: { useMocks: false },
+    test: {
+        tags: ['real-auth'],
+        username: 'spock',
+        opts: { appSetup, appFactory, getAuthToken },
+        config: { useMocks: false },
+    },
 });

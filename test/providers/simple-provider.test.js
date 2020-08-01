@@ -44,10 +44,11 @@ const mod2 = {
     }
 }
 
-const testSetup = { modules: { mod1, mod2 }, appFactory };
+const appSetup = { modules: { mod1, mod2 } };
 
 runTest({
     name: 'simple provider',
+    opts: { appSetup, appFactory },
     cases: [{
         name: 'get param "name" from provider',
         steps: [{
@@ -55,4 +56,4 @@ runTest({
             200: { msg: 'Hello, SPOCK!' },
         }],
     }],
-}, testSetup);
+});

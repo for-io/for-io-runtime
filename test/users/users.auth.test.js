@@ -25,12 +25,14 @@
  */
 
 const { runTest } = require('api-diligence');
-const testSetup = require('./testSetup');
+const appFactory = require('../../src/appFactory');
+const appSetup = require('./appSetup');
 
 const state = {};
 
-const test = {
+runTest({
     name: 'auth',
+    opts: { appSetup, appFactory },
     config: { useMocks: false },
     precondition: {},
     cases: [{
@@ -106,6 +108,4 @@ const test = {
             401: {},
         }],
     }],
-};
-
-runTest(test, testSetup);
+});

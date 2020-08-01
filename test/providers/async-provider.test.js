@@ -52,10 +52,11 @@ async function upper(s) {
     })
 }
 
-const testSetup = { modules: { mod1, mod2 }, appFactory };
+const appSetup = { modules: { mod1, mod2 } };
 
 runTest({
     name: 'async provider',
+    opts: { appSetup, appFactory },
     cases: [{
         name: 'get param "name" from async provider',
         steps: [{
@@ -63,4 +64,4 @@ runTest({
             200: { msg: 'Hello, SPOCK!' },
         }],
     }],
-}, testSetup);
+});
