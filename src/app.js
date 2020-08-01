@@ -25,7 +25,6 @@
  */
 
 const express = require('express');
-const cors = require('cors');
 const path = require('path');
 const cookieParser = require('cookie-parser');
 const passport = require('passport');
@@ -33,19 +32,24 @@ const passport = require('passport');
 function createExpressApp({ router, config }) {
   const app = express();
 
-  if (config.httpLogging) {
+  if (config.MORGAN_LOGGER !== undefined) {  // e.g. 'dev', 'combined'
     const morgan = require('morgan');
-    app.use(morgan(config.httpLogging)); // e.g. dev, combined
+    app.use(morgan(config.MORGAN_LOGGER));
   }
 
-  if (config.STATIC_DIR) {
+  if (config.STATIC_DIR !== undefined) {  // e.g. 'public'
     app.use(express.static(path.join(__dirname, config.STATIC_DIR)));
   }
 
   app.use(express.json());
   app.use(express.urlencoded({ extended: false }));
   app.use(cookieParser());
-  app.use(cors());
+
+  if (config.CORS_ORIGIN !== undefined) {  // e.g. '*', 'example.com'
+    const cors = require('cors');
+    app.use(cors({ origin: config.CORS_ORIGIN }));
+  }
+
   app.use(passport.initialize());
 
   app.use('/', router);
