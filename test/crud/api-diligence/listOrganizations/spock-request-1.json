@@ -1,7 +1,5 @@
 {
   "method": "GET",
   "url": "/organizations",
-  "headers": {
-    "host": "example.com"
-  }
+  "headers": {}
 }

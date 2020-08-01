@@ -1,9 +1,7 @@
 {
   "method": "PATCH",
   "url": "/organizations/organization_1",
-  "headers": {
-    "host": "example.com"
-  },
+  "headers": {},
   "body": {
     "name": "the name"
   }

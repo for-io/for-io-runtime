@@ -1,9 +1,7 @@
 {
   "method": "POST",
   "url": "/organizations",
-  "headers": {
-    "host": "example.com"
-  },
+  "headers": {},
   "body": {
     "name": "the name"
   }

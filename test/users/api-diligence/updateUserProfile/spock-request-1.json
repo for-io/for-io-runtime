@@ -3,7 +3,7 @@
   "url": "/users/spock",
   "username": "spock",
   "headers": {
-    "host": "example.com"
+    
   },
   "body": {
     "firstName": "the firstName",

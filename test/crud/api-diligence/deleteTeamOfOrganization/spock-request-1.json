@@ -1,7 +1,5 @@
 {
   "method": "DELETE",
   "url": "/organizations/organization_1/teams/team_1",
-  "headers": {
-    "host": "example.com"
-  }
+  "headers": {}
 }

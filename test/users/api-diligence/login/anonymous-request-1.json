@@ -2,8 +2,7 @@
   "method": "POST",
   "url": "/login",
   "headers": {
-    "x-mock-user": "",
-    "host": "example.com"
+    "X-Mock-User": ""
   },
   "body": {
     "username": "spock",
