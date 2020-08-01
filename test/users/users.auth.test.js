@@ -33,7 +33,7 @@ const state = {};
 runTest({
     name: 'auth',
     opts: { appSetup, appFactory },
-    config: { useMocks: false },
+    config: { USE_MOCKS: false },
     precondition: {},
     cases: [{
         name: 'add new user, login and update profile',

@@ -30,7 +30,7 @@ const container = require('./container');
 const typeRegistry = require('./type-registry');
 const builtInModules = require('./builtInModules');
 
-function createAppContext({ modules, moduleNames, components = {}, useMocks = false, require }) {
+function createAppContext({ modules, moduleNames, components = {}, config = {}, require }) {
 
     const builtInComponents = {
         invokers,
@@ -50,7 +50,7 @@ function createAppContext({ modules, moduleNames, components = {}, useMocks = fa
         components: allComponents,
         modules: allModules,
         moduleNames,
-        useMocks,
+        useMocks: config.USE_MOCKS,
         require,
     });
 

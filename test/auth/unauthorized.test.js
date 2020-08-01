@@ -44,7 +44,7 @@ runTest({
     name: 'unauthorized with mock auth & without mock user',
     opts: { appSetup, appFactory },
     config: {
-        useMocks: true,
+        USE_MOCKS: true,
         JWT_SECRET: 'jwt_secret'
     },
     cases: [{
@@ -60,7 +60,7 @@ runTest({
     name: 'unauthorized without mock auth & without mock user',
     opts: { appSetup, appFactory },
     config: {
-        useMocks: false,
+        USE_MOCKS: false,
         JWT_SECRET: 'jwt_secret'
     },
     cases: [{
@@ -76,7 +76,7 @@ runTest({
     name: 'unauthorized without mock auth & with mock user',
     opts: { appSetup, appFactory },
     config: {
-        useMocks: false,
+        USE_MOCKS: false,
         JWT_SECRET: 'jwt_secret'
     },
     cases: [{
@@ -93,7 +93,7 @@ runTest({
     name: 'authorized with mock auth & with mock user',
     opts: { appSetup, appFactory, mockAuth: true },
     config: {
-        useMocks: true,
+        USE_MOCKS: true,
         JWT_SECRET: 'jwt_secret'
     },
     cases: [{

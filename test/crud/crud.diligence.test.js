@@ -54,7 +54,7 @@ runApiDiligence({
         tags: ['mock-auth'],
         username: 'spock',
         opts: { appSetup, appFactory, mockAuth: true },
-        config: { useMocks: true },
+        config: { USE_MOCKS: true },
     },
 });
 
@@ -65,6 +65,6 @@ runApiDiligence({
         tags: ['real-auth'],
         username: 'spock',
         opts: { appSetup, appFactory, getAuthToken },
-        config: { useMocks: false },
+        config: { USE_MOCKS: false },
     },
 });

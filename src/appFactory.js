@@ -64,8 +64,8 @@ async function createApp(appSetup = {}) {
     modules,
     moduleNames,
     components,
+    config,
     require,
-    useMocks: config.useMocks,
   });
 
   if (config.NODE_ENV === 'dev') {
@@ -91,6 +91,7 @@ function initConfig(opts) {
     NODE_ENV: process.env.NODE_ENV || 'production',
     JWT_SECRET: process.env.JWT_SECRET,
     DB_TYPE: process.env.DB_TYPE || 'none',
+    USE_MOCKS: false, // typically overwritten by tests
   };
 
   if (opts.config) Object.assign(defaultConfig, opts.config);
