@@ -24,28 +24,28 @@
  * SOFTWARE.
  */
 
-const builtInTypesModule = require("./components/types");
-const builtInResponsesModule = require("./components/responses");
-const builtInExceptionHandlerModule = require("./components/exceptionHandler");
-const builtInPasswordsMockModule = require("./mocks/passwordsMock");
-const builtInMiddlewareMockModule = require("./mocks/middlewareMock");
-const builtInAuthMockModule = require("./mocks/authMock");
-const builtInDbProviderModule = require("./components/db");
-const builtInPageProviderModule = require("./providers/page");
-const builtInLogProviderModule = require("./providers/log");
-const builtInUserProviderModule = require("./providers/user");
-const builtInRoutingModule = require('./components/routing');
+const builtInTypes = require("./components/types");
+const builtInResponses = require("./components/responses");
+const builtInExceptionHandler = require("./components/exceptionHandler");
+const builtInPasswordsMock = require("./mocks/passwordsMock");
+const builtInMiddlewareMock = require("./mocks/middlewareMock");
+const builtInAuthMock = require("./mocks/authMock");
+const builtInDbProvider = require("./components/db");
+const builtInPageProvider = require("./providers/page");
+const builtInLogProvider = require("./providers/log");
+const builtInUserProvider = require("./providers/user");
+const builtInRouting = require('./components/routing');
 
 module.exports = {
-    builtInTypesModule,
-    builtInResponsesModule,
-    builtInExceptionHandlerModule,
-    builtInPasswordsMockModule,
-    builtInMiddlewareMockModule,
-    builtInAuthMockModule,
-    builtInDbProviderModule,
-    builtInPageProviderModule,
-    builtInLogProviderModule,
-    builtInUserProviderModule,
-    builtInRoutingModule,
+    builtInTypes,
+    builtInResponses,
+    builtInExceptionHandler,
+    builtInPasswordsMock,
+    builtInMiddlewareMock,
+    builtInAuthMock,
+    builtInDbProvider,
+    builtInPageProvider,
+    builtInLogProvider,
+    builtInUserProvider,
+    builtInRouting,
 };
