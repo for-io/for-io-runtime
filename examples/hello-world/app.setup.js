@@ -1,4 +1,4 @@
 module.exports = {
     dir: __dirname,
-    moduleNames: ['./hello']
+    moduleNames: { src: ['./hello'] }
 };

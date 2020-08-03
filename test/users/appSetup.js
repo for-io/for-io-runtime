@@ -24,16 +24,18 @@
  * SOFTWARE.
  */
 
-const moduleNames = [
-    './users-routes',
-    './users-types',
-    "./controllers/users/getUserProfileImpl",
-    "./controllers/users/updateUserImpl",
-    "./controllers/users/deleteUserImpl",
-    "./controllers/users/listUsersImpl",
-    "./controllers/users/loginImpl",
-    "./controllers/users/addUserImpl",
-]
+const moduleNames = {
+    src: [
+        './users-routes',
+        './users-types',
+        "./controllers/users/getUserProfileImpl",
+        "./controllers/users/updateUserImpl",
+        "./controllers/users/deleteUserImpl",
+        "./controllers/users/listUsersImpl",
+        "./controllers/users/loginImpl",
+        "./controllers/users/addUserImpl",
+    ]
+};
 
 module.exports = {
     moduleNames,

@@ -164,10 +164,12 @@ class DependencyInjection {
     }
 
     _loadModules(moduleNames) {
-        for (let moduleName of moduleNames) {
-            let importedModule = this._require(moduleName);
+        for (let moduleName of moduleNames.src || []) {
+            this._addModuleToSeg(this._require(moduleName), moduleName);
+        }
 
-            this._addModuleToSeg(importedModule, moduleName);
+        for (let moduleName of moduleNames.test || []) {
+            this._addModuleToSeg(this._require(moduleName), moduleName);
         }
     }
 

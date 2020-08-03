@@ -24,21 +24,23 @@
  * SOFTWARE.
  */
 
-const moduleNames = [
-    './crud-auth',
-    './crud-routes',
-    './crud-types',
-    "./controllers/organizations/addOrganizationImpl",
-    "./controllers/organizations/updateOrganizationImpl",
-    "./controllers/organizations/deleteOrganizationImpl",
-    "./controllers/organizations/getOrganizationImpl",
-    "./controllers/organizations/listOrganizationsImpl",
-    "./controllers/organizations_teams/addTeamToOrganizationImpl",
-    "./controllers/organizations_teams/updateTeamOfOrganizationImpl",
-    "./controllers/organizations_teams/deleteTeamOfOrganizationImpl",
-    "./controllers/organizations_teams/getTeamOfOrganizationImpl",
-    "./controllers/organizations_teams/listTeamsOfOrganizationImpl"
-];
+const moduleNames = {
+    src: [
+        './crud-auth',
+        './crud-routes',
+        './crud-types',
+        "./controllers/organizations/addOrganizationImpl",
+        "./controllers/organizations/updateOrganizationImpl",
+        "./controllers/organizations/deleteOrganizationImpl",
+        "./controllers/organizations/getOrganizationImpl",
+        "./controllers/organizations/listOrganizationsImpl",
+        "./controllers/organizations_teams/addTeamToOrganizationImpl",
+        "./controllers/organizations_teams/updateTeamOfOrganizationImpl",
+        "./controllers/organizations_teams/deleteTeamOfOrganizationImpl",
+        "./controllers/organizations_teams/getTeamOfOrganizationImpl",
+        "./controllers/organizations_teams/listTeamsOfOrganizationImpl"
+    ]
+};
 
 module.exports = {
     moduleNames,

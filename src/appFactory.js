@@ -48,7 +48,7 @@ async function createApp(appSetup = {}) {
   const logger = appSetup.logger || console;
   const router = appSetup.router || express.Router();
 
-  const moduleNames = getModuleNames(appSetup);
+  const moduleNames = getModuleNames(appSetup, config);
 
   const components = Object.assign({
     _, config, router, middleware,
@@ -77,12 +77,17 @@ async function createApp(appSetup = {}) {
   return { app, config };
 }
 
-function getModuleNames(appSetup) {
-  const dir = appSetup.dir;
+function getModuleNames(appSetup, config) {
+  const { dir, moduleNames } = appSetup;
 
-  return appSetup.moduleNames
-    ? appSetup.moduleNames.map(name => dir ? path.join(dir, name) : name)
-    : undefined;
+  if (!dir || !moduleNames) return moduleNames;
+
+  let testMode = config.NODE_ENV === 'test';
+
+  return {
+    src: (moduleNames.src || []).map(name => path.join(dir, name)),
+    test: testMode ? (moduleNames.test || []).map(name => path.join(dir, name)) : [],
+  };
 }
 
 function initConfig(opts) {
