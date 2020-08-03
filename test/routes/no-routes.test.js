@@ -24,20 +24,19 @@
  * SOFTWARE.
  */
 
-exports['MOCK middleware'] = {
+const { runTest } = require('api-diligence');
+const appFactory = require('../../src/appFactory');
 
-    authenticate(route) {
-        return function (req, res, next) {
-            let userId = req.headers['x-mock-user'] || req.query['mock-user'];
+const appSetup = {};
 
-            if (!userId) throw { statusCode: 401, body: {} };
-
-            let email = `${userId}@example.com`;
-
-            req.user = { id: userId, email };
-
-            next();
-        };
-    },
-
-};
+runTest({
+    name: 'no routes',
+    opts: { appSetup, appFactory },
+    cases: [{
+        name: 'not found',
+        steps: [{
+            request: 'GET /',
+            404: {},
+        }],
+    }],
+});
