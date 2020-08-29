@@ -32,15 +32,15 @@ const HTTP_STATUS_CODES = require('http').STATUS_CODES;
 
 const auth = require('./server-modules/auth');
 const passwords = require('./server-modules/passwords');
+const appFactoryModule = require('./server-modules/defaultAppFactory');
 const { connectToDb } = require('./server-modules/dbconn');
 
-const { createExpressApp } = require('./app');
 const { createAppContext } = require('./appcontext');
 
 async function createApp(appSetup = {}) {
   const config = initConfig(appSetup);
 
-  const builtInModules = { auth, passwords };
+  const builtInModules = { auth, passwords, appFactoryModule };
   const modules = Object.assign(builtInModules, appSetup.modules);
 
   const logger = appSetup.logger || console;
@@ -70,7 +70,8 @@ async function createApp(appSetup = {}) {
     logger.info('Dependency injection context', context.info());
   }
 
-  const app = createExpressApp({ router, config });
+  const appFactory = context.getDependency('appFactory');
+  const app = appFactory.createApp();
 
   return { app, config };
 }

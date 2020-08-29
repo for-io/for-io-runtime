@@ -24,37 +24,39 @@
  * SOFTWARE.
  */
 
-const express = require('express');
-const path = require('path');
-const cookieParser = require('cookie-parser');
-const passport = require('passport');
+exports['SINGLETON appFactory__default'] = (config, router) => ({
 
-function createExpressApp({ router, config }) {
-  const app = express();
+  createApp() {
+    const express = require('express');
+    const app = express();
 
-  if (config.MORGAN_LOGGER !== undefined) {  // e.g. 'dev', 'combined'
-    const morgan = require('morgan');
-    app.use(morgan(config.MORGAN_LOGGER));
+    if (config.MORGAN_LOGGER !== undefined) {  // e.g. 'dev', 'combined'
+      const morgan = require('morgan');
+      app.use(morgan(config.MORGAN_LOGGER));
+    }
+
+    if (config.STATIC_DIR !== undefined) {  // e.g. 'public'
+      const path = require('path');
+      app.use(express.static(path.join(__dirname, config.STATIC_DIR)));
+    }
+
+    app.use(express.json());
+    app.use(express.urlencoded({ extended: false }));
+
+    const cookieParser = require('cookie-parser');
+    app.use(cookieParser());
+
+    if (config.CORS_ORIGIN !== undefined) {  // e.g. '*', 'example.com'
+      const cors = require('cors');
+      app.use(cors({ origin: config.CORS_ORIGIN }));
+    }
+
+    const passport = require('passport');
+    app.use(passport.initialize());
+
+    app.use('/', router);
+
+    return app;
   }
 
-  if (config.STATIC_DIR !== undefined) {  // e.g. 'public'
-    app.use(express.static(path.join(__dirname, config.STATIC_DIR)));
-  }
-
-  app.use(express.json());
-  app.use(express.urlencoded({ extended: false }));
-  app.use(cookieParser());
-
-  if (config.CORS_ORIGIN !== undefined) {  // e.g. '*', 'example.com'
-    const cors = require('cors');
-    app.use(cors({ origin: config.CORS_ORIGIN }));
-  }
-
-  app.use(passport.initialize());
-
-  app.use('/', router);
-
-  return app;
-}
-
-module.exports = { createExpressApp };
+});
