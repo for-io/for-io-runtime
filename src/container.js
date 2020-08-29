@@ -123,6 +123,8 @@ class DependencyInjection {
         this._createdOn = new Date();
         this._depInfo = new DependencyTracker();
         this._useMocks = opts.useMocks;
+        this._continueOnErrors = opts.continueOnErrors;
+        this._moduleNames = opts.moduleNames;
 
         this._components = Object.assign({}, opts.components || {});
         this._mocks = Object.assign({}, opts.mocks || {});
@@ -163,13 +165,22 @@ class DependencyInjection {
         }
     }
 
+    _loadModule(moduleName) {
+        try {
+            this._addModuleToSeg(this._require(moduleName), moduleName);
+
+        } catch (e) {
+            this.logError(e);
+        }
+    }
+
     _loadModules(moduleNames) {
         for (let moduleName of moduleNames.src || []) {
-            this._addModuleToSeg(this._require(moduleName), moduleName);
+            this._loadModule(moduleName);
         }
 
         for (let moduleName of moduleNames.test || []) {
-            this._addModuleToSeg(this._require(moduleName), moduleName);
+            this._loadModule(moduleName);
         }
     }
 

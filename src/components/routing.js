@@ -27,7 +27,8 @@
 const { sortRoutes } = require('../route-sorter');
 const utils = require('../utils');
 
-exports['SINGLETON routing'] = (router, api, middleware, auth, controllers, types, providers, exceptionHandler, logger, invokers, DependencyTracker) => {
+exports['SINGLETON routing'] = (router, api, middleware, auth, config, controllers,
+    types, providers, exceptionHandler, logger, invokers, DependencyTracker) => {
 
     async function run(name, controller, req, res, next, specification) {
 
@@ -129,7 +130,7 @@ exports['SINGLETON routing'] = (router, api, middleware, auth, controllers, type
         try {
 
             if (!controller) {
-                throw new Error(`Cannot find the controller for API endpoint '${name}'!`);
+                throw new Error(`Undefined controller for API endpoint '${name}'!`);
             }
 
             result = await invokers.invokeAsync(controller, async depName => await provide(depName, apiDepTracker));
@@ -202,6 +203,11 @@ exports['SINGLETON routing'] = (router, api, middleware, auth, controllers, type
     function initRoutes() {
         const routes = _getRoutes();
 
+        if (routes.length == 0) {
+            if (config.NODE_ENV !== 'test') logger.warn(`No routes were defined!`);
+            return;
+        }
+
         sortRoutes(routes);
 
         for (const route of routes) {
@@ -210,25 +216,40 @@ exports['SINGLETON routing'] = (router, api, middleware, auth, controllers, type
             utils.def(route.verb, 'route.verb');
             utils.def(route.path, 'route.path');
 
+            const controller = _findController(route, controllers);
+
             const method = router[route.verb.toLowerCase()].bind(router);
-            const args = [route.path];
 
-            for (const middName of route.middleware || []) {
-                const middlewareFactory = middleware[middName];
+            if (controller) {
 
-                if (!middlewareFactory) throw new Error(`Cannot find middleware factory with name: "${middName}"`);
+                const args = [route.path];
 
-                args.push(middlewareFactory(route));
+                for (const middName of route.middleware || []) {
+                    const middlewareFactory = middleware[middName];
+
+                    if (!middlewareFactory) throw new Error(`Cannot find middleware factory with name: "${middName}"`);
+
+                    args.push(middlewareFactory(route));
+                }
+
+                args.push(async (req, res, next) => {
+                    await run(route.name, controller, req, res, next, route);
+                });
+
+                method(...args);
+
+            } else {
+                const errMsg = `Cannot find a controller for API endpoint: "${route.name}"`;
+
+                if (config.NODE_ENV === 'dev' || config.NODE_ENV === 'test') {
+                    method(route.path, async (req, res, next) => {
+                        await run(route.name, () => { throw new Error(errMsg); }, req, res, next, route);
+                    });
+                } else {
+                    throw new Error(errMsg);
+                }
             }
 
-            const controller = _findController(route, controllers);
-            if (!controller) throw new Error(`Cannot find a controller for API endpoint: "${route.name}"`);
-
-            args.push(async (req, res, next) => {
-                await run(route.name, controller, req, res, next, route);
-            });
-
-            method(...args);
         }
     }
 

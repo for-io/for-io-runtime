@@ -51,6 +51,7 @@ function createAppContext({ modules, moduleNames, components = {}, config = {}, 
         modules: allModules,
         moduleNames,
         useMocks: config.USE_MOCKS,
+        continueOnErrors: config.CONTINUE_ON_ERRORS,
         require,
     });
 
