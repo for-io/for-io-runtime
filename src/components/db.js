@@ -24,38 +24,49 @@
  * SOFTWARE.
  */
 
-exports['SINGLETON db__default'] = (config, database, mongodb__optional, mongoCollectionExtensions__optional) => {
+exports['SINGLETON db__default'] = (config, database, mongodb__getter, mongoCollectionExtensions__optional__getter) => {
 
     switch (config.DB_TYPE) {
         case 'mongodb':
-            return createMongoProxy(mongodb__optional, mongoCollectionExtensions__optional);
+            return createMongoProxy(mongodb__getter(), mongoCollectionExtensions__optional__getter());
 
         default:
             return null;
     }
 
     function createMongoProxy(mongodb, mongoCollectionExtensions) {
+        const dbProxyTarget = {
+            ObjectId: mongodb.ObjectId.bind(mongodb),
+        };
 
-        function extendColl(coll) {
-            for (const name in mongoCollectionExtensions) {
-                if (mongoCollectionExtensions.hasOwnProperty(name)) {
-                    const fn = mongoCollectionExtensions[name];
-                    coll[name] = fn.bind(coll);
+        const collFactory = name => database.collection(name);
+
+        return createDbProxy(dbProxyTarget, collFactory, mongoCollectionExtensions);
+    }
+
+    function createDbProxy(dbTarget, tableFactory, tableExtensions) {
+
+        function extendTable(table) {
+            if (tableExtensions) {
+                for (const name in tableExtensions) {
+                    if (tableExtensions.hasOwnProperty(name)) {
+                        const fn = tableExtensions[name];
+                        table[name] = fn.bind(table);
+                    }
                 }
             }
 
-            return coll;
+            return table;
         }
 
-        return new Proxy({}, {
-            get: function (target, prop, receiver) {
-                switch (prop) {
-                    case 'ObjectId':
-                        return mongodb.ObjectId.bind(mongodb);
+        return new Proxy(dbTarget, {
+            get: function (target, propName, receiver) {
 
-                    default:
-                        return extendColl(database.collection(prop));
+                if (!target.hasOwnProperty(propName) && !propName.startsWith('__')) {
+                    target[propName] = extendTable(tableFactory(propName));
                 }
+
+                return target[propName];
             }
         });
     }
