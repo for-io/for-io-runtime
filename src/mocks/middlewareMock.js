@@ -24,9 +24,9 @@
  * SOFTWARE.
  */
 
-exports['MOCK middleware'] = {
+exports['MOCK authMiddlewareFactory'] = {
 
-    authenticate(route) {
+    createMiddleware(route) {
         return function (req, res, next) {
             let userId = req.headers['x-mock-user'] || req.query['mock-user'];
 

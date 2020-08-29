@@ -28,8 +28,6 @@ const _ = require('lodash');
 const path = require('path');
 const express = require('express');
 
-const utils = require('./utils');
-const middleware = require('./middleware');
 const HTTP_STATUS_CODES = require('http').STATUS_CODES;
 
 const auth = require('./server-modules/auth');
@@ -51,7 +49,7 @@ async function createApp(appSetup = {}) {
   const moduleNames = getModuleNames(appSetup, config);
 
   const components = Object.assign({
-    _, config, router, middleware,
+    _, config, router,
     logger__default: logger,
     HTTP_STATUS_CODES,
   }, appSetup.components);

@@ -42,7 +42,7 @@ exports['API updateUserProfile'] = {
     cookies: {},
     roles: [],
     responses: [200, 403, 404, 422],
-    middleware: ["authenticate"],
+    middleware: ['auth'],
     tags: ["users"],
     typeNames: {
         params: "UpdateUserProfileParams",
@@ -64,7 +64,7 @@ exports['API listUsers'] = {
     cookies: {},
     roles: [],
     responses: [200, 403],
-    middleware: ["authenticate"],
+    middleware: ['auth'],
     tags: ["users"],
     typeNames: {},
     model: "User:list"
@@ -85,7 +85,7 @@ exports['API deleteUser'] = {
     cookies: {},
     roles: [],
     responses: [200, 403, 404],
-    middleware: ["authenticate"],
+    middleware: ['auth'],
     tags: ["users"],
     typeNames: {
         params: "DeleteUserParams"
@@ -131,7 +131,7 @@ exports['API getUserProfile'] = {
     cookies: {},
     roles: [],
     responses: [200, 403, 404],
-    middleware: ["authenticate"],
+    middleware: ['auth'],
     tags: ["users"],
     typeNames: {
         params: "GetUserProfileParams"

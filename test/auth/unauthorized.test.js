@@ -31,7 +31,7 @@ const mod = {
     'API hello': {
         verb: "GET",
         path: "/hello",
-        middleware: ['authenticate'],
+        middleware: ['auth'],
         run(userId) {
             return { msg: `Hello, ${userId}!` };
         }

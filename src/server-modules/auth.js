@@ -59,3 +59,11 @@ exports['SINGLETON auth__default'] = (config) => {
     }
 
 };
+
+exports['SINGLETON authMiddlewareFactory__default'] = () => ({
+
+    createMiddleware(route) {
+        return passport.authenticate('jwt', { session: false });
+    },
+
+});

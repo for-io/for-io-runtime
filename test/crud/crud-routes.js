@@ -39,7 +39,7 @@ exports['API addOrganization'] = {
     cookies: {},
     roles: [],
     responses: [200, 403, 422],
-    middleware: ["authenticate"],
+    middleware: ['auth'],
     tags: [],
     typeNames: {
         body: "AddOrganizationBody"
@@ -65,7 +65,7 @@ exports['API updateOrganization'] = {
     cookies: {},
     roles: [],
     responses: [200, 403, 404, 422],
-    middleware: ["authenticate"],
+    middleware: ['auth'],
     tags: [],
     typeNames: {
         params: "UpdateOrganizationParams",
@@ -90,7 +90,7 @@ exports['API deleteOrganization'] = {
     cookies: {},
     roles: [],
     responses: [200, 403, 404],
-    middleware: ["authenticate"],
+    middleware: ['auth'],
     tags: [],
     typeNames: {
         params: "DeleteOrganizationParams"
@@ -113,7 +113,7 @@ exports['API getOrganization'] = {
     cookies: {},
     roles: [],
     responses: [200, 403, 404],
-    middleware: ["authenticate"],
+    middleware: ['auth'],
     tags: [],
     typeNames: {
         params: "GetOrganizationParams"
@@ -134,7 +134,7 @@ exports['API listOrganizations'] = {
     cookies: {},
     roles: [],
     responses: [200, 403],
-    middleware: ["authenticate"],
+    middleware: ['auth'],
     tags: [],
     typeNames: {},
     model: "Organization:list"
@@ -158,7 +158,7 @@ exports['API addTeamToOrganization'] = {
     cookies: {},
     roles: [],
     responses: [200, 403, 404, 422],
-    middleware: ["authenticate"],
+    middleware: ['auth'],
     tags: [],
     typeNames: {
         params: "AddTeamToOrganizationParams",
@@ -187,7 +187,7 @@ exports['API updateTeamOfOrganization'] = {
     cookies: {},
     roles: [],
     responses: [200, 403, 404, 422],
-    middleware: ["authenticate"],
+    middleware: ['auth'],
     tags: [],
     typeNames: {
         params: "UpdateTeamOfOrganizationParams",
@@ -213,7 +213,7 @@ exports['API deleteTeamOfOrganization'] = {
     cookies: {},
     roles: [],
     responses: [200, 403, 404],
-    middleware: ["authenticate"],
+    middleware: ['auth'],
     tags: [],
     typeNames: {
         params: "DeleteTeamOfOrganizationParams"
@@ -237,7 +237,7 @@ exports['API getTeamOfOrganization'] = {
     cookies: {},
     roles: [],
     responses: [200, 403, 404],
-    middleware: ["authenticate"],
+    middleware: ['auth'],
     tags: [],
     typeNames: {
         params: "GetTeamOfOrganizationParams"
@@ -260,7 +260,7 @@ exports['API listTeamsOfOrganization'] = {
     cookies: {},
     roles: [],
     responses: [200, 403, 404],
-    middleware: ["authenticate"],
+    middleware: ['auth'],
     tags: [],
     typeNames: {
         params: "ListTeamsOfOrganizationParams"

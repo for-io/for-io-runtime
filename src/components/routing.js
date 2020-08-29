@@ -27,7 +27,7 @@
 const { sortRoutes } = require('../route-sorter');
 const utils = require('../utils');
 
-exports['SINGLETON routing'] = (router, api, middleware, auth, config, controllers,
+exports['SINGLETON routing'] = (__context, router, api, auth, config, controllers,
     types, providers, exceptionHandler, logger, invokers, DependencyTracker) => {
 
     async function run(name, controller, req, res, next, specification) {
@@ -225,11 +225,12 @@ exports['SINGLETON routing'] = (router, api, middleware, auth, config, controlle
                 const args = [route.path];
 
                 for (const middName of route.middleware || []) {
-                    const middlewareFactory = middleware[middName];
+                    const middFactoryName = `${middName}MiddlewareFactory`;
+                    const middlewareFactoryObj = __context.getDependency(middFactoryName);
 
-                    if (!middlewareFactory) throw new Error(`Cannot find middleware factory with name: "${middName}"`);
+                    if (!middlewareFactoryObj) throw new Error(`Cannot find a middleware factory with name: "${middFactoryName}"`);
 
-                    args.push(middlewareFactory(route));
+                    args.push(middlewareFactoryObj.createMiddleware(route));
                 }
 
                 args.push(async (req, res, next) => {
