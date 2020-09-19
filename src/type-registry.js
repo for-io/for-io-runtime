@@ -224,7 +224,9 @@ function _arrayFactory(typeName, factory) {
 }
 
 function _wrap(factory) {
-    return (value, _err, _name) => {
+    return function (value) {
+
+        let _err = arguments[1], _name = arguments[2];
 
         const isRoot = _err === undefined;
         if (isRoot) _err = new _ValidationErrors();
