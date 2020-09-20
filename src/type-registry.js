@@ -34,9 +34,9 @@ const _types = {};
 
 const _util = { _has, _coll };
 
-function _registerType(typeName, factory) {
-    _types[typeName] = _wrap(factory);
-    _types[`${typeName}Array`] = _wrap(_arrayFactory(`${typeName}Array`, factory));
+function _registerType(typeName, factory, isBuiltIn) {
+    _types[typeName] = _wrap(factory, isBuiltIn);
+    _types[`${typeName}Array`] = _wrap(_arrayFactory(factory), isBuiltIn);
 }
 
 class _ValidationErrors {
@@ -66,9 +66,6 @@ class _ValidationErrors {
     }
 
     wrongType(name, type, val) {
-        if (!name) {
-            throw new Error('Invalid name')
-        }
         this.error(name, `Must be ${type}`);
     }
 
@@ -93,18 +90,45 @@ class _ValidationErrors {
 
 const EMAIL_REGEX = /^[^@\s]+@[^@\s]+\.[^@\s]+$/;
 
+function _validationErr(details) {
+    const e = new Error(ERR_DATA_VALIDATION);
+    e.body = { error: ERR_DATA_VALIDATION, details };
+    e.statusCode = 422;
+    return e;
+}
+
+function _error(err, opts, name, msg) {
+    if (err) {
+        err.error(name, msg);
+    } else {
+        let validate = opts && opts.validation;
+        let errMsg = name ? `${name}: ${msg}` : msg;
+        throw validate ? _validationErr(errMsg) : new Error(errMsg);
+    }
+}
+
+function _wrongType(err, opts, name, type, val) {
+    if (err) {
+        err.wrongType(name, type, val)
+    } else {
+        let validate = opts && opts.validation;
+        let errMsg = name ? `'${name}' must be ${type}!` : `Must be ${type}!`;
+        throw validate ? _validationErr(errMsg) : new Error(errMsg);
+    }
+}
+
 const _builtInTypes = {
 
-    _float(val, err, name) {
+    _float(val, opts, err, name) {
         if (utils.isNumber(val)) {
             return parseFloat(val);
         } else {
-            err.wrongType(name, 'float', val);
+            _wrongType(err, opts, name, 'float', val);
             return NO_VAL;
         }
     },
 
-    _int(val, err, name) {
+    _int(val, opts, err, name) {
         if (utils.isNumber(val)) {
             let n = parseFloat(val);
 
@@ -113,11 +137,11 @@ const _builtInTypes = {
             }
         }
 
-        err.wrongType(name, 'integer', val);
+        _wrongType(err, opts, name, 'integer', val);
         return NO_VAL;
     },
 
-    _uint(val, err, name) {
+    _uint(val, opts, err, name) {
         if (utils.isNumber(val)) {
             let n = parseFloat(val);
 
@@ -125,26 +149,26 @@ const _builtInTypes = {
                 if (n >= 0) {
                     return n;
                 } else {
-                    err.error(name, 'Cannot be negative');
+                    _error(err, opts, name, 'Cannot be negative');
                     return NO_VAL;
                 }
             }
         }
 
-        err.wrongType(name, 'integer', val);
+        _wrongType(err, opts, name, 'integer', val);
         return NO_VAL;
     },
 
-    _byte(val, err, name) {
+    _byte(val, opts, err, name) {
         if (utils.isNumber(val)) {
             let n = parseFloat(val);
 
             if (Number.isInteger(n)) {
                 if (n >= 256) {
-                    err.error(name, 'Must be < 256');
+                    _error(err, opts, name, 'Must be < 256');
                     return NO_VAL;
                 } else if (n < 0) {
-                    err.error(name, 'Cannot be negative');
+                    _error(err, opts, name, 'Cannot be negative');
                     return NO_VAL;
                 } else {
                     return n;
@@ -152,29 +176,29 @@ const _builtInTypes = {
             }
         }
 
-        err.wrongType(name, 'byte', val);
+        _wrongType(err, opts, name, 'byte', val);
         return NO_VAL;
     },
 
-    _string(val, err, name) {
+    _string(val, opts, err, name) {
         if (utils.isString(val)) {
             return val;
         } else {
-            err.wrongType(name, 'string', val);
+            _wrongType(err, opts, name, 'string', val);
             return NO_VAL;
         }
     },
 
-    _email(val, err, name) {
+    _email(val, opts, err, name) {
         if (utils.isString(val) && EMAIL_REGEX.test(val)) {
             return val;
         } else {
-            err.wrongType(name, 'email', val);
+            _wrongType(err, opts, name, 'email', val);
             return NO_VAL;
         }
     },
 
-    _boolean(val, err, name) {
+    _boolean(val, opts, err, name) {
         if (utils.isBoolean(val)) {
             return val;
         } else {
@@ -183,17 +207,17 @@ const _builtInTypes = {
             } else if (val === 'false' || val === 'n' || val == 0) {
                 return false;
             } else {
-                err.wrongType(name, 'boolean', val);
+                _wrongType(err, opts, name, 'boolean', val);
                 return NO_VAL;
             }
         }
     },
 
-    _object(val, err, name) {
+    _object(val, opts, err, name) {
         if (utils.isObject(val)) {
             return val;
         } else {
-            err.wrongType(name, 'object', val);
+            _wrongType(err, opts, name, 'object', val);
             return {};
         }
     },
@@ -204,13 +228,13 @@ function _has(val) {
     return val !== undefined && val !== null;
 }
 
-function _coll(factory, val, err, name) {
+function _coll(factory, val, opts, err, name) {
     if (val !== undefined && val !== null) {
 
         if (utils.isArray(val)) {
-            return val.map((item, index) => factory(item, err, name + index + '.', _types, _util));
+            return val.map((item, index) => factory(item, opts, err, name + index + '.', _types, _util));
         } else {
-            err.wrongType(name, 'array', val);
+            _wrongType(err, opts, name, 'array', val);
             return [];
         }
 
@@ -219,26 +243,26 @@ function _coll(factory, val, err, name) {
     }
 }
 
-function _arrayFactory(typeName, factory) {
-    return (arr, err, name) => _coll(factory, arr, err, name || '');
+function _arrayFactory(itemFactory) {
+    return (arr, opts, err, name) => _coll(itemFactory, arr, opts, err, name || '');
 }
 
-function _wrap(factory) {
-    return function (value) {
+function _wrap(factory, isBuiltIn) {
+    return function (value, opts) {
+        // NOTE opts can be undefined!
+        const isRoot = arguments.length <= 2;
 
-        let _err = arguments[1], _name = arguments[2];
+        let _err = arguments[2];
+        if (isRoot && !isBuiltIn) _err = new _ValidationErrors();
 
-        const isRoot = _err === undefined;
-        if (isRoot) _err = new _ValidationErrors();
+        let _name = arguments[3];
+        if (isRoot && opts && opts.name) _name = opts.name;
 
-        const result = factory(value, _err, _name, _types, _util);
+        const result = factory(value, opts, _err, _name, _types, _util);
 
         function validate() {
             if (_err.hasErrors()) {
-                const e = new Error(ERR_DATA_VALIDATION);
-                e.body = { error: ERR_DATA_VALIDATION, details: _err.details() };
-                e.statusCode = 422;
-                throw e;
+                throw _validationErr(_err.details());
             }
 
             return this;
@@ -252,10 +276,12 @@ function _wrap(factory) {
             return _err.details();
         }
 
-        if (isRoot && (utils.isObject(result) || utils.isArray(result))) {
-            result.validate = validate.bind(result);
-            result.isValid = isValid.bind(result);
-            result.getValidationErrors = getValidationErrors.bind(result);
+        if (isRoot) {
+            if (utils.isObject(result) || utils.isArray(result)) {
+                result.validate = validate.bind(result);
+                result.isValid = isValid.bind(result);
+                result.getValidationErrors = getValidationErrors.bind(result);
+            }
         }
 
         return result;
@@ -291,7 +317,7 @@ const _defaultTypes = {
 for (const typeName in _defaultTypes) {
     if (_defaultTypes.hasOwnProperty(typeName)) {
         const factory = _defaultTypes[typeName];
-        _registerType(typeName, factory);
+        _registerType(typeName, factory, true);
     }
 }
 
@@ -303,13 +329,14 @@ function addTypes(types) {
     for (const typeName in types) {
         if (types.hasOwnProperty(typeName)) {
             const typeClass = types[typeName];
-            _registerType(typeName, (data, err, name = '') => new typeClass({
+            _registerType(typeName, (data, opts, err, name = '') => new typeClass({
                 data,
                 prefix: name,
                 types: _types,
+                opts,
                 err,
                 util: _util,
-            }));
+            }), false);
         }
     }
 }

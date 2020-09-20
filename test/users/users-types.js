@@ -25,88 +25,88 @@
  */
 
 class User {
-    constructor({ data = {}, prefix = '', types, err, util }) {
+    constructor({ data = {}, prefix = '', types, opts, err, util }) {
 
         // _id : string pkey autogen
-        this._id = util._has(data._id) ? types.string(data._id, err, prefix + '_id') : null;
+        this._id = util._has(data._id) ? types.string(data._id, opts, err, prefix + '_id') : null;
 
         // email : email
-        this.email = util._has(data.email) ? types.email(data.email, err, prefix + 'email') : err.no(prefix + 'email');
+        this.email = util._has(data.email) ? types.email(data.email, opts, err, prefix + 'email') : err.no(prefix + 'email');
 
         // passwordHash : string
-        this.passwordHash = util._has(data.passwordHash) ? types.string(data.passwordHash, err, prefix + 'passwordHash') : err.no(prefix + 'passwordHash');
+        this.passwordHash = util._has(data.passwordHash) ? types.string(data.passwordHash, opts, err, prefix + 'passwordHash') : err.no(prefix + 'passwordHash');
 
         // firstName : string
-        this.firstName = util._has(data.firstName) ? types.string(data.firstName, err, prefix + 'firstName') : err.no(prefix + 'firstName');
+        this.firstName = util._has(data.firstName) ? types.string(data.firstName, opts, err, prefix + 'firstName') : err.no(prefix + 'firstName');
 
         // lastName : string
-        this.lastName = util._has(data.lastName) ? types.string(data.lastName, err, prefix + 'lastName') : err.no(prefix + 'lastName');
+        this.lastName = util._has(data.lastName) ? types.string(data.lastName, opts, err, prefix + 'lastName') : err.no(prefix + 'lastName');
     }
 }
 
 class UpdateUserProfileParams {
-    constructor({ data = {}, prefix = '', types, err, util }) {
+    constructor({ data = {}, prefix = '', types, opts, err, util }) {
 
         // id : string
-        this.id = util._has(data.id) ? types.string(data.id, err, prefix + 'id') : err.no(prefix + 'id');
+        this.id = util._has(data.id) ? types.string(data.id, opts, err, prefix + 'id') : err.no(prefix + 'id');
     }
 }
 
 class UpdateUserProfileBody {
-    constructor({ data = {}, prefix = '', types, err, util }) {
+    constructor({ data = {}, prefix = '', types, opts, err, util }) {
 
         // firstName : string
-        this.firstName = util._has(data.firstName) ? types.string(data.firstName, err, prefix + 'firstName') : err.no(prefix + 'firstName');
+        this.firstName = util._has(data.firstName) ? types.string(data.firstName, opts, err, prefix + 'firstName') : err.no(prefix + 'firstName');
 
         // lastName : string
-        this.lastName = util._has(data.lastName) ? types.string(data.lastName, err, prefix + 'lastName') : err.no(prefix + 'lastName');
+        this.lastName = util._has(data.lastName) ? types.string(data.lastName, opts, err, prefix + 'lastName') : err.no(prefix + 'lastName');
     }
 }
 
 class DeleteUserParams {
-    constructor({ data = {}, prefix = '', types, err, util }) {
+    constructor({ data = {}, prefix = '', types, opts, err, util }) {
 
         // id : string
-        this.id = util._has(data.id) ? types.string(data.id, err, prefix + 'id') : err.no(prefix + 'id');
+        this.id = util._has(data.id) ? types.string(data.id, opts, err, prefix + 'id') : err.no(prefix + 'id');
     }
 }
 
 class LoginBody {
-    constructor({ data = {}, prefix = '', types, err, util }) {
+    constructor({ data = {}, prefix = '', types, opts, err, util }) {
 
         // username : string
-        this.username = util._has(data.username) ? types.string(data.username, err, prefix + 'username') : err.no(prefix + 'username');
+        this.username = util._has(data.username) ? types.string(data.username, opts, err, prefix + 'username') : err.no(prefix + 'username');
 
         // password : password
-        this.password = util._has(data.password) ? types.password(data.password, err, prefix + 'password') : err.no(prefix + 'password');
+        this.password = util._has(data.password) ? types.password(data.password, opts, err, prefix + 'password') : err.no(prefix + 'password');
     }
 }
 
 class GetUserProfileParams {
-    constructor({ data = {}, prefix = '', types, err, util }) {
+    constructor({ data = {}, prefix = '', types, opts, err, util }) {
 
         // id : string
-        this.id = util._has(data.id) ? types.string(data.id, err, prefix + 'id') : err.no(prefix + 'id');
+        this.id = util._has(data.id) ? types.string(data.id, opts, err, prefix + 'id') : err.no(prefix + 'id');
     }
 }
 
 class AddUserBody {
-    constructor({ data = {}, prefix = '', types, err, util }) {
+    constructor({ data = {}, prefix = '', types, opts, err, util }) {
 
         // username : string
-        this.username = util._has(data.username) ? types.string(data.username, err, prefix + 'username') : err.no(prefix + 'username');
+        this.username = util._has(data.username) ? types.string(data.username, opts, err, prefix + 'username') : err.no(prefix + 'username');
 
         // password : password
-        this.password = util._has(data.password) ? types.password(data.password, err, prefix + 'password') : err.no(prefix + 'password');
+        this.password = util._has(data.password) ? types.password(data.password, opts, err, prefix + 'password') : err.no(prefix + 'password');
 
         // email : email
-        this.email = util._has(data.email) ? types.email(data.email, err, prefix + 'email') : err.no(prefix + 'email');
+        this.email = util._has(data.email) ? types.email(data.email, opts, err, prefix + 'email') : err.no(prefix + 'email');
 
         // firstName : string
-        this.firstName = util._has(data.firstName) ? types.string(data.firstName, err, prefix + 'firstName') : err.no(prefix + 'firstName');
+        this.firstName = util._has(data.firstName) ? types.string(data.firstName, opts, err, prefix + 'firstName') : err.no(prefix + 'firstName');
 
         // lastName : string
-        this.lastName = util._has(data.lastName) ? types.string(data.lastName, err, prefix + 'lastName') : err.no(prefix + 'lastName');
+        this.lastName = util._has(data.lastName) ? types.string(data.lastName, opts, err, prefix + 'lastName') : err.no(prefix + 'lastName');
     }
 }
 
