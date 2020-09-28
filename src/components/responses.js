@@ -26,32 +26,11 @@
 
 exports['SINGLETON responses__default'] = {
 
-    OK: {
-        success: true,
-    },
+    OK: {},
 
-    FORBIDDEN: {
-        statusCode: 403,
-        body: {
-            success: false,
-            status: 'Access denied!',
-        }
-    },
-
-    NOT_FOUND: {
-        statusCode: 404,
-        body: {
-            success: false,
-            status: 'Not found!',
-        }
-    },
-
-    INTERNAL_ERROR: {
-        statusCode: 500,
-        body: {
-            success: false,
-            status: 'Internal server error!',
-        }
-    },
+    CREATED: 201,
+    FORBIDDEN: 403,
+    NOT_FOUND: 404,
+    INTERNAL_ERROR: 500,
 
 };

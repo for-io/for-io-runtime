@@ -83,7 +83,7 @@ runTest({
                     lastName: "KIRK",
                 }
             },
-            200: { success: true },
+            200: {},
             postcondition: {
                 users: [{
                     _id: "kirk",
