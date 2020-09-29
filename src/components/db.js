@@ -81,3 +81,101 @@ exports['MEMBER mongoCollectionExtensions.exists'] = () => {
     }
 
 };
+
+exports['MEMBER mongoCollectionExtensions.verifyId'] = () => {
+
+    return async function verifyId(id) {
+        if (!await this.exists({ _id: id })) throw responses.NOT_FOUND;
+    }
+
+};
+
+exports['MEMBER mongoCollectionExtensions.getOne'] = (responses) => {
+
+    return async function getOne(filter) {
+        let doc = await this.findOne(filter);
+
+        if (!doc) throw responses.NOT_FOUND;
+
+        return doc;
+    }
+
+};
+
+exports['MEMBER mongoCollectionExtensions.getById'] = (responses) => {
+
+    return async function getById(id) {
+        return await this.getOne({ _id: id });
+    }
+
+};
+
+exports['MEMBER mongoCollectionExtensions.deleteById'] = (responses) => {
+
+    return async function deleteById(id, condition) {
+        if (condition) {
+            await this.verifyId(id);
+
+            let filter = Object.assign({ _id: id }, condition);
+
+            let result = await this.deleteOne(filter);
+
+            if (result.deletedCount === 0) throw responses.FORBIDDEN;
+
+        } else {
+            let result = await this.deleteOne({ _id: id });
+
+            if (result.deletedCount === 0) throw responses.NOT_FOUND;
+        }
+    }
+
+};
+
+exports['MEMBER mongoCollectionExtensions.updateById'] = (responses) => {
+
+    return async function updateById(id, modification, condition) {
+        if (condition) {
+            await this.verifyId(id);
+
+            let filter = Object.assign({ _id: id }, condition);
+
+            let result = await this.updateOne(filter, modification);
+
+            if (result.matchedCount === 0) throw responses.FORBIDDEN;
+
+        } else {
+            let result = await this.updateOne({ _id: id }, modification);
+
+            if (result.matchedCount === 0) throw responses.NOT_FOUND;
+        }
+    }
+
+};
+
+exports['MEMBER mongoCollectionExtensions.addRef'] = (responses) => {
+
+    return async function addRef(docId, relName, refId) {
+        let result = await this.updateOne({ _id: docId }, {
+            $push: {
+                [relName]: refId
+            },
+        });
+
+        if (result.matchedCount === 0) throw responses.NOT_FOUND;
+    }
+
+};
+
+exports['MEMBER mongoCollectionExtensions.removeRef'] = (responses) => {
+
+    return async function removeRef(docId, relName, refId) {
+        let result = await this.updateOne({ _id: docId }, {
+            $pull: {
+                [relName]: refId
+            },
+        });
+
+        if (result.matchedCount === 0) throw responses.NOT_FOUND;
+    }
+
+};
