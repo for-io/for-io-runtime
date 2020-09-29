@@ -37,7 +37,35 @@ const { connectToDb } = require('./server-modules/dbconn');
 
 const { createAppContext } = require('./appcontext');
 
+const API_MODULE_NAME = 'API_MODULE';
+
+function preprocessAppSetup(appSetup) {
+  if (appSetup.api) {
+    appSetup.modules = appSetup.modules || {};
+
+    let apiModule = {};
+
+    for (const apiKey in appSetup.api) {
+      if (appSetup.api.hasOwnProperty(apiKey)) {
+        const controller = appSetup.api[apiKey];
+
+        let apiName = apiKey.replace(/[^a-zA-Z0-9]+/g, '_');
+        apiModule[`API ${apiName}`] = { [apiKey]: controller };
+      }
+    }
+
+    if (API_MODULE_NAME in appSetup.modules) throw new Error(`The module "${API_MODULE_NAME}" already exists!`);
+    appSetup.modules[API_MODULE_NAME] = apiModule;
+
+    delete appSetup.api;
+  }
+
+  return appSetup;
+}
+
 async function createApp(appSetup = {}) {
+  appSetup = preprocessAppSetup(appSetup);
+
   const config = initConfig(appSetup);
 
   const builtInModules = { auth, passwords, appFactoryModule };
