@@ -156,11 +156,7 @@ exports['SINGLETON routing'] = (__context, router, api, auth, config, controller
         }
 
         if (result !== undefined) {
-            if (typeof result === 'string') {
-                res.send(result);
-            } else {
-                res.json(result);
-            }
+            res.json(result);
         }
     }
 
