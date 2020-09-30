@@ -73,7 +73,7 @@ exports['SINGLETON db__default'] = (config, database, mongodb__getter, mongoColl
 
 };
 
-exports['MEMBER mongoCollectionExtensions.exists'] = () => {
+exports['MEMBER mongoCollectionExtensions.exists'] = (responses) => {
 
     return async function exists(filter) {
         let count = await this.countDocuments(filter, { limit: 1 });
@@ -82,7 +82,7 @@ exports['MEMBER mongoCollectionExtensions.exists'] = () => {
 
 };
 
-exports['MEMBER mongoCollectionExtensions.verifyId'] = () => {
+exports['MEMBER mongoCollectionExtensions.verifyId'] = (responses) => {
 
     return async function verifyId(id) {
         if (!await this.exists({ _id: id })) throw responses.NOT_FOUND;
