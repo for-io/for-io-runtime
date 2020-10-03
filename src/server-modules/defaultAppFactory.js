@@ -24,36 +24,19 @@
  * SOFTWARE.
  */
 
-exports['SINGLETON appFactory__default'] = (config, router) => ({
+exports['SINGLETON appFactory__default'] = (router) => ({
 
   createApp() {
     const express = require('express');
+    const cookieParser = require('cookie-parser');
+    const passport = require('passport');
+
     const app = express();
-
-    if (config.MORGAN_LOGGER !== undefined) {  // e.g. 'dev', 'combined'
-      const morgan = require('morgan');
-      app.use(morgan(config.MORGAN_LOGGER));
-    }
-
-    if (config.STATIC_DIR !== undefined) {  // e.g. 'public'
-      const path = require('path');
-      app.use(express.static(path.join(__dirname, config.STATIC_DIR)));
-    }
 
     app.use(express.json());
     app.use(express.urlencoded({ extended: false }));
-
-    const cookieParser = require('cookie-parser');
     app.use(cookieParser());
-
-    if (config.CORS_ORIGIN !== undefined) {  // e.g. '*', 'example.com'
-      const cors = require('cors');
-      app.use(cors({ origin: config.CORS_ORIGIN }));
-    }
-
-    const passport = require('passport');
     app.use(passport.initialize());
-
     app.use('/', router);
 
     return app;
