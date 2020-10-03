@@ -40,8 +40,7 @@ async function connectToDb(config) {
 async function connectToMongoDB(config) {
     const mongodb = require('mongodb');
 
-    const mongoUrl = config.MONGO_URL || process.env.MONGO_URL;
-    const mongoClient = new mongodb.MongoClient(mongoUrl, { useNewUrlParser: true, useUnifiedTopology: true });
+    const mongoClient = new mongodb.MongoClient(config.MONGO_URL, { useNewUrlParser: true, useUnifiedTopology: true });
 
     await mongoClient.connect();
     const database = mongoClient.db();

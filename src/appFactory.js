@@ -94,8 +94,8 @@ async function createApp(appSetup = {}) {
     require,
   });
 
-  if (config.NODE_ENV === 'dev') {
-    logger.info('Dependency injection context', context.info());
+  if (config.DEBUG_MODE) {
+    logger.debug('Dependency injection context', context.info());
   }
 
   const appFactory = context.getDependency('appFactory');
@@ -120,9 +120,10 @@ function getModuleNames(appSetup, config) {
 function initConfig(opts) {
   const defaultConfig = {
     PORT: process.env.PORT || 3000,
+    DEBUG_MODE: process.env.FOR_IO_DEBUG === 'true',
     NODE_ENV: process.env.NODE_ENV || 'production',
-    JWT_SECRET: process.env.JWT_SECRET,
-    DB_TYPE: process.env.DB_TYPE || 'none',
+    DB_TYPE: 'none', // typically configured by the app
+    MONGO_URL: process.env.MONGO_URL || 'mongodb://localhost:27017',
     USE_MOCKS: false, // typically overwritten by tests
   };
 
