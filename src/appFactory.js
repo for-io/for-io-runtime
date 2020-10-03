@@ -99,8 +99,7 @@ async function createApp(appSetup = {}) {
     logger.debug('Dependency injection context', context.info());
   }
 
-  const appFactory = context.getDependency('appFactory');
-  const app = appFactory.createApp();
+  const app = context.getDependency('app');
 
   return { app, config };
 }
