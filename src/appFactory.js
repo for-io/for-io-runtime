@@ -66,12 +66,13 @@ function preprocessAppSetup(appSetup) {
 async function createApp(appSetup = {}) {
   appSetup = preprocessAppSetup(appSetup);
 
-  const config = initConfig(appSetup);
+  const logger = appSetup.logger || console;
+
+  const config = initConfig(appSetup, logger);
 
   const builtInModules = { auth, passwords, appFactoryModule };
   const modules = Object.assign(builtInModules, appSetup.modules);
 
-  const logger = appSetup.logger || console;
   const router = appSetup.router || express.Router();
 
   const moduleNames = getModuleNames(appSetup, config);
@@ -117,11 +118,12 @@ function getModuleNames(appSetup, config) {
   };
 }
 
-function initConfig(opts) {
+function initConfig(opts, logger) {
   const defaultConfig = {
     PORT: process.env.PORT || 3000,
     DEBUG_MODE: process.env.FOR_IO_DEBUG === 'true',
     NODE_ENV: process.env.NODE_ENV || 'production',
+    JWT_SECRET: process.env.JWT_SECRET,
     DB_TYPE: 'none', // typically configured by the app
     MONGO_URL: process.env.MONGO_URL || 'mongodb://localhost:27017',
     USE_MOCKS: false, // typically overwritten by tests
@@ -129,7 +131,17 @@ function initConfig(opts) {
 
   if (opts.config) Object.assign(defaultConfig, opts.config);
 
+  if (!defaultConfig.JWT_SECRET) {
+    defaultConfig.JWT_SECRET = generateRandomJWTSecret();
+    logger.warn('JWT_SECRET was not specified. Generated a random secret. This should be fixed in production.');
+  }
+
   return defaultConfig;
+}
+
+function generateRandomJWTSecret() {
+  const crypto = require('crypto');
+  return crypto.randomBytes(64).toString('hex');
 }
 
 module.exports = createApp;
