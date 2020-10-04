@@ -96,7 +96,13 @@ async function createApp(appSetup = {}) {
   });
 
   if (config.DEBUG_MODE) {
-    logger.debug('Dependency injection context', context.info());
+    logger.debug('Dependency injection context:');
+
+    context.iterateSegments((segment, c) => {
+      let moduleName = path.basename(c.moduleName);
+      let deps = c.dependencies.length > 0 ? `, DEPS [${c.dependencies.join(', ')}]` : '';
+      logger.debug(` - ${segment} ${c.name} : ${typeof c.value}, MODULE ${moduleName}` + deps)
+    });
   }
 
   const app = context.getDependency('app');

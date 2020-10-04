@@ -584,6 +584,16 @@ class DependencyInjection {
         invokers.invoke(func, name => this._findDependencyWithTracking(name));
     }
 
+    iterateSegments(fn) {
+        for (const segmentKey in this._segmentsByKey) {
+            if (this._segmentsByKey.hasOwnProperty(segmentKey)) {
+                let cs = this._segmentsByKey[segmentKey];
+                for (const c of cs) {
+                    fn(segmentKey, c);
+                }
+            }
+        }
+    }
 }
 
 module.exports = { DependencyInjection };
