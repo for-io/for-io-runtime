@@ -62,7 +62,8 @@ exports['SINGLETON db__default'] = (config, database, mongodb__getter, mongoColl
         return new Proxy(dbTarget, {
             get: function (target, propName, receiver) {
 
-                if (!target.hasOwnProperty(propName) && !propName.startsWith('__')) {
+                // if not a symbol and not an existing property and not internal
+                if (typeof propName === 'string' && !target.hasOwnProperty(propName) && !propName.startsWith('__')) {
                     target[propName] = extendTable(tableFactory(propName));
                 }
 
