@@ -25,6 +25,7 @@
  */
 
 const { DependencyInjection } = require('./container');
+const { App } = require('./app');
 const appFactory = require('./appFactory');
 const server = require('./server');
 
@@ -36,6 +37,7 @@ async function initAndStartServer(opts) {
 
 module.exports = {
     DependencyInjection,
+    App,
     appFactory,
 
     start(opts) {

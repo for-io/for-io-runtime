@@ -27,5 +27,6 @@
 const container = require('./container');
 const typeRegistry = require('./type-registry');
 const appcontext = require('./appcontext');
+const { App } = require('./app');
 
-module.exports = { container, typeRegistry, appcontext };
+module.exports = { container, typeRegistry, appcontext, App };

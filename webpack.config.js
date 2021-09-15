@@ -33,6 +33,6 @@ module.exports = {
         path: path.resolve(__dirname, 'dist'),
         filename: 'ForIoRuntime.js',
         library: 'ForIoRuntime',
-        libraryTarget: 'umd',
+        libraryTarget: 'commonjs-module',
     },
 };
