@@ -24,16 +24,26 @@
  * SOFTWARE.
  */
 
-const bcrypt = require('bcrypt');
+export async function connectToDb(config: any) {
+    switch (config.DB_TYPE) {
+        case 'none':
+            return {};
 
-exports['SINGLETON passwords__default'] = {
+        case 'mongodb':
+            return await connectToMongoDB(config);
 
-    async hash(plaintextPassword) {
-        return await bcrypt.hash(plaintextPassword, 10);
-    },
+        default:
+            throw new Error(`Unsupported database type (DB_TYPE='${config.DB_TYPE}') for automatic initialization! Expected 'mongodb', 'none', or else you can provide a pre-initialized db instead.`)
+    }
+}
 
-    async compareWithHash(plaintextPassword, hash) {
-        return await bcrypt.compare(plaintextPassword, hash);
-    },
+async function connectToMongoDB(config: any) {
+    const mongodb = require('mongodb');
 
-};
+    const mongoClient = new mongodb.MongoClient(config.MONGO_URL, { useNewUrlParser: true, useUnifiedTopology: true });
+
+    await mongoClient.connect();
+    const database = mongoClient.db();
+
+    return { mongodb, database };
+}

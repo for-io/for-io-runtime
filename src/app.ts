@@ -1,6 +1,14 @@
 const { cloneDeep } = require("lodash");
 
-class AppSetup {
+export class AppSetup {
+    _componentFactories: any;
+    _components: any;
+    _endpoints: any;
+    _mockFactories: any;
+    _mocks: any;
+    _providers: any;
+    _typeDefs: any;
+    _types: any;
 
     constructor() {
         this.reset();
@@ -16,49 +24,48 @@ class AppSetup {
         this._mockFactories = {};
     }
 
-    addEndpoint(opts, endpoint) {
+    addEndpoint(opts: any, endpoint: any) {
         this._endpoints[opts.name] = wrapValueWithOpts(opts, endpoint);
     }
 
-    addTypeDef(opts, typeDef) {
+    addTypeDef(opts: any, typeDef: any) {
         this._typeDefs[opts.name] = wrapValueWithOpts(opts, typeDef);
     }
 
-    addProvider(opts, provider) {
+    addProvider(opts: any, provider: any) {
         this._providers[opts.name] = wrapValueWithOpts(opts, provider);
     }
 
-    addComponent(opts, component) {
+    addComponent(opts: any, component: any) {
         this._components[opts.name] = wrapValueWithOpts(opts, component);
     }
 
-    addComponentFactory(opts, factory) {
+    addComponentFactory(opts: any, factory: any) {
         this._componentFactories[opts.name] = wrapValueWithOpts(opts, factory);
     }
 
-    addMock(opts, component) {
+    addMock(opts: any, component: any) {
         this._mocks[opts.name] = wrapValueWithOpts(opts, component);
     }
 
-    addMockFactory(opts, factory) {
+    addMockFactory(opts: any, factory: any) {
         this._mockFactories[opts.name] = wrapValueWithOpts(opts, factory);
     }
 
     getSetup() {
         return {
-            endpoints: copyOf(this._endpoints),
-            typeDefs: copyOf(this._typeDefs),
-            providers: copyOf(this._providers),
-            components: copyOf(this._components),
-            componentFactories: copyOf(this._componentFactories),
-            mocks: copyOf(this._mocks),
-            mockFactories: copyOf(this._mockFactories),
+            endpoints: cloneDeep(this._endpoints),
+            typeDefs: cloneDeep(this._typeDefs),
+            providers: cloneDeep(this._providers),
+            components: cloneDeep(this._components),
+            componentFactories: cloneDeep(this._componentFactories),
+            mocks: cloneDeep(this._mocks),
+            mockFactories: cloneDeep(this._mockFactories),
         };
     }
-
 }
 
-function wrapValueWithOpts(opts, value) {
+function wrapValueWithOpts(opts: any, value: any) {
     let obj = cloneDeep(opts);
 
     obj.type = obj.type || 'any';
@@ -67,6 +74,4 @@ function wrapValueWithOpts(opts, value) {
     return obj;
 }
 
-const App = new AppSetup();
-
-module.exports = { App };
+export const App = new AppSetup();

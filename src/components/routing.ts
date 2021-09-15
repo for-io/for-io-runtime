@@ -24,19 +24,19 @@
  * SOFTWARE.
  */
 
-const { sortRoutes } = require('../route-sorter');
-const utils = require('../utils');
+import { sortRoutes } from '../route-sorter';
+import utils from '../utils';
 
-exports['SINGLETON routing'] = (__context, router, api, auth, config, controllers,
-    types, providers, exceptionHandler, logger, invokers, DependencyTracker) => {
+exports['SINGLETON routing'] = (__context: any, router: any, api: any, auth: any, config: any, controllers: any,
+    types: any, providers: any, exceptionHandler: any, logger: any, invokers: any, DependencyTracker: any) => {
 
-    async function run(name, controller, req, res, next, specification) {
+    async function run(name: any, controller: any, req: any, res: any, next: any, specification: any) {
 
-        let _exception; // will be set if the controller throws an exception
+        let _exception: any; // will be set if the controller throws an exception
 
-        let _dataObjs = {}; // a cache for data objects (params, query, body, headers, cookies)
+        let _dataObjs: any = {}; // a cache for data objects (params, query, body, headers, cookies)
 
-        function initDataObj(name) {
+        function initDataObj(name: any) {
             let typeName = specification.typeNames ? specification.typeNames[name] : undefined;
 
             if (typeName) {
@@ -53,7 +53,7 @@ exports['SINGLETON routing'] = (__context, router, api, auth, config, controller
             }
         }
 
-        function provideDataObj(name) {
+        function provideDataObj(name: any) {
             if (!(name in _dataObjs)) {
                 _dataObjs[name] = initDataObj(name);
             }
@@ -61,7 +61,7 @@ exports['SINGLETON routing'] = (__context, router, api, auth, config, controller
             return _dataObjs[name];
         }
 
-        function getDataParam(name) {
+        function getDataParam(name: any) {
             if (req.body.hasOwnProperty(name)) return provideDataObj('body')[name];
             if (req.params.hasOwnProperty(name)) return provideDataObj('params')[name];
             if (req.query.hasOwnProperty(name)) return provideDataObj('query')[name];
@@ -69,7 +69,7 @@ exports['SINGLETON routing'] = (__context, router, api, auth, config, controller
             throw new Error(`Unknown parameter: '${name}'`);
         }
 
-        async function provide(name, depTracker) {
+        async function provide(name: any, depTracker: any) {
             depTracker.enter(name);
 
             try {
@@ -81,9 +81,9 @@ exports['SINGLETON routing'] = (__context, router, api, auth, config, controller
         }
 
         // must be called only by provide(...)
-        async function _provide(name, depTracker) {
+        async function _provide(name: any, depTracker: any) {
             if (providers.hasOwnProperty(name)) {
-                return await invokers.invokeAsync(providers[name], async depName => await provide(depName, depTracker))
+                return await invokers.invokeAsync(providers[name], async (depName: any) => await provide(depName, depTracker));
             }
 
             switch (name) {
@@ -133,7 +133,7 @@ exports['SINGLETON routing'] = (__context, router, api, auth, config, controller
                 throw new Error(`Undefined controller for API endpoint '${name}'!`);
             }
 
-            result = await invokers.invokeAsync(controller, async depName => await provide(depName, apiDepTracker));
+            result = await invokers.invokeAsync(controller, async (depName: any) => await provide(depName, apiDepTracker));
 
         } catch (exception) {
             res._exception = exception; // make the exception accessible through the response (needed for the IDE)
@@ -147,7 +147,7 @@ exports['SINGLETON routing'] = (__context, router, api, auth, config, controller
 
             try {
                 apiDepTracker.enter('exceptionHandler');
-                result = await invokers.invokeAsync(exceptionHandler, async depName => await provide(depName, apiDepTracker));
+                result = await invokers.invokeAsync(exceptionHandler, async (depName: any) => await provide(depName, apiDepTracker));
             } catch (err) {
                 logger.error('An error was thrown by the exception handler!', err);
                 next(err);
@@ -160,7 +160,7 @@ exports['SINGLETON routing'] = (__context, router, api, auth, config, controller
         }
     }
 
-    function _fnToRoute(name, fn) {
+    function _fnToRoute(name: any, fn: any) {
         const { verb, path } = utils.extractRoute(name);
 
         return { name, verb, path, run: fn };
@@ -229,7 +229,7 @@ exports['SINGLETON routing'] = (__context, router, api, auth, config, controller
                     args.push(middlewareFactoryObj.createMiddleware(route));
                 }
 
-                args.push(async (req, res, next) => {
+                args.push(async (req: any, res: any, next: any) => {
                     await run(route.name, controller, req, res, next, route);
                 });
 
@@ -239,7 +239,7 @@ exports['SINGLETON routing'] = (__context, router, api, auth, config, controller
                 const errMsg = `Cannot find a controller for API endpoint: "${route.name}"`;
 
                 if (config.NODE_ENV === 'dev' || config.NODE_ENV === 'test') {
-                    method(route.path, async (req, res, next) => {
+                    method(route.path, async (req: any, res: any, next: any) => {
                         await run(route.name, () => { throw new Error(errMsg); }, req, res, next, route);
                     });
                 } else {
@@ -250,7 +250,7 @@ exports['SINGLETON routing'] = (__context, router, api, auth, config, controller
         }
     }
 
-    function _findController(route, controllers) {
+    function _findController(route: any, controllers: any) {
         if (route.run) {
             return route.run;
         } else {
@@ -258,7 +258,7 @@ exports['SINGLETON routing'] = (__context, router, api, auth, config, controller
         }
     }
 
-    function dispatch(request, callbacks) {
+    function dispatch(request: any, callbacks: any) {
         router._dispatch(request, callbacks);
     }
 

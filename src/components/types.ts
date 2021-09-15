@@ -24,46 +24,10 @@
  * SOFTWARE.
  */
 
-const jwt = require('jsonwebtoken');
-const passport = require('passport');
-const { ExtractJwt } = require('passport-jwt');
-const JWTStrategy = require('passport-jwt').Strategy;
+exports['SINGLETON types__default'] = (typeRegistry: any, typedefs: any) => {
 
-function _init(config) {
-    passport.use('jwt', new JWTStrategy({
+    typeRegistry.addTypes(typedefs);
 
-        secretOrKey: config.JWT_SECRET,
-
-        jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
-
-    }, async (token, done) => {
-
-        try {
-            // pass the user data to the next middleware
-            return done(null, token.user);
-        } catch (error) {
-            done(error);
-        }
-
-    }));
-}
-
-exports['SINGLETON auth__default'] = (config) => {
-
-    _init(config);
-
-    return {
-        signToken(payload) {
-            return jwt.sign(payload, config.JWT_SECRET);
-        }
-    }
+    return typeRegistry.getTypes();
 
 };
-
-exports['SINGLETON authMiddlewareFactory__default'] = () => ({
-
-    createMiddleware(route) {
-        return passport.authenticate('jwt', { session: false });
-    },
-
-});

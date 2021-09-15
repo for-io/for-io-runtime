@@ -24,29 +24,23 @@
  * SOFTWARE.
  */
 
-function sortRoutes(routes) {
-    const VERB_ORDER = { GET: 1, POST: 2, PUT: 3, PATCH: 4, DELETE: 5, ANY: 6 };
+import { App } from './app';
+import { appFactory } from './appFactory';
+import { DependencyInjection } from './container';
+import server from './server';
 
-    function paramCount(path) {
-        return (path.match(/\:/g) || []).length;
-    }
+async function initAndStartServer(opts: any) {
+    const { app, config } = opts.app ? opts : await appFactory(opts);
 
-    function compare(a, b) {
-        if (a.verb !== b.verb) {
-            return VERB_ORDER[a.verb] - VERB_ORDER[b.verb];
-        }
-
-        let pc1 = paramCount(a.path);
-        let pc2 = paramCount(b.path);
-
-        if (pc1 !== pc2) {
-            return pc1 - pc2;
-        }
-
-        return a.path < b.path ? -1 : a.path > b.path ? 1 : 0;
-    }
-
-    routes.sort(compare);
+    server.listen({ app, config });
 }
 
-module.exports = { sortRoutes };
+export default {
+    DependencyInjection,
+    App,
+    appFactory,
+
+    start(opts: any) {
+        initAndStartServer(opts).catch(e => console.log('Error while starting the server!', e));
+    }
+};

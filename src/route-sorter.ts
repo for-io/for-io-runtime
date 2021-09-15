@@ -24,41 +24,27 @@
  * SOFTWARE.
  */
 
-const { DependencyTracker } = require('./dep-tracker');
-const invokers = require('./invokers');
-const container = require('./container');
-const typeRegistry = require('./type-registry');
-const builtInModules = require('./builtInModules');
+export function sortRoutes(routes: any) {
+    const VERB_ORDER: any = { GET: 1, POST: 2, PUT: 3, PATCH: 4, DELETE: 5, ANY: 6 };
 
-function createAppContext({ modules, moduleNames, components = {}, config = {}, require }) {
+    function paramCount(path: any) {
+        return (path.match(/\:/g) || []).length;
+    }
 
-    const builtInComponents = {
-        invokers,
-        typeRegistry,
-        DependencyTracker,
-        typedefs__default: {},
-        controllers__default: {},
-        api__default: {},
-        config__default: {},
-        logger__default: console,
-    };
+    function compare(a: any, b: any) {
+        if (a.verb !== b.verb) {
+            return VERB_ORDER[a.verb] - VERB_ORDER[b.verb];
+        }
 
-    const allModules = Object.assign({}, builtInModules, modules);
-    const allComponents = Object.assign(builtInComponents, components);
+        let pc1 = paramCount(a.path);
+        let pc2 = paramCount(b.path);
 
-    const context = new container.DependencyInjection({
-        components: allComponents,
-        modules: allModules,
-        moduleNames,
-        useMocks: config.USE_MOCKS,
-        continueOnErrors: config.CONTINUE_ON_ERRORS,
-        require,
-    });
+        if (pc1 !== pc2) {
+            return pc1 - pc2;
+        }
 
-    // trigger initialization of the top-level component
-    context.getDependency('routing');
+        return a.path < b.path ? -1 : a.path > b.path ? 1 : 0;
+    }
 
-    return context;
+    routes.sort(compare);
 }
-
-module.exports = { createAppContext };

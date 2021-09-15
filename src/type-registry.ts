@@ -24,24 +24,26 @@
  * SOFTWARE.
  */
 
-const utils = require('./utils');
+import utils from './utils';
 
 const ERR_DATA_VALIDATION = 'Data validation errors!';
 
 const NO_VAL = null;
 
-const _types = {};
+const _types: any = {};
 
 const _util = { _has, _coll };
 
-function _registerType(typeName, factory, isBuiltIn) {
+function _registerType(typeName: any, factory: any, isBuiltIn: any) {
     _types[typeName] = _wrap(factory, isBuiltIn);
     _types[`${typeName}Array`] = _wrap(_arrayFactory(factory), isBuiltIn);
 }
 
 class _ValidationErrors {
+    errors: any;
+    prefix: any;
 
-    constructor(errors, prefix = '') {
+    constructor(errors?: any, prefix = '') {
         this.errors = errors || {
             hasErrors: false,
             details: {},
@@ -50,7 +52,7 @@ class _ValidationErrors {
         this.prefix = prefix;
     }
 
-    error(name, msg) {
+    error(name: any, msg: any) {
         this.errors.hasErrors = true;
 
         const key = this.prefix + name;
@@ -60,22 +62,22 @@ class _ValidationErrors {
         }
     }
 
-    no(name) {
+    no(name: any) {
         this.error(name, 'Missing value');
         return NO_VAL;
     }
 
-    wrongType(name, type, val) {
+    wrongType(name: any, type: any, val: any) {
         this.error(name, `Must be ${type}`);
     }
 
-    verify(cond, name, msg) {
+    verify(cond: any, name: any, msg: any) {
         if (!cond) {
             this.error(name, msg);
         }
     }
 
-    nested(name) {
+    nested(name: any) {
         return new _ValidationErrors(this.errors, this.prefix + name + '.');
     }
 
@@ -90,14 +92,14 @@ class _ValidationErrors {
 
 const EMAIL_REGEX = /^[^@\s]+@[^@\s]+\.[^@\s]+$/;
 
-function _validationErr(details) {
+function _validationErr(details: any) {
     const e = new Error(ERR_DATA_VALIDATION);
-    e.body = { error: ERR_DATA_VALIDATION, details };
-    e.statusCode = 422;
+    (e as any).body = { error: ERR_DATA_VALIDATION, details };
+    (e as any).statusCode = 422;
     return e;
 }
 
-function _error(err, opts, name, msg) {
+function _error(err: any, opts: any, name: any, msg: any) {
     if (err) {
         err.error(name, msg);
     } else {
@@ -107,7 +109,7 @@ function _error(err, opts, name, msg) {
     }
 }
 
-function _wrongType(err, opts, name, type, val) {
+function _wrongType(err: any, opts: any, name: any, type: any, val: any) {
     if (err) {
         err.wrongType(name, type, val)
     } else {
@@ -119,7 +121,7 @@ function _wrongType(err, opts, name, type, val) {
 
 const _builtInTypes = {
 
-    _float(val, opts, err, name) {
+    _float(val: any, opts: any, err: any, name: any) {
         if (utils.isNumber(val)) {
             return parseFloat(val);
         } else {
@@ -128,7 +130,7 @@ const _builtInTypes = {
         }
     },
 
-    _int(val, opts, err, name) {
+    _int(val: any, opts: any, err: any, name: any) {
         if (utils.isNumber(val)) {
             let n = parseFloat(val);
 
@@ -141,7 +143,7 @@ const _builtInTypes = {
         return NO_VAL;
     },
 
-    _uint(val, opts, err, name) {
+    _uint(val: any, opts: any, err: any, name: any) {
         if (utils.isNumber(val)) {
             let n = parseFloat(val);
 
@@ -159,7 +161,7 @@ const _builtInTypes = {
         return NO_VAL;
     },
 
-    _byte(val, opts, err, name) {
+    _byte(val: any, opts: any, err: any, name: any) {
         if (utils.isNumber(val)) {
             let n = parseFloat(val);
 
@@ -180,7 +182,7 @@ const _builtInTypes = {
         return NO_VAL;
     },
 
-    _string(val, opts, err, name) {
+    _string(val: any, opts: any, err: any, name: any) {
         if (utils.isString(val)) {
             return val;
         } else {
@@ -189,7 +191,7 @@ const _builtInTypes = {
         }
     },
 
-    _email(val, opts, err, name) {
+    _email(val: any, opts: any, err: any, name: any) {
         if (utils.isString(val) && EMAIL_REGEX.test(val)) {
             return val;
         } else {
@@ -198,7 +200,7 @@ const _builtInTypes = {
         }
     },
 
-    _boolean(val, opts, err, name) {
+    _boolean(val: any, opts: any, err: any, name: any) {
         if (utils.isBoolean(val)) {
             return val;
         } else {
@@ -213,7 +215,7 @@ const _builtInTypes = {
         }
     },
 
-    _object(val, opts, err, name) {
+    _object(val: any, opts: any, err: any, name: any) {
         if (utils.isObject(val)) {
             return val;
         } else {
@@ -224,15 +226,15 @@ const _builtInTypes = {
 
 };
 
-function _has(val) {
+function _has(val: any) {
     return val !== undefined && val !== null;
 }
 
-function _coll(factory, val, opts, err, name) {
+function _coll(factory: any, val: any, opts: any, err: any, name: any) {
     if (val !== undefined && val !== null) {
 
         if (utils.isArray(val)) {
-            return val.map((item, index) => factory(item, opts, err, name + index + '.', _types, _util));
+            return val.map((item: any, index: any) => factory(item, opts, err, name + index + '.', _types, _util));
         } else {
             _wrongType(err, opts, name, 'array', val);
             return [];
@@ -243,12 +245,12 @@ function _coll(factory, val, opts, err, name) {
     }
 }
 
-function _arrayFactory(itemFactory) {
-    return (arr, opts, err, name) => _coll(itemFactory, arr, opts, err, name || '');
+function _arrayFactory(itemFactory: any) {
+    return (arr: any, opts: any, err: any, name: any) => _coll(itemFactory, arr, opts, err, name || '');
 }
 
-function _wrap(factory, isBuiltIn) {
-    return function (value, opts) {
+function _wrap(factory: any, isBuiltIn: any) {
+    return function (value: any, opts: any) {
         // NOTE opts can be undefined!
         const isRoot = arguments.length <= 2;
 
@@ -260,7 +262,7 @@ function _wrap(factory, isBuiltIn) {
 
         const result = factory(value, opts, _err, _name, _types, _util);
 
-        function validate() {
+        function validate(this: any) {
             if (_err.hasErrors()) {
                 throw _validationErr(_err.details());
             }
@@ -288,7 +290,7 @@ function _wrap(factory, isBuiltIn) {
     };
 }
 
-const _defaultTypes = {
+const _defaultTypes: any = {
     'float': _builtInTypes._float,
     'double': _builtInTypes._float,
     'number': _builtInTypes._float,
@@ -325,11 +327,11 @@ function getTypes() {
     return _types;
 }
 
-function addTypes(types) {
+function addTypes(types: any) {
     for (const typeName in types) {
         if (types.hasOwnProperty(typeName)) {
             const typeClass = types[typeName];
-            _registerType(typeName, (data, opts, err, name = '') => new typeClass({
+            _registerType(typeName, (data: any, opts: any, err: any, name = '') => new typeClass({
                 data,
                 prefix: name,
                 types: _types,
@@ -341,7 +343,7 @@ function addTypes(types) {
     }
 }
 
-module.exports = {
+export const typeRegistry = {
     getTypes,
     addTypes,
     _internals: { _has, _coll }

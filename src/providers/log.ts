@@ -24,18 +24,11 @@
  * SOFTWARE.
  */
 
-exports['SINGLETON app__default'] = (router) => {
-  const express = require('express');
-  const cookieParser = require('cookie-parser');
-  const passport = require('passport');
+exports['PROVIDER log'] = (logger: any) => {
 
-  const app = express();
+    return function log() {
+        // can be customized to retrieve request-scoped logger for tracing
+        return logger;
+    }
 
-  app.use(express.json());
-  app.use(express.urlencoded({ extended: false }));
-  app.use(cookieParser());
-  app.use(passport.initialize());
-  app.use('/', router);
-
-  return app;
-}
+};

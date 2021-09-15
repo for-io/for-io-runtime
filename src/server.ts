@@ -26,7 +26,10 @@
 
 const http = require('http');
 
-function listen({ app, config = {} }) {
+function listen({
+  app,
+  config = {}
+}: any) {
   const port = normalizePort(config.PORT || 3000);
   app.set('port', port);
 
@@ -36,7 +39,7 @@ function listen({ app, config = {} }) {
   server.on('error', onError);
   server.on('listening', onListening);
 
-  function normalizePort(val) {
+  function normalizePort(val: any) {
     let port = parseInt(val, 10);
 
     if (isNaN(port)) {
@@ -56,7 +59,7 @@ function listen({ app, config = {} }) {
    * Event listener for HTTP server "error" event.
    */
 
-  function onError(error) {
+  function onError(error: any) {
     if (error.syscall !== 'listen') {
       throw error;
     }
@@ -98,4 +101,4 @@ function listen({ app, config = {} }) {
 
 }
 
-module.exports = { listen };
+export default { listen };

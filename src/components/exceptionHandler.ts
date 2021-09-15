@@ -24,10 +24,37 @@
  * SOFTWARE.
  */
 
-exports['MOCK auth__default'] = {
+exports['SINGLETON exceptionHandler__default'] = (logger: any, HTTP_STATUS_CODES: any) => {
 
-    signToken(payload) {
-        return 'MOCK.SIGNED.TOKEN';
-    },
+    return async (res: any, exception: any) => {
+        let status;
+
+        if (typeof exception === 'number') {
+            status = exception;
+        } else if (typeof exception === 'object' && typeof exception.statusCode === 'number') {
+            status = exception.statusCode;
+        } else {
+            status = 500;
+        }
+
+        if (!HTTP_STATUS_CODES[status + '']) {
+            logger.error('Invalid status code:', status);
+            status = 500;
+        }
+
+        let body = exception.body || { status: HTTP_STATUS_CODES[status + ''] };
+
+        if (status >= 500) {
+            logger.error('Caught exception:', exception);
+        }
+
+        res.status(status);
+
+        if (typeof body === 'string') {
+            res.send(body);
+        } else {
+            res.json(body);
+        }
+    };
 
 };

@@ -24,10 +24,45 @@
  * SOFTWARE.
  */
 
-exports['SINGLETON types__default'] = (typeRegistry, typedefs) => {
+import builtInModules from './builtInModules';
+import { DependencyInjection } from './container';
+import { DependencyTracker } from './dep-tracker';
+import invokers from './invokers';
+import { typeRegistry } from './type-registry';
 
-    typeRegistry.addTypes(typedefs);
+export function createAppContext({
+    modules,
+    moduleNames,
+    components = {},
+    config = {},
+    require
+}: any) {
 
-    return typeRegistry.getTypes();
+    const builtInComponents = {
+        invokers,
+        typeRegistry,
+        DependencyTracker,
+        typedefs__default: {},
+        controllers__default: {},
+        api__default: {},
+        config__default: {},
+        logger__default: console,
+    };
 
-};
+    const allModules = Object.assign({}, builtInModules, modules);
+    const allComponents = Object.assign(builtInComponents, components);
+
+    const context = new DependencyInjection({
+        components: allComponents,
+        modules: allModules,
+        moduleNames,
+        useMocks: config.USE_MOCKS,
+        continueOnErrors: config.CONTINUE_ON_ERRORS,
+        require,
+    });
+
+    // trigger initialization of the top-level component
+    context.getDependency('routing');
+
+    return context;
+}

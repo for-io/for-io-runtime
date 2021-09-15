@@ -24,52 +24,52 @@
  * SOFTWARE.
  */
 
-module.exports = {
+export default {
 
-    isValidName(name) {
+    isValidName(name: any) {
         return /^[\w_$]+$/.test(name);
     },
 
-    orElse(val, alternative) {
+    orElse(val: any, alternative: any) {
         return val !== undefined ? val : alternative;
     },
 
-    isArray(x) {
+    isArray(x: any) {
         return Array.isArray(x);
     },
 
-    isString(x) {
+    isString(x: any) {
         return typeof x === 'string' || (x instanceof String);
     },
 
-    isNumber(x) {
+    isNumber(x: any) {
         return !isNaN(x - parseFloat(x));
     },
 
-    isBoolean(x) {
+    isBoolean(x: any) {
         return typeof x === 'boolean' || (x instanceof Boolean);
     },
 
-    isFunction(x) {
+    isFunction(x: any) {
         if (typeof x === 'function') return true;
 
         let s = Object.prototype.toString.call(x);
         return s === '[object Function]' || s === '[object AsyncFunction]';
     },
 
-    isObject(x) {
+    isObject(x: any) {
         return x !== null && (typeof x === 'object') && !Array.isArray(x);
     },
 
-    must(cond, errMsg = 'Assertion failed!') {
+    must(cond: any, errMsg = 'Assertion failed!') {
         if (!cond) throw new Error(errMsg);
     },
 
-    def(val, desc) {
+    def(val: any, desc: any) {
         if (val === undefined) throw new Error(`Undefined "${desc}"!`);
     },
 
-    extractRoute(s) {
+    extractRoute(s: any) {
         let parts = s.split(' ');
 
         this.must(parts.length === 2, 'Expected route to have 2 parts: verb and path (e.g. GET /foo), but found: ' + parts.length);

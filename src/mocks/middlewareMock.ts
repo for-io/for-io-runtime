@@ -24,15 +24,20 @@
  * SOFTWARE.
  */
 
-exports['MOCK passwords__default'] = {
+exports['MOCK authMiddlewareFactory'] = {
 
-    async hash(plaintextPassword) {
-        return `mock-hash-of-${plaintextPassword}`;
-    },
+    createMiddleware(route: any) {
+        return function (req: any, res: any, next: any) {
+            let userId = req.headers['x-mock-user'] || req.query['mock-user'];
 
-    async compareWithHash(plaintextPassword, hash) {
-        let passHash = await this.hash(plaintextPassword);
-        return passHash === hash;
+            if (!userId) throw { statusCode: 401, body: {} };
+
+            let email = `${userId}@example.com`;
+
+            req.user = { id: userId, email };
+
+            next();
+        };
     },
 
 };

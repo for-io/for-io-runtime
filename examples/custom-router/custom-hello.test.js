@@ -1,5 +1,5 @@
 const { runTest } = require('api-diligence');
-const appFactory = require('../../src/appFactory');
+const { appFactory } = require('../../src/appFactory');
 const appSetup = require('./app.setup');
 
 runTest({

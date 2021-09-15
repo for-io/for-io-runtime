@@ -25,7 +25,7 @@
  */
 
 const { runTest } = require('api-diligence');
-const appFactory = require('../../src/appFactory');
+const { appFactory } = require('../../src/appFactory');
 
 const mod1 = {
     'CONTROLLER hello': () => {

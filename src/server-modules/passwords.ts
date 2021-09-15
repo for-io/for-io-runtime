@@ -24,20 +24,17 @@
  * SOFTWARE.
  */
 
-exports['PROVIDER user'] = () => {
+const bcrypt = require('bcrypt');
 
-    return (req) => req.user;
+export default {
+    'SINGLETON passwords__default': {
 
-};
+        async hash(plaintextPassword: any) {
+            return await bcrypt.hash(plaintextPassword, 10);
+        },
 
-exports['PROVIDER userId'] = (responses) => {
-
-    return function userId(user) {
-        let userId = user ? user.id : undefined;
-
-        if (!userId) throw responses.FORBIDDEN;
-
-        return userId;
+        async compareWithHash(plaintextPassword: any, hash: any) {
+            return await bcrypt.compare(plaintextPassword, hash);
+        },
     }
-
 };

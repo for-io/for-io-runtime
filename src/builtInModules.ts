@@ -24,11 +24,28 @@
  * SOFTWARE.
  */
 
-exports['PROVIDER log'] = (logger) => {
+const builtInTypes = require("./components/types");
+const builtInResponses = require("./components/responses");
+const builtInExceptionHandler = require("./components/exceptionHandler");
+const builtInPasswordsMock = require("./mocks/passwordsMock");
+const builtInMiddlewareMock = require("./mocks/middlewareMock");
+const builtInAuthMock = require("./mocks/authMock");
+const builtInDbProvider = require("./components/db");
+const builtInPageProvider = require("./providers/page");
+const builtInLogProvider = require("./providers/log");
+const builtInUserProvider = require("./providers/user");
+const builtInRouting = require('./components/routing');
 
-    return function log() {
-        // can be customized to retrieve request-scoped logger for tracing
-        return logger;
-    }
-
+export default {
+    builtInTypes,
+    builtInResponses,
+    builtInExceptionHandler,
+    builtInPasswordsMock,
+    builtInMiddlewareMock,
+    builtInAuthMock,
+    builtInDbProvider,
+    builtInPageProvider,
+    builtInLogProvider,
+    builtInUserProvider,
+    builtInRouting,
 };

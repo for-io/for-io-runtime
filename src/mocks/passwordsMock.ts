@@ -24,37 +24,15 @@
  * SOFTWARE.
  */
 
-exports['SINGLETON exceptionHandler__default'] = (logger, HTTP_STATUS_CODES) => {
+exports['MOCK passwords__default'] = {
 
-    return async (res, exception) => {
-        let status;
+    async hash(plaintextPassword: any) {
+        return `mock-hash-of-${plaintextPassword}`;
+    },
 
-        if (typeof exception === 'number') {
-            status = exception;
-        } else if (typeof exception === 'object' && typeof exception.statusCode === 'number') {
-            status = exception.statusCode;
-        } else {
-            status = 500;
-        }
-
-        if (!HTTP_STATUS_CODES[status + '']) {
-            logger.error('Invalid status code:', status);
-            status = 500;
-        }
-
-        let body = exception.body || { status: HTTP_STATUS_CODES[status + ''] };
-
-        if (status >= 500) {
-            logger.error('Caught exception:', exception);
-        }
-
-        res.status(status);
-
-        if (typeof body === 'string') {
-            res.send(body);
-        } else {
-            res.json(body);
-        }
-    };
+    async compareWithHash(plaintextPassword: any, hash: any) {
+        let passHash = await this.hash(plaintextPassword);
+        return passHash === hash;
+    },
 
 };

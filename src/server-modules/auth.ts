@@ -24,40 +24,49 @@
  * SOFTWARE.
  */
 
-class DependencyTracker {
+const jwt = require('jsonwebtoken');
+const passport = require('passport');
+const { ExtractJwt } = require('passport-jwt');
+const JWTStrategy = require('passport-jwt').Strategy;
 
-    constructor() {
-        this._chain = [];
-    }
+function _init(config: any) {
+    passport.use('jwt', new JWTStrategy({
 
-    getChain(startingPos = 0) {
-        return this._chain.slice(startingPos).join(' -> ');
-    }
+        secretOrKey: config.JWT_SECRET,
 
-    enter(name) {
-        let pos = this._chain.indexOf(name);
+        jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
 
-        if (pos >= 0) {
-            let chain = this.getChain(pos) + ' -> ' + name;
-            let fullChain = this.getChain() + ' -> ' + name;
-            let e = new Error(`Detected circular dependency: ${chain}`);
-            e.details = { 'Full chain': fullChain };
-            throw e;
+    }, async (token: any, done: any) => {
+
+        try {
+            // pass the user data to the next middleware
+            return done(null, token.user);
+        } catch (error) {
+            done(error);
         }
 
-        this._chain.push(name);
-    }
-
-    leave(name) {
-        let len = this._chain.length;
-
-        if (len > 0 && this._chain[len - 1] === name) {
-            this._chain.length = len - 1;
-        } else {
-            throw new Error(`The last dependency is not '${name}'`);
-        }
-    }
-
+    }));
 }
 
-module.exports = { DependencyTracker };
+export default {
+    'SINGLETON auth__default': (config: any) => {
+
+        _init(config);
+
+        return {
+            signToken(payload: any) {
+                return jwt.sign(payload, config.JWT_SECRET);
+            }
+        };
+
+    },
+
+    'SINGLETON authMiddlewareFactory__default': () => ({
+
+        createMiddleware(route: any) {
+            return passport.authenticate('jwt', { session: false });
+        },
+
+    })
+
+};

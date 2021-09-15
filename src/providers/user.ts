@@ -24,28 +24,20 @@
  * SOFTWARE.
  */
 
-const builtInTypes = require("./components/types");
-const builtInResponses = require("./components/responses");
-const builtInExceptionHandler = require("./components/exceptionHandler");
-const builtInPasswordsMock = require("./mocks/passwordsMock");
-const builtInMiddlewareMock = require("./mocks/middlewareMock");
-const builtInAuthMock = require("./mocks/authMock");
-const builtInDbProvider = require("./components/db");
-const builtInPageProvider = require("./providers/page");
-const builtInLogProvider = require("./providers/log");
-const builtInUserProvider = require("./providers/user");
-const builtInRouting = require('./components/routing');
+exports['PROVIDER user'] = () => {
 
-module.exports = {
-    builtInTypes,
-    builtInResponses,
-    builtInExceptionHandler,
-    builtInPasswordsMock,
-    builtInMiddlewareMock,
-    builtInAuthMock,
-    builtInDbProvider,
-    builtInPageProvider,
-    builtInLogProvider,
-    builtInUserProvider,
-    builtInRouting,
+    return (req: any) => req.user;
+
+};
+
+exports['PROVIDER userId'] = (responses: any) => {
+
+    return function userId(user: any) {
+        let userId = user ? user.id : undefined;
+
+        if (!userId) throw responses.FORBIDDEN;
+
+        return userId;
+    };
+
 };

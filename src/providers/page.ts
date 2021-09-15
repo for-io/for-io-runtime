@@ -24,23 +24,17 @@
  * SOFTWARE.
  */
 
-const { DependencyInjection } = require('./container');
-const { App } = require('./app');
-const appFactory = require('./appFactory');
-const server = require('./server');
+exports['PROVIDER page'] = () => {
 
-async function initAndStartServer(opts) {
-    const { app, config } = opts.app ? opts : await appFactory(opts);
+    return function page(params: any) {
+        const DEFAULT_PAGE_SIZE = 10;
+        const MAX_PAGE_SIZE = 100;
 
-    server.listen({ app, config });
-}
+        return {
+            before: params.before,
+            after: params.after,
+            limit: Math.min(parseInt(params.limit) || DEFAULT_PAGE_SIZE, MAX_PAGE_SIZE),
+        };
+    };
 
-module.exports = {
-    DependencyInjection,
-    App,
-    appFactory,
-
-    start(opts) {
-        initAndStartServer(opts).catch(e => console.log('Error while starting the server!', e));
-    }
 };

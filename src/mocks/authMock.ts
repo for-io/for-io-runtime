@@ -24,20 +24,10 @@
  * SOFTWARE.
  */
 
-exports['MOCK authMiddlewareFactory'] = {
+exports['MOCK auth__default'] = {
 
-    createMiddleware(route) {
-        return function (req, res, next) {
-            let userId = req.headers['x-mock-user'] || req.query['mock-user'];
-
-            if (!userId) throw { statusCode: 401, body: {} };
-
-            let email = `${userId}@example.com`;
-
-            req.user = { id: userId, email };
-
-            next();
-        };
+    signToken(payload: any) {
+        return 'MOCK.SIGNED.TOKEN';
     },
 
 };

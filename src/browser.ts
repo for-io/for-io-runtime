@@ -24,28 +24,11 @@
  * SOFTWARE.
  */
 
-async function connectToDb(config) {
-    switch (config.DB_TYPE) {
-        case 'none':
-            return {};
+import { createAppContext } from './appcontext';
+import { DependencyInjection } from './container';
+export { App } from './app';
+export { typeRegistry } from './type-registry';
 
-        case 'mongodb':
-            return await connectToMongoDB(config);
+export const container = { DependencyInjection };
 
-        default:
-            throw new Error(`Unsupported database type (DB_TYPE='${config.DB_TYPE}') for automatic initialization! Expected 'mongodb', 'none', or else you can provide a pre-initialized db instead.`)
-    }
-}
-
-async function connectToMongoDB(config) {
-    const mongodb = require('mongodb');
-
-    const mongoClient = new mongodb.MongoClient(config.MONGO_URL, { useNewUrlParser: true, useUnifiedTopology: true });
-
-    await mongoClient.connect();
-    const database = mongoClient.db();
-
-    return { mongodb, database };
-}
-
-module.exports = { connectToDb };
+export const appcontext = { createAppContext };

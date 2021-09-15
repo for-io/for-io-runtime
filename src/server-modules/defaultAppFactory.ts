@@ -24,9 +24,20 @@
  * SOFTWARE.
  */
 
-const container = require('./container');
-const typeRegistry = require('./type-registry');
-const appcontext = require('./appcontext');
-const { App } = require('./app');
+export default {
+  'SINGLETON app__default': (router: any) => {
+    const express = require('express');
+    const cookieParser = require('cookie-parser');
+    const passport = require('passport');
 
-module.exports = { container, typeRegistry, appcontext, App };
+    const app = express();
+
+    app.use(express.json());
+    app.use(express.urlencoded({ extended: false }));
+    app.use(cookieParser());
+    app.use(passport.initialize());
+    app.use('/', router);
+
+    return app;
+  }
+};

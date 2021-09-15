@@ -24,26 +24,23 @@
  * SOFTWARE.
  */
 
-const _ = require('lodash');
-const path = require('path');
-const express = require('express');
-
-const HTTP_STATUS_CODES = require('http').STATUS_CODES;
-
-const auth = require('./server-modules/auth');
-const passwords = require('./server-modules/passwords');
-const appFactoryModule = require('./server-modules/defaultAppFactory');
-const { connectToDb } = require('./server-modules/dbconn');
-
-const { createAppContext } = require('./appcontext');
+import express from 'express';
+import { STATUS_CODES } from 'http';
+import _ from 'lodash';
+import path from 'path';
+import { createAppContext } from './appcontext';
+import auth from './server-modules/auth';
+import { connectToDb } from './server-modules/dbconn';
+import appFactoryModule from './server-modules/defaultAppFactory';
+import passwords from './server-modules/passwords';
 
 const API_MODULE_NAME = 'API_MODULE';
 
-function preprocessAppSetup(appSetup) {
+function preprocessAppSetup(appSetup: any) {
   if (appSetup.api) {
     appSetup.modules = appSetup.modules || {};
 
-    let apiModule = {};
+    let apiModule: any = {};
 
     for (const apiKey in appSetup.api) {
       if (appSetup.api.hasOwnProperty(apiKey)) {
@@ -63,25 +60,25 @@ function preprocessAppSetup(appSetup) {
   return appSetup;
 }
 
-async function createApp(appSetup = {}) {
+export async function appFactory(appSetup = {}) {
   appSetup = preprocessAppSetup(appSetup);
 
-  const logger = appSetup.logger || console;
+  const logger = (appSetup as any).logger || console;
 
   const config = initConfig(appSetup, logger);
 
   const builtInModules = { auth, passwords, appFactoryModule };
-  const modules = Object.assign(builtInModules, appSetup.modules);
+  const modules = Object.assign(builtInModules, (appSetup as any).modules);
 
-  const router = appSetup.router || express.Router();
+  const router = (appSetup as any).router || express.Router();
 
   const moduleNames = getModuleNames(appSetup, config);
 
   const components = Object.assign({
     _, config, router,
     logger__default: logger,
-    HTTP_STATUS_CODES,
-  }, appSetup.components);
+    HTTP_STATUS_CODES: STATUS_CODES,
+  }, (appSetup as any).components);
 
   if (!components.database) {
     Object.assign(components, await connectToDb(config));
@@ -98,7 +95,7 @@ async function createApp(appSetup = {}) {
   if (config.DEBUG_MODE) {
     logger.debug('Dependency injection context:');
 
-    context.iterateSegments((segment, c) => {
+    context.iterateSegments((segment: any, c: any) => {
       let moduleName = path.basename(c.moduleName);
       let deps = c.dependencies.length > 0 ? `, DEPS [${c.dependencies.join(', ')}]` : '';
       logger.debug(` - ${segment} ${c.name} : ${typeof c.value}, MODULE ${moduleName}` + deps)
@@ -110,7 +107,7 @@ async function createApp(appSetup = {}) {
   return { app, config };
 }
 
-function getModuleNames(appSetup, config) {
+function getModuleNames(appSetup: any, config: any) {
   const { dir, moduleNames } = appSetup;
 
   if (!dir || !moduleNames) return moduleNames;
@@ -118,12 +115,12 @@ function getModuleNames(appSetup, config) {
   let testMode = config.NODE_ENV === 'test';
 
   return {
-    src: (moduleNames.src || []).map(name => path.join(dir, name)),
-    test: testMode ? (moduleNames.test || []).map(name => path.join(dir, name)) : [],
+    src: (moduleNames.src || []).map((name: any) => path.join(dir, name)),
+    test: testMode ? (moduleNames.test || []).map((name: any) => path.join(dir, name)) : [],
   };
 }
 
-function initConfig(opts, logger) {
+function initConfig(opts: any, logger: any) {
   const defaultConfig = {
     PORT: process.env.PORT || 3000,
     DEBUG_MODE: process.env.FOR_IO_DEBUG === 'true',
@@ -148,5 +145,3 @@ function generateRandomJWTSecret() {
   const crypto = require('crypto');
   return crypto.randomBytes(64).toString('hex');
 }
-
-module.exports = createApp;

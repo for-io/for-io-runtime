@@ -24,7 +24,7 @@
  * SOFTWARE.
  */
 
-exports['SINGLETON db__default'] = (config, database, mongodb__getter, mongoCollectionExtensions__optional__getter) => {
+exports['SINGLETON db__default'] = (config: any, database: any, mongodb__getter: any, mongoCollectionExtensions__optional__getter: any) => {
 
     switch (config.DB_TYPE) {
         case 'mongodb':
@@ -34,19 +34,19 @@ exports['SINGLETON db__default'] = (config, database, mongodb__getter, mongoColl
             return null;
     }
 
-    function createMongoProxy(mongodb, mongoCollectionExtensions) {
+    function createMongoProxy(mongodb: any, mongoCollectionExtensions: any) {
         const dbProxyTarget = {
             ObjectId: mongodb.ObjectId.bind(mongodb),
         };
 
-        const collFactory = name => database.collection(name);
+        const collFactory = (name: any) => database.collection(name);
 
         return createDbProxy(dbProxyTarget, collFactory, mongoCollectionExtensions);
     }
 
-    function createDbProxy(dbTarget, tableFactory, tableExtensions) {
+    function createDbProxy(dbTarget: any, tableFactory: any, tableExtensions: any) {
 
-        function extendTable(table) {
+        function extendTable(table: any) {
             if (tableExtensions) {
                 for (const name in tableExtensions) {
                     if (tableExtensions.hasOwnProperty(name)) {
@@ -74,46 +74,46 @@ exports['SINGLETON db__default'] = (config, database, mongodb__getter, mongoColl
 
 };
 
-exports['MEMBER mongoCollectionExtensions.exists'] = (responses) => {
+exports['MEMBER mongoCollectionExtensions.exists'] = (responses: any) => {
 
-    return async function exists(filter) {
+    return async function exists(this: any, filter: any) {
         let count = await this.countDocuments(filter, { limit: 1 });
         return count === 1;
-    }
+    };
 
 };
 
-exports['MEMBER mongoCollectionExtensions.verifyId'] = (responses) => {
+exports['MEMBER mongoCollectionExtensions.verifyId'] = (responses: any) => {
 
-    return async function verifyId(id) {
-        if (!await this.exists({ _id: id })) throw responses.NOT_FOUND;
-    }
+    return async function verifyId(this: any, id: any) {
+        if (!(await this.exists({ _id: id }))) throw responses.NOT_FOUND;
+    };
 
 };
 
-exports['MEMBER mongoCollectionExtensions.getOne'] = (responses) => {
+exports['MEMBER mongoCollectionExtensions.getOne'] = (responses: any) => {
 
-    return async function getOne(filter) {
+    return async function getOne(this: any, filter: any) {
         let doc = await this.findOne(filter);
 
         if (!doc) throw responses.NOT_FOUND;
 
         return doc;
-    }
+    };
 
 };
 
-exports['MEMBER mongoCollectionExtensions.getById'] = (responses) => {
+exports['MEMBER mongoCollectionExtensions.getById'] = (responses: any) => {
 
-    return async function getById(id) {
+    return async function getById(this: any, id: any) {
         return await this.getOne({ _id: id });
-    }
+    };
 
 };
 
-exports['MEMBER mongoCollectionExtensions.deleteById'] = (responses) => {
+exports['MEMBER mongoCollectionExtensions.deleteById'] = (responses: any) => {
 
-    return async function deleteById(id, condition) {
+    return async function deleteById(this: any, id: any, condition: any) {
         if (condition) {
             await this.verifyId(id);
 
@@ -128,13 +128,13 @@ exports['MEMBER mongoCollectionExtensions.deleteById'] = (responses) => {
 
             if (result.deletedCount === 0) throw responses.NOT_FOUND;
         }
-    }
+    };
 
 };
 
-exports['MEMBER mongoCollectionExtensions.updateById'] = (responses) => {
+exports['MEMBER mongoCollectionExtensions.updateById'] = (responses: any) => {
 
-    return async function updateById(id, modification, condition) {
+    return async function updateById(this: any, id: any, modification: any, condition: any) {
         if (condition) {
             await this.verifyId(id);
 
@@ -149,13 +149,13 @@ exports['MEMBER mongoCollectionExtensions.updateById'] = (responses) => {
 
             if (result.matchedCount === 0) throw responses.NOT_FOUND;
         }
-    }
+    };
 
 };
 
-exports['MEMBER mongoCollectionExtensions.addRef'] = (responses) => {
+exports['MEMBER mongoCollectionExtensions.addRef'] = (responses: any) => {
 
-    return async function addRef(docId, relName, refId) {
+    return async function addRef(this: any, docId: any, relName: any, refId: any) {
         let result = await this.updateOne({ _id: docId }, {
             $push: {
                 [relName]: refId
@@ -163,13 +163,13 @@ exports['MEMBER mongoCollectionExtensions.addRef'] = (responses) => {
         });
 
         if (result.matchedCount === 0) throw responses.NOT_FOUND;
-    }
+    };
 
 };
 
-exports['MEMBER mongoCollectionExtensions.removeRef'] = (responses) => {
+exports['MEMBER mongoCollectionExtensions.removeRef'] = (responses: any) => {
 
-    return async function removeRef(docId, relName, refId) {
+    return async function removeRef(this: any, docId: any, relName: any, refId: any) {
         let result = await this.updateOne({ _id: docId }, {
             $pull: {
                 [relName]: refId
@@ -177,6 +177,6 @@ exports['MEMBER mongoCollectionExtensions.removeRef'] = (responses) => {
         });
 
         if (result.matchedCount === 0) throw responses.NOT_FOUND;
-    }
+    };
 
 };

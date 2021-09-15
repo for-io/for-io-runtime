@@ -24,17 +24,38 @@
  * SOFTWARE.
  */
 
-exports['PROVIDER page'] = () => {
+export class DependencyTracker {
+    _chain: any;
 
-    return function page(params) {
-        const DEFAULT_PAGE_SIZE = 10;
-        const MAX_PAGE_SIZE = 100;
-
-        return {
-            before: params.before,
-            after: params.after,
-            limit: Math.min(parseInt(params.limit) || DEFAULT_PAGE_SIZE, MAX_PAGE_SIZE),
-        };
+    constructor() {
+        this._chain = [];
     }
 
-};
+    getChain(startingPos = 0) {
+        return this._chain.slice(startingPos).join(' -> ');
+    }
+
+    enter(name: any) {
+        let pos = this._chain.indexOf(name);
+
+        if (pos >= 0) {
+            let chain = this.getChain(pos) + ' -> ' + name;
+            let fullChain = this.getChain() + ' -> ' + name;
+            let e = new Error(`Detected circular dependency: ${chain}`);
+            (e as any).details = { 'Full chain': fullChain };
+            throw e;
+        }
+
+        this._chain.push(name);
+    }
+
+    leave(name: any) {
+        let len = this._chain.length;
+
+        if (len > 0 && this._chain[len - 1] === name) {
+            this._chain.length = len - 1;
+        } else {
+            throw new Error(`The last dependency is not '${name}'`);
+        }
+    }
+}
