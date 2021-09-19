@@ -24,16 +24,14 @@
  * SOFTWARE.
  */
 
-exports['API login'] = (auth, responses, _) => ({
+const { App } = require("../test-helpers");
 
-    async 'POST /login'(body) {
-        if (body.username !== body.password) throw responses.FORBIDDEN;
+App.addEndpoint('POST /login', (auth, responses, _, body) => {
+    if (body.username !== body.password) throw responses.FORBIDDEN;
 
-        const userData = { id: body.username };
+    const userData = { id: body.username };
 
-        const token = auth.signToken({ user: userData });
+    const token = auth.signToken({ user: userData });
 
-        return { token };
-    },
-
+    return { token };
 });

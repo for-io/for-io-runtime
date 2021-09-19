@@ -24,17 +24,19 @@
  * SOFTWARE.
  */
 
-exports['PROVIDER page'] = () => {
+import { AppSetup } from "..";
 
-    return function page(params: any) {
-        const DEFAULT_PAGE_SIZE = 10;
-        const MAX_PAGE_SIZE = 100;
+function pageProvider(params: any) {
+    const DEFAULT_PAGE_SIZE = 10;
+    const MAX_PAGE_SIZE = 100;
 
-        return {
-            before: params.before,
-            after: params.after,
-            limit: Math.min(parseInt(params.limit) || DEFAULT_PAGE_SIZE, MAX_PAGE_SIZE),
-        };
+    return {
+        before: params.before,
+        after: params.after,
+        limit: Math.min(parseInt(params.limit) || DEFAULT_PAGE_SIZE, MAX_PAGE_SIZE),
     };
-
 };
+
+export function registerPageProvider(app: AppSetup) {
+    app.addProvider({ name: 'page', asDefault: true }, pageProvider);
+}

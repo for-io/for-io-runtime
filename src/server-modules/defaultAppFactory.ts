@@ -24,20 +24,18 @@
  * SOFTWARE.
  */
 
-export default {
-  'SINGLETON app__default': (router: any) => {
-    const express = require('express');
-    const cookieParser = require('cookie-parser');
-    const passport = require('passport');
+export function expressAppFactory(router: any) {
+  const express = require('express');
+  const cookieParser = require('cookie-parser');
+  const passport = require('passport');
 
-    const app = express();
+  const app = express();
 
-    app.use(express.json());
-    app.use(express.urlencoded({ extended: false }));
-    app.use(cookieParser());
-    app.use(passport.initialize());
-    app.use('/', router);
+  app.use(express.json());
+  app.use(express.urlencoded({ extended: false }));
+  app.use(cookieParser());
+  app.use(passport.initialize());
+  app.use('/', router);
 
-    return app;
-  }
-};
+  return app;
+}

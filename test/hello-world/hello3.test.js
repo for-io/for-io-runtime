@@ -24,13 +24,14 @@
  * SOFTWARE.
  */
 
+const { App } = require('../../src');
 const tester = require('../tester');
 
-const api = {
-    'GET /hello': (name) => ({ msg: `Hello, ${name}!` })
+const mod1 = () => {
+    App.addEndpoint('GET /hello', (name) => ({ msg: `Hello, ${name}!` }));
 };
 
-tester.test('hello', { api })
+tester.test('hello', [mod1])
     .expect('GET /hello?name=spock', { msg: 'Hello, spock!' })
     .expect('GET /hello?name=kirk', { msg: 'Hello, kirk!' })
     .run();

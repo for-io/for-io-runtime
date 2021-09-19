@@ -24,17 +24,18 @@
  * SOFTWARE.
  */
 
+const { App } = require('../../src');
 const tester = require('../tester');
 
-const api = {
-    'GET /sync': (res) => { res.send({}) },
-    'GET /async': async (res) => { res.send({}) },
+const mod1 = () => {
+    App.addEndpoint('GET /sync', (res) => { res.send({}) });
+    App.addEndpoint('GET /async', async (res) => { res.send({}) });
 };
 
-tester.test('sync no return', { api })
+tester.test('sync no return', [mod1])
     .expect('GET /sync', {})
     .run();
 
-tester.test('async no return', { api })
+tester.test('async no return', [mod1])
     .expect('GET /async', {})
     .run();

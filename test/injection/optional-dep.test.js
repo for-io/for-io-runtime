@@ -25,25 +25,29 @@
  */
 
 const container = require('../../src/container');
+const { App } = require('../../src');
 
 test('optional dependencies across modules', () => {
     verify({
-        mod1: { 'SINGLETON foo': (bar, baz__optional) => [bar, baz__optional], },
-        mod2: { 'SINGLETON bar': 'X' },
+        mod1() {
+            App.addComponentFactory('foo', (bar, baz__optional) => [bar, baz__optional]);
+        },
+        mod2() {
+            App.addComponent('bar', 'X');
+        },
     });
 });
 
 test('optional dependencies inside module', () => {
     verify({
-        mod1: {
-            'SINGLETON foo': (bar, baz__optional) => [bar, baz__optional],
-            'SINGLETON bar': 'X',
-        },
+        mod1() {
+            App.addComponentFactory('foo', (bar, baz__optional) => [bar, baz__optional]);
+            App.addComponent('bar', 'X');
+        }
     });
 });
 
 function verify(modules) {
-    const context = new container.DependencyInjection({ modules });
-
+    const context = new container.DependencyInjection({ modules, app: App });
     expect(context.getDependency('foo')).toStrictEqual(['X', undefined]);
 }

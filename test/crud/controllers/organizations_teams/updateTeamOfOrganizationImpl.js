@@ -24,9 +24,14 @@
  * SOFTWARE.
  */
 
-exports['CONTROLLER updateTeamOfOrganization'] = (db, responses, _) => {
+const { App } = require("../../../test-helpers");
 
-    return async function updateTeamOfOrganization(organizationId, teamId2, body, userId, log) {
+App.addEndpoint('updateTeamOfOrganization', {
+    verb: 'PATCH',
+    path: '/organizations/:organizationId/teams/:teamId2',
+    middleware: ['auth'],
+
+    async controller(db, types, responses, _, organizationId, teamId2, body) {
         // check if the organization and the team exist
         if (!await db.organizations.exists({ _id: organizationId, 'teams._id': teamId2 })) throw responses.NOT_FOUND;
 
@@ -54,5 +59,4 @@ exports['CONTROLLER updateTeamOfOrganization'] = (db, responses, _) => {
 
         return responses.OK;
     }
-
-}
+});

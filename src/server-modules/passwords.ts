@@ -26,15 +26,14 @@
 
 const bcrypt = require('bcrypt');
 
-export default {
-    'SINGLETON passwords__default': {
+export const passwordsService = {
 
-        async hash(plaintextPassword: any) {
-            return await bcrypt.hash(plaintextPassword, 10);
-        },
+    async hash(plaintextPassword: any) {
+        return await bcrypt.hash(plaintextPassword, 10);
+    },
 
-        async compareWithHash(plaintextPassword: any, hash: any) {
-            return await bcrypt.compare(plaintextPassword, hash);
-        },
-    }
+    async compareWithHash(plaintextPassword: any, hash: any) {
+        return await bcrypt.compare(plaintextPassword, hash);
+    },
+
 };

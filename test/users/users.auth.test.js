@@ -24,7 +24,7 @@
  * SOFTWARE.
  */
 
-const { runTest } = require('api-diligence');
+const { runTest } = require('../diligence');
 const { appFactory } = require('../../src/appFactory');
 const appSetup = require('./appSetup');
 

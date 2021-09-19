@@ -25,60 +25,40 @@
  */
 
 import express from 'express';
-import { STATUS_CODES } from 'http';
+import { STATUS_CODES as HTTP_STATUS_CODES } from 'http';
 import _ from 'lodash';
 import path from 'path';
 import { createAppContext } from './appcontext';
-import auth from './server-modules/auth';
+import { authFactory, authMiddlewareFactoryService } from "./server-modules/auth";
 import { connectToDb } from './server-modules/dbconn';
-import appFactoryModule from './server-modules/defaultAppFactory';
-import passwords from './server-modules/passwords';
+import { expressAppFactory } from "./server-modules/defaultAppFactory";
+import { passwordsService } from "./server-modules/passwords";
 
-const API_MODULE_NAME = 'API_MODULE';
-
-function preprocessAppSetup(appSetup: any) {
+export async function appFactory(appSetup: any = {}) {
   if (appSetup.api) {
-    appSetup.modules = appSetup.modules || {};
-
-    let apiModule: any = {};
-
-    for (const apiKey in appSetup.api) {
-      if (appSetup.api.hasOwnProperty(apiKey)) {
-        const controller = appSetup.api[apiKey];
-
-        let apiName = apiKey.replace(/[^a-zA-Z0-9]+/g, '_');
-        apiModule[`API ${apiName}`] = { [apiKey]: controller };
-      }
-    }
-
-    if (API_MODULE_NAME in appSetup.modules) throw new Error(`The module "${API_MODULE_NAME}" already exists!`);
-    appSetup.modules[API_MODULE_NAME] = apiModule;
-
-    delete appSetup.api;
+    throw new Error('The appSetup.api property is not supported anymore!');
   }
 
-  return appSetup;
-}
-
-export async function appFactory(appSetup = {}) {
-  appSetup = preprocessAppSetup(appSetup);
-
-  const logger = (appSetup as any).logger || console;
-
+  const logger = appSetup.logger || console;
   const config = initConfig(appSetup, logger);
-
-  const builtInModules = { auth, passwords, appFactoryModule };
-  const modules = Object.assign(builtInModules, (appSetup as any).modules);
-
-  const router = (appSetup as any).router || express.Router();
-
+  const modules = appSetup.modules;
+  const router = appSetup.router || express.Router();
   const moduleNames = getModuleNames(appSetup, config);
 
   const components = Object.assign({
-    _, config, router,
+    _,
+    config,
+    router,
     logger__default: logger,
-    HTTP_STATUS_CODES: STATUS_CODES,
-  }, (appSetup as any).components);
+    HTTP_STATUS_CODES,
+    passwords__default: passwordsService,
+  }, appSetup.components);
+
+  const componentFactories = {
+    expressApp__default: expressAppFactory,
+    authMiddlewareFactory__default: () => authMiddlewareFactoryService,
+    auth__default: authFactory,
+  };
 
   if (!components.database) {
     Object.assign(components, await connectToDb(config));
@@ -88,6 +68,7 @@ export async function appFactory(appSetup = {}) {
     modules,
     moduleNames,
     components,
+    componentFactories,
     config,
     require,
   });
@@ -102,7 +83,7 @@ export async function appFactory(appSetup = {}) {
     });
   }
 
-  const app = context.getDependency('app');
+  const app = context.getDependency('expressApp');
 
   return { app, config };
 }

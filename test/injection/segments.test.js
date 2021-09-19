@@ -24,18 +24,21 @@
  * SOFTWARE.
  */
 
+const { App } = require('../../src');
 const container = require('../../src/container');
 
 test('should merge multiple segments', () => {
     verify({
-        mod1: { 'MEMBER x.foo': 1 },
-        mod2: { 'MEMBER x.bar': 2 },
-        mod3: { 'MEMBER y.baz': 3 },
+        mod1() {
+            App.addMember('x.foo', 1);
+            App.addMember('x.bar', 2);
+            App.addMember('y.baz', 3);
+        }
     });
 });
 
 function verify(modules) {
-    const context1 = new container.DependencyInjection({ modules });
+    const context1 = new container.DependencyInjection({ modules, app: App });
 
     expect(context1.getDependency('x')).toStrictEqual({ foo: 1, bar: 2 });
     expect(context1.getDependency('y')).toStrictEqual({ baz: 3 });

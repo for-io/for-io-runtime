@@ -24,9 +24,14 @@
  * SOFTWARE.
  */
 
-exports['CONTROLLER getOrganization'] = (db, types, responses, _) => {
+const { App } = require("../../../test-helpers");
 
-    return async function getOrganization(organizationId, userId, log) {
+App.addEndpoint('getOrganization', {
+    verb: 'GET',
+    path: '/organizations/:organizationId',
+    middleware: ['auth'],
+
+    async controller(db, types, responses, _, organizationId, userId, log) {
         let filter = {
             _id: organizationId,
         };
@@ -38,5 +43,4 @@ exports['CONTROLLER getOrganization'] = (db, types, responses, _) => {
 
         return organization;
     }
-
-}
+});

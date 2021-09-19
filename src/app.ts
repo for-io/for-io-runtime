@@ -1,14 +1,44 @@
+import { forOwn, isString } from "lodash";
+import { DEFAULT_SUFFIX } from "./constants";
+
 const { cloneDeep } = require("lodash");
 
+type AppSetupOpts = {
+    name: string,
+    asDefault?: boolean,
+    type?: string,
+};
+
+type AppSetupOptsOrName = string | AppSetupOpts;
+
+type Func = { (...args: any): any };
+
+export type AppSetupElements = {
+    endpoints: any,
+    providerFactories: any,
+    componentFactories: any,
+    mockFactories: any,
+    memberFactories: any,
+    typeDefFactories: any,
+};
+
+export type AppSetupWrappedValue = {
+    name: string,
+    moduleName?: string,
+    value: any,
+    asDefault?: boolean,
+    type?: string,
+};
+
 export class AppSetup {
-    _componentFactories: any;
-    _components: any;
-    _endpoints: any;
-    _mockFactories: any;
-    _mocks: any;
-    _providers: any;
-    _typeDefs: any;
-    _types: any;
+
+    private _endpoints: any;
+    private _componentFactories: any;
+    private _mockFactories: any;
+    private _providerFactories: any;
+    private _memberFactories: any;
+    private _typeDefFactories: any;
+    private _currentModuleName?: string;
 
     constructor() {
         this.reset();
@@ -16,62 +46,130 @@ export class AppSetup {
 
     reset() {
         this._endpoints = {};
-        this._types = {};
-        this._providers = {};
-        this._components = {};
         this._componentFactories = {};
-        this._mocks = {};
         this._mockFactories = {};
+        this._providerFactories = {};
+        this._memberFactories = {};
+        this._typeDefFactories = {};
+        this._currentModuleName = undefined;
     }
 
-    addEndpoint(opts: any, endpoint: any) {
-        this._endpoints[opts.name] = wrapValueWithOpts(opts, endpoint);
+    setCurrentModuleName(moduleName?: string) {
+        this._currentModuleName = moduleName;
     }
 
-    addTypeDef(opts: any, typeDef: any) {
-        this._typeDefs[opts.name] = wrapValueWithOpts(opts, typeDef);
+    addEndpoint(opts: AppSetupOptsOrName, endpoint: any) {
+        this.addEndpointFactory(opts, () => endpoint);
     }
 
-    addProvider(opts: any, provider: any) {
-        this._providers[opts.name] = wrapValueWithOpts(opts, provider);
+    addEndpointFactory(opts: AppSetupOptsOrName, factory: Func) {
+        const item = this.wrapValueWithOpts(opts, factory);
+        this._endpoints[item.name] = item;
     }
 
-    addComponent(opts: any, component: any) {
-        this._components[opts.name] = wrapValueWithOpts(opts, component);
+    addTypeDef(opts: AppSetupOptsOrName, typeDef: any) {
+        this.addTypeDefFactory(opts, () => typeDef);
     }
 
-    addComponentFactory(opts: any, factory: any) {
-        this._componentFactories[opts.name] = wrapValueWithOpts(opts, factory);
+    addTypeDefFactory(opts: AppSetupOptsOrName, factory: Func) {
+        const item = this.wrapValueWithOpts(opts, factory);
+        this._typeDefFactories[item.name] = item;
     }
 
-    addMock(opts: any, component: any) {
-        this._mocks[opts.name] = wrapValueWithOpts(opts, component);
+    addProvider(opts: AppSetupOptsOrName, provider: Func) {
+        this.addProviderFactory(opts, () => provider);
     }
 
-    addMockFactory(opts: any, factory: any) {
-        this._mockFactories[opts.name] = wrapValueWithOpts(opts, factory);
+    addProviderFactory(opts: AppSetupOptsOrName, factory: Func) {
+        const item = this.wrapValueWithOpts(opts, factory);
+        this._providerFactories[item.name] = item;
     }
 
-    getSetup() {
+    addService(opts: AppSetupOptsOrName, service: any) {
+        this.addComponent(opts, service);
+    }
+
+    addServiceFactory(opts: AppSetupOptsOrName, factory: Func) {
+        this.addComponentFactory(opts, factory);
+    }
+
+    addComponent(opts: AppSetupOptsOrName, component: any) {
+        this.addComponentFactory(opts, () => component);
+    }
+
+    addComponentFactory(opts: AppSetupOptsOrName, factory: Func) {
+        const item = this.wrapValueWithOpts(opts, factory);
+        this._componentFactories[item.name] = item;
+    }
+
+    addMock(opts: AppSetupOptsOrName, mock: any) {
+        this.addMockFactory(opts, () => mock);
+    }
+
+    addMockFactory(opts: AppSetupOptsOrName, factory: Func) {
+        const item = this.wrapValueWithOpts(opts, factory);
+        this._mockFactories[item.name] = item;
+    }
+
+    addComponents(components: any) {
+        forOwn(components, (comp, name) => {
+            this.addComponent({ name }, comp);
+        });
+    }
+
+    addComponentFactories(factories: any) {
+        forOwn(factories, (factory, name) => {
+            this.addComponentFactory({ name }, factory);
+        });
+    }
+
+    addMember(opts: AppSetupOptsOrName, member: any) {
+        this.addMemberFactory(opts, () => member);
+    }
+
+    addMemberFactory(opts: AppSetupOptsOrName, factory: Func) {
+        const item = this.wrapValueWithOpts(opts, factory);
+        this._memberFactories[item.name] = item;
+    }
+
+    getElements(): AppSetupElements {
         return {
-            endpoints: cloneDeep(this._endpoints),
-            typeDefs: cloneDeep(this._typeDefs),
-            providers: cloneDeep(this._providers),
-            components: cloneDeep(this._components),
-            componentFactories: cloneDeep(this._componentFactories),
-            mocks: cloneDeep(this._mocks),
-            mockFactories: cloneDeep(this._mockFactories),
+            endpoints: copyOf(this._endpoints),
+            typeDefFactories: copyOf(this._typeDefFactories),
+            providerFactories: copyOf(this._providerFactories),
+            componentFactories: copyOf(this._componentFactories),
+            mockFactories: copyOf(this._mockFactories),
+            memberFactories: copyOf(this._memberFactories),
         };
+    }
+
+    wrapValueWithOpts(optsOrName: AppSetupOptsOrName, value: any) {
+        let wrap: AppSetupWrappedValue;
+
+        const moduleName = this._currentModuleName;
+
+        if (isString(optsOrName)) {
+            wrap = { name: optsOrName, moduleName, value };
+
+        } else {
+            const name = getNameFrom(optsOrName);
+            wrap = { ...cloneDeep(optsOrName), name, moduleName, value };
+        }
+
+        return wrap;
+    }
+
+    print() {
+        console.log('App setup', this.getElements());
     }
 }
 
-function wrapValueWithOpts(opts: any, value: any) {
-    let obj = cloneDeep(opts);
+function copyOf(obj: any) {
+    return Object.assign({}, obj);
+}
 
-    obj.type = obj.type || 'any';
-    obj.value = value;
-
-    return obj;
+function getNameFrom(optsOrName: AppSetupOpts) {
+    return optsOrName.asDefault ? `${optsOrName.name}${DEFAULT_SUFFIX}` : optsOrName.name;
 }
 
 export const App = new AppSetup();

@@ -24,9 +24,13 @@
  * SOFTWARE.
  */
 
-exports['CONTROLLER login'] = (db, passwords, auth, responses, _) => {
+const { App } = require("../../../test-helpers");
 
-    return async function login(body) {
+App.addEndpoint('login', {
+    verb: 'POST',
+    path: '/login',
+
+    async controller(db, passwords, auth, responses, _, body) {
         const user = await db.users.findOne({ _id: body.username });
         if (!user) throw responses.NOT_FOUND;
 
@@ -42,5 +46,4 @@ exports['CONTROLLER login'] = (db, passwords, auth, responses, _) => {
 
         return { token };
     }
-
-}
+});

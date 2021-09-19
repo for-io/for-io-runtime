@@ -24,7 +24,9 @@
  * SOFTWARE.
  */
 
-exports['MOCK passwords__default'] = {
+import { AppSetup } from "..";
+
+const passwordsMock = {
 
     async hash(plaintextPassword: any) {
         return `mock-hash-of-${plaintextPassword}`;
@@ -36,3 +38,7 @@ exports['MOCK passwords__default'] = {
     },
 
 };
+
+export function registerPasswordsMock(app: AppSetup) {
+    app.addMock({ name: 'passwords', asDefault: true }, passwordsMock);
+}

@@ -24,26 +24,31 @@
  * SOFTWARE.
  */
 
+const { App } = require('../../src');
 const container = require('../../src/container');
 
 test('circular dependency of 2 groups across modules', () => {
     const modules = {
-        mod1: { 'MEMBER x.a': (y) => y },
-        mod2: { 'MEMBER y.b': (x) => x },
+        mod1() {
+            App.addMemberFactory('x.a', (y) => y);
+        },
+        mod2() {
+            App.addMemberFactory('y.b', (x) => x);
+        }
     };
 
-    verifyDeps({ modules }, 'mod1/x.a -> y -> mod2/y.b -> x -> mod1/x.a');
+    verifyDeps({ modules, app: App }, 'mod1/x.a -> y -> mod2/y.b -> x -> mod1/x.a');
 });
 
 test('circular dependency of 2 groups inside module', () => {
     const modules = {
-        mod1: {
-            'MEMBER x.a': (y) => y,
-            'MEMBER y.b': (x) => x,
+        mod1() {
+            App.addMemberFactory('x.a', (y) => y);
+            App.addMemberFactory('y.b', (x) => x);
         },
     };
 
-    verifyDeps({ modules }, 'mod1/x.a -> y -> mod1/y.b -> x -> mod1/x.a');
+    verifyDeps({ modules, app: App }, 'mod1/x.a -> y -> mod1/y.b -> x -> mod1/x.a');
 });
 
 function verifyDeps(opts, chain) {

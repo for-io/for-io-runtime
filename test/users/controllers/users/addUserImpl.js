@@ -24,17 +24,15 @@
  * SOFTWARE.
  */
 
-exports['CONTROLLER addUser'] = (db, passwords, types) => {
+const { App } = require("../../../test-helpers");
 
-    return async function addUser(body) {
-        let user = types.User(body);
+App.addEndpoint('POST /users', async function (db, passwords, types, body) {
+    let user = types.User(body);
 
-        user._id = body.username;
-        user.passwordHash = await passwords.hash(body.password);
+    user._id = body.username;
+    user.passwordHash = await passwords.hash(body.password);
 
-        let res = await db.users.insertOne(user);
+    let res = await db.users.insertOne(user);
 
-        return { _id: res.insertedId };
-    }
-
-}
+    return { _id: res.insertedId };
+});

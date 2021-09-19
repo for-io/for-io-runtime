@@ -48,25 +48,20 @@ function _init(config: any) {
     }));
 }
 
-export default {
-    'SINGLETON auth__default': (config: any) => {
+export function authFactory(config: any) {
+    _init(config);
 
-        _init(config);
+    return {
+        signToken(payload: any) {
+            return jwt.sign(payload, config.JWT_SECRET);
+        }
+    };
+}
 
-        return {
-            signToken(payload: any) {
-                return jwt.sign(payload, config.JWT_SECRET);
-            }
-        };
+export const authMiddlewareFactoryService = {
 
+    createMiddleware(route: any) {
+        return passport.authenticate('jwt', { session: false });
     },
 
-    'SINGLETON authMiddlewareFactory__default': () => ({
-
-        createMiddleware(route: any) {
-            return passport.authenticate('jwt', { session: false });
-        },
-
-    })
-
-};
+}

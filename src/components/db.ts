@@ -24,7 +24,9 @@
  * SOFTWARE.
  */
 
-exports['SINGLETON db__default'] = (config: any, database: any, mongodb__getter: any, mongoCollectionExtensions__optional__getter: any) => {
+import { AppSetup } from "..";
+
+function dbFactory(config: any, database: any, mongodb__getter: any, mongoCollectionExtensions__optional__getter: any) {
 
     switch (config.DB_TYPE) {
         case 'mongodb':
@@ -74,24 +76,24 @@ exports['SINGLETON db__default'] = (config: any, database: any, mongodb__getter:
 
 };
 
-exports['MEMBER mongoCollectionExtensions.exists'] = (responses: any) => {
+function existsFactory(responses: any) {
 
     return async function exists(this: any, filter: any) {
         let count = await this.countDocuments(filter, { limit: 1 });
         return count === 1;
     };
 
-};
+}
 
-exports['MEMBER mongoCollectionExtensions.verifyId'] = (responses: any) => {
+function verifyIdFactory(responses: any) {
 
     return async function verifyId(this: any, id: any) {
         if (!(await this.exists({ _id: id }))) throw responses.NOT_FOUND;
     };
 
-};
+}
 
-exports['MEMBER mongoCollectionExtensions.getOne'] = (responses: any) => {
+function getOneFactory(responses: any) {
 
     return async function getOne(this: any, filter: any) {
         let doc = await this.findOne(filter);
@@ -101,17 +103,17 @@ exports['MEMBER mongoCollectionExtensions.getOne'] = (responses: any) => {
         return doc;
     };
 
-};
+}
 
-exports['MEMBER mongoCollectionExtensions.getById'] = (responses: any) => {
+function getByIdFactory(responses: any) {
 
     return async function getById(this: any, id: any) {
         return await this.getOne({ _id: id });
     };
 
-};
+}
 
-exports['MEMBER mongoCollectionExtensions.deleteById'] = (responses: any) => {
+function deleteByIdFactory(responses: any) {
 
     return async function deleteById(this: any, id: any, condition: any) {
         if (condition) {
@@ -130,9 +132,10 @@ exports['MEMBER mongoCollectionExtensions.deleteById'] = (responses: any) => {
         }
     };
 
-};
+}
 
-exports['MEMBER mongoCollectionExtensions.updateById'] = (responses: any) => {
+
+function updateByIdFactory(responses: any) {
 
     return async function updateById(this: any, id: any, modification: any, condition: any) {
         if (condition) {
@@ -151,9 +154,9 @@ exports['MEMBER mongoCollectionExtensions.updateById'] = (responses: any) => {
         }
     };
 
-};
+}
 
-exports['MEMBER mongoCollectionExtensions.addRef'] = (responses: any) => {
+function addRefFactory(responses: any) {
 
     return async function addRef(this: any, docId: any, relName: any, refId: any) {
         let result = await this.updateOne({ _id: docId }, {
@@ -165,9 +168,9 @@ exports['MEMBER mongoCollectionExtensions.addRef'] = (responses: any) => {
         if (result.matchedCount === 0) throw responses.NOT_FOUND;
     };
 
-};
+}
 
-exports['MEMBER mongoCollectionExtensions.removeRef'] = (responses: any) => {
+function removeRefFactory(responses: any) {
 
     return async function removeRef(this: any, docId: any, relName: any, refId: any) {
         let result = await this.updateOne({ _id: docId }, {
@@ -179,4 +182,18 @@ exports['MEMBER mongoCollectionExtensions.removeRef'] = (responses: any) => {
         if (result.matchedCount === 0) throw responses.NOT_FOUND;
     };
 
-};
+}
+
+export function registerDb(app: AppSetup) {
+    app.addServiceFactory({ name: 'db', asDefault: true }, dbFactory);
+
+    const target = 'mongoCollectionExtensions';
+    app.addMemberFactory(`${target}.exists`, existsFactory);
+    app.addMemberFactory(`${target}.verifyId`, verifyIdFactory);
+    app.addMemberFactory(`${target}.getOne`, getOneFactory);
+    app.addMemberFactory(`${target}.getById`, getByIdFactory);
+    app.addMemberFactory(`${target}.deleteById`, deleteByIdFactory);
+    app.addMemberFactory(`${target}.updateById`, updateByIdFactory);
+    app.addMemberFactory(`${target}.addRef`, addRefFactory);
+    app.addMemberFactory(`${target}.removeRef`, removeRefFactory);
+}

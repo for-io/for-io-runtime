@@ -1,7 +1,8 @@
-const { runTest } = require('../../test/diligence');
+const { runTest } = require('../diligence');
 import { appFactory } from '../../src/appFactory';
 
-const appSetup = require('./app.setup');
+// This tests the execution of another test for the same app setup with same modules (hello1.setup)
+const appSetup = require('./hello1.setup');
 
 runTest({
     name: 'hello',

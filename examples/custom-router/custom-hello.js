@@ -1,7 +1,5 @@
-module.exports = {
-    'API hello': {
-        'GET /hello'(name) {
-            return { msg: `Hello, ${name}!` };
-        },
-    },
-};
+const { App } = require("../../src");
+
+App.addEndpoint('GET /hello', (name) => {
+    return { msg: `Hello, ${name}!` };
+})

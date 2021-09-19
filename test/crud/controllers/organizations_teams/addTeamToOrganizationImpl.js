@@ -24,9 +24,14 @@
  * SOFTWARE.
  */
 
-exports['CONTROLLER addTeamToOrganization'] = (db, types, responses, _) => {
+const { App } = require("../../../test-helpers");
 
-    return async function addTeamToOrganization(organizationId, userId, body, log) {
+App.addEndpoint('addTeamToOrganization', {
+    verb: 'POST',
+    path: '/organizations/:organizationId/teams',
+    middleware: ['auth'],
+
+    async controller(db, types, responses, _, organizationId, userId, body, log) {
         // check if the organization exists
         if (!await db.organizations.exists({ _id: organizationId })) throw responses.NOT_FOUND;
 
@@ -45,5 +50,4 @@ exports['CONTROLLER addTeamToOrganization'] = (db, types, responses, _) => {
 
         return { _id: team._id };
     }
-
-}
+});

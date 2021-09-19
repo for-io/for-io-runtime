@@ -24,11 +24,17 @@
  * SOFTWARE.
  */
 
-exports['PROVIDER log'] = (logger: any) => {
+import { AppSetup } from "..";
+
+function loggerFactory(logger: any) {
 
     return function log() {
         // can be customized to retrieve request-scoped logger for tracing
         return logger;
     }
 
-};
+}
+
+export function registerLog(app: AppSetup) {
+    app.addProviderFactory({ name: 'log', asDefault: true }, loggerFactory);
+}

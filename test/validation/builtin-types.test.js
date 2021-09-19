@@ -24,27 +24,26 @@
  * SOFTWARE.
  */
 
-const { runTest } = require('api-diligence');
+const { runTest } = require('../diligence');
 const { appFactory } = require('../../src/appFactory');
+const { App } = require('../../src');
 
-const mod1 = {
-    'API num1': (types) => ({
-        'GET /num1'(x) {
-            types.int(x, { name: 'X', validation: true });
-        },
-    }),
+const mod1 = () => {
 
-    'API num2': (types) => ({
-        'GET /num2'(x) {
-            types.int(x, { name: 'X' });
-        },
-    }),
+    App.addEndpoint('GET /num1', (types, x) => {
+        types.int(x, { name: 'X', validation: true })
+    });
+
+    App.addEndpoint('GET /num2', (types, x) => {
+        types.int(x, { name: 'X' });
+    });
+
 };
 
 const error = jest.fn(() => { });
 
-const modLog = {
-    'SINGLETON logger': { error },
+const modLog = () => {
+    App.addComponent('logger', { error });
 };
 
 const appSetup = { modules: { mod1, modLog } };

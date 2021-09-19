@@ -24,22 +24,21 @@
  * SOFTWARE.
  */
 
-import { AppSetup } from "..";
+const { runTest } = require('../diligence');
+const { unauthorizedTestOpts } = require('./test-ops');
 
-const USER_TYPE = '{ id: string, email : string }';
-
-function userIdProviderFactory(responses: any) {
-    return function userId(user: any) {
-        let userId = user ? user.id : undefined;
-
-        if (!userId) throw responses.FORBIDDEN;
-
-        return userId;
-    };
-}
-
-export function registerUser(app: AppSetup) {
-    app.addProvider({ name: 'user', type: USER_TYPE }, (req: any) => req.user);
-
-    app.addProviderFactory({ name: 'userId', type: 'string' }, userIdProviderFactory);
-}
+runTest({
+    name: 'unauthorized with mock auth & no user',
+    opts: unauthorizedTestOpts,
+    config: {
+        USE_MOCKS: true,
+        JWT_SECRET: 'jwt_secret'
+    },
+    cases: [{
+        name: 'unauthorized request',
+        steps: [{
+            request: 'GET /hello',
+            401: {},
+        }],
+    }],
+});

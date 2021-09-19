@@ -24,7 +24,9 @@
  * SOFTWARE.
  */
 
-exports['SINGLETON exceptionHandler__default'] = (logger: any, HTTP_STATUS_CODES: any) => {
+import { AppSetup } from "..";
+
+function exceptionHandlerFactory(logger: any, HTTP_STATUS_CODES: any) {
 
     return async (res: any, exception: any) => {
         let status;
@@ -57,4 +59,8 @@ exports['SINGLETON exceptionHandler__default'] = (logger: any, HTTP_STATUS_CODES
         }
     };
 
-};
+}
+
+export function registerExceptionHandler(app: AppSetup) {
+    app.addServiceFactory({ name: 'exceptionHandler', asDefault: true }, exceptionHandlerFactory);
+}

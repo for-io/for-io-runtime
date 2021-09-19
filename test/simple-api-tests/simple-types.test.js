@@ -24,16 +24,17 @@
  * SOFTWARE.
  */
 
+const { App } = require('../../src');
 const tester = require('../tester');
 
-const api = {
-    'GET /num': () => 123,
-    'GET /bool': () => true,
-    'GET /str': () => 'abc',
-    'GET /arr': () => [10, 20],
+const mod1 = () => {
+    App.addEndpoint('GET /num', () => 123);
+    App.addEndpoint('GET /bool', () => true);
+    App.addEndpoint('GET /str', () => 'abc');
+    App.addEndpoint('GET /arr', () => [10, 20]);
 };
 
-tester.test('simple types', { api })
+tester.test('simple types', [mod1])
     .expect('GET /num', 123)
     .expect('GET /bool', true)
     .expect('GET /str', 'abc')

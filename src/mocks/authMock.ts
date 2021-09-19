@@ -24,10 +24,16 @@
  * SOFTWARE.
  */
 
-exports['MOCK auth__default'] = {
+import { AppSetup } from "..";
+
+const authMock = {
 
     signToken(payload: any) {
         return 'MOCK.SIGNED.TOKEN';
     },
 
 };
+
+export function registerAuthMock(app: AppSetup) {
+    app.addMock({ name: 'auth', asDefault: true }, authMock);
+}

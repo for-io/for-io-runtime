@@ -24,22 +24,15 @@
  * SOFTWARE.
  */
 
-const { runTest } = require('api-diligence');
+const { runTest } = require('../diligence');
 const { appFactory } = require('../../src/appFactory');
+const { App } = require('../../src');
 
-const mod = {
-
-    'API helloWorld': {
-        verb: "GET",
-        path: "/hello",
-        run(query) {
-            return { msg: `Hello, ${query.name}!` };
-        }
-    },
-
+const mod1 = () => {
+    App.addEndpoint('GET /hello', (query) => ({ msg: `Hello, ${query.name}!` }));
 };
 
-const appSetup = { modules: { mod } };
+const appSetup = { modules: { mod1 } };
 
 runTest({
     name: 'hello',

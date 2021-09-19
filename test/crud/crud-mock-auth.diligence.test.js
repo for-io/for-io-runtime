@@ -26,26 +26,8 @@
 
 const path = require('path');
 const { appFactory } = require('../../src/appFactory');
-const { runApiDiligence } = require('api-diligence');
+const { runApiDiligence } = require('../diligence');
 const appSetup = require('./appSetup');
-
-const tokens = {};
-async function getAuthToken({ username, agent }) {
-    if (!tokens[username]) {
-        let resp = await agent.post('/login')
-            .send({ username, password: username })
-            .timeout(1000)
-            .catch(err => {
-                console.error(err);
-                throw err;
-            });
-
-        if (resp.statusCode !== 200) throw new Error('Expected successful login!');
-
-        tokens[username] = resp.body.token;
-    }
-    return tokens[username];
-}
 
 // run tests with mock auth
 runApiDiligence({
@@ -55,16 +37,5 @@ runApiDiligence({
         username: 'spock',
         opts: { appSetup, appFactory, mockAuth: true },
         config: { USE_MOCKS: true },
-    },
-});
-
-// run tests with real auth
-runApiDiligence({
-    testsRoot: path.join(__dirname, 'api-diligence'),
-    test: {
-        tags: ['real-auth'],
-        username: 'spock',
-        opts: { appSetup, appFactory, getAuthToken },
-        config: { USE_MOCKS: false },
     },
 });

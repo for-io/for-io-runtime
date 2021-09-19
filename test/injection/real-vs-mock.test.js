@@ -24,28 +24,33 @@
  * SOFTWARE.
  */
 
+const { App } = require('../../src');
 const container = require('../../src/container');
 
 test('mock instead of real (across modules)', () => {
     verify({
-        mod1: { 'SINGLETON foo': 'R' },
-        mod2: { 'MOCK foo': 'M' },
+        mod1() {
+            App.addComponent('foo', 'R');
+        },
+        mod2() {
+            App.addMock('foo', 'M');
+        },
     });
 });
 
 test('mock instead of real (inside module)', () => {
     verify({
-        mod1: {
-            'SINGLETON foo': 'R',
-            'MOCK foo': 'M',
+        mod1() {
+            App.addComponent('foo', 'R');
+            App.addMock('foo', 'M');
         },
     });
 });
 
 function verify(modules) {
-    const context1 = new container.DependencyInjection({ modules, useMocks: true });
+    const context1 = new container.DependencyInjection({ modules, useMocks: true, app: App });
     expect(context1.getDependency('foo')).toBe('M');
 
-    const context2 = new container.DependencyInjection({ modules, useMocks: false });
+    const context2 = new container.DependencyInjection({ modules, useMocks: false, app: App });
     expect(context2.getDependency('foo')).toBe('R');
 }

@@ -26,7 +26,6 @@
 
 const moduleNames = {
     src: [
-        './users-routes',
         './users-types',
         "./controllers/users/getUserProfileImpl",
         "./controllers/users/updateUserImpl",

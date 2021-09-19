@@ -24,11 +24,15 @@
  * SOFTWARE.
  */
 
+import { cloneDeep, forOwn } from 'lodash';
+import { AppSetup } from '../app';
+import { DEFAULT_SUFFIX } from '../constants';
+import { DIContext } from '../container';
 import { sortRoutes } from '../route-sorter';
 import utils from '../utils';
 
-exports['SINGLETON routing'] = (__context: any, router: any, api: any, auth: any, config: any, controllers: any,
-    types: any, providers: any, exceptionHandler: any, logger: any, invokers: any, DependencyTracker: any) => {
+function routing(__context: DIContext, router: any, api: any, auth: any, config: any, controllers: any,
+    types: any, providers: any, exceptionHandler: any, logger: any, invokers: any, DependencyTracker: any) {
 
     async function run(name: any, controller: any, req: any, res: any, next: any, specification: any) {
 
@@ -61,12 +65,15 @@ exports['SINGLETON routing'] = (__context: any, router: any, api: any, auth: any
             return _dataObjs[name];
         }
 
-        function getDataParam(name: any) {
+        function getDataParamOrComponent(name: any) {
+            let comp = __context.getDependencyIfExists(name);
+            if (comp !== undefined) return comp;
+
             if (req.body.hasOwnProperty(name)) return provideDataObj('body')[name];
             if (req.params.hasOwnProperty(name)) return provideDataObj('params')[name];
             if (req.query.hasOwnProperty(name)) return provideDataObj('query')[name];
 
-            throw new Error(`Unknown parameter: '${name}'`);
+            throw new Error(`Unknown parameter/component name: '${name}'`);
         }
 
         async function provide(name: any, depTracker: any) {
@@ -82,8 +89,12 @@ exports['SINGLETON routing'] = (__context: any, router: any, api: any, auth: any
 
         // must be called only by provide(...)
         async function _provide(name: any, depTracker: any) {
+
             if (providers.hasOwnProperty(name)) {
                 return await invokers.invokeAsync(providers[name], async (depName: any) => await provide(depName, depTracker));
+
+            } else if (providers.hasOwnProperty(name + DEFAULT_SUFFIX)) {
+                return await invokers.invokeAsync(providers[name + DEFAULT_SUFFIX], async (depName: any) => await provide(depName, depTracker));
             }
 
             switch (name) {
@@ -118,7 +129,7 @@ exports['SINGLETON routing'] = (__context: any, router: any, api: any, auth: any
                     return specification;
 
                 default:
-                    return getDataParam(name);
+                    return getDataParamOrComponent(name);
             }
         }
 
@@ -163,37 +174,38 @@ exports['SINGLETON routing'] = (__context: any, router: any, api: any, auth: any
     function _fnToRoute(name: any, fn: any) {
         const { verb, path } = utils.extractRoute(name);
 
-        return { name, verb, path, run: fn };
+        return { name, verb, path, controller: fn };
     }
 
     function _getRoutes() {
-        const routes = [];
+        const routes: any[] = [];
 
-        for (const name in api) {
-            if (api.hasOwnProperty(name)) {
-                let route = api[name];
-
-                if (utils.isFunction(route)) {
-                    route = _fnToRoute(name, route);
-
-                } else if (utils.isObject(route)) {
-                    let keys = Object.keys(route);
-
-                    if (keys.length === 1 && utils.isFunction(route[keys[0]])) {
-                        route = _fnToRoute(keys[0], route[keys[0]]);
-                    } else {
-                        route.name = name;
-                    }
-
-                } else {
-                    throw new Error('The route must be an object or function: ' + route);
-                }
-
-                routes.push(route);
-            }
-        }
+        forOwn(api, (endpoint, name) => {
+            routes.push(createRouteFromEndpoint(endpoint, name));
+        });
 
         return routes;
+    }
+
+    function createRouteFromEndpoint(endpoint: any, name: string) {
+        if (utils.isFunction(endpoint)) {
+            return _fnToRoute(name, endpoint);
+
+        } else if (utils.isObject(endpoint)) {
+            let keys = Object.keys(endpoint);
+
+            if (keys.length === 1 && utils.isFunction(endpoint[keys[0]])) {
+                return _fnToRoute(keys[0], endpoint[keys[0]]);
+
+            } else {
+                let route = cloneDeep(endpoint);
+                route.name = name;
+                return route;
+            }
+
+        } else {
+            throw new Error('The route must be an object or function: ' + endpoint);
+        }
     }
 
     function initRoutes() {
@@ -222,7 +234,7 @@ exports['SINGLETON routing'] = (__context: any, router: any, api: any, auth: any
 
                 for (const middName of route.middleware || []) {
                     const middFactoryName = `${middName}MiddlewareFactory`;
-                    const middlewareFactoryObj = __context.getDependency(middFactoryName);
+                    const middlewareFactoryObj = __context.getDependencyIfExists(middFactoryName);
 
                     if (!middlewareFactoryObj) throw new Error(`Cannot find a middleware factory with name: "${middFactoryName}"`);
 
@@ -251,8 +263,8 @@ exports['SINGLETON routing'] = (__context: any, router: any, api: any, auth: any
     }
 
     function _findController(route: any, controllers: any) {
-        if (route.run) {
-            return route.run;
+        if (route.controller) {
+            return route.controller;
         } else {
             return controllers[route.name];
         }
@@ -266,4 +278,8 @@ exports['SINGLETON routing'] = (__context: any, router: any, api: any, auth: any
 
     return { dispatch };
 
-};
+}
+
+export function registerRouting(app: AppSetup) {
+    app.addComponentFactory({ name: 'routing' }, routing);
+}

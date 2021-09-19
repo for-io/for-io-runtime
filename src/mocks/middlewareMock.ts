@@ -24,7 +24,9 @@
  * SOFTWARE.
  */
 
-exports['MOCK authMiddlewareFactory'] = {
+import { AppSetup } from "..";
+
+const authMiddlewareFactoryMock = {
 
     createMiddleware(route: any) {
         return function (req: any, res: any, next: any) {
@@ -41,3 +43,7 @@ exports['MOCK authMiddlewareFactory'] = {
     },
 
 };
+
+export function registerAuthMiddlewareFactoryMock(app: AppSetup) {
+    app.addMock({ name: 'authMiddlewareFactory', asDefault: true }, authMiddlewareFactoryMock);
+}

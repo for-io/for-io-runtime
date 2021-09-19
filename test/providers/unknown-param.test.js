@@ -24,26 +24,23 @@
  * SOFTWARE.
  */
 
-const { runTest } = require('api-diligence');
+const { runTest } = require('../diligence');
 const { appFactory } = require('../../src/appFactory');
+const { App } = require('../../src');
 
-const mod1 = {
-    'API hello': {
-        verb: "GET",
-        path: "/hello",
-        run: (foo) => foo,
-    },
+const mod1 = () => {
+    App.addEndpoint('GET /hello', (foo) => foo);
 };
 
 const error = jest.fn(() => { });
 
-const mod2 = {
-    'SINGLETON logger': { error },
+const mod2 = () => {
+    App.addComponent('logger', { error });
 };
 
 function onDone() {
     expect(error).toHaveBeenCalledTimes(1);
-    expect(error).toHaveBeenCalledWith('Caught exception:', new Error("Unknown parameter: 'foo'"));
+    expect(error).toHaveBeenCalledWith('Caught exception:', new Error("Unknown parameter/component name: 'foo'"));
 }
 
 const appSetup = { modules: { mod1, mod2 } };

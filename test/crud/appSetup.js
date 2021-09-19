@@ -27,7 +27,6 @@
 const moduleNames = {
     src: [
         './crud-auth',
-        './crud-routes',
         './crud-types',
         "./controllers/organizations/addOrganizationImpl",
         "./controllers/organizations/updateOrganizationImpl",

@@ -24,28 +24,22 @@
  * SOFTWARE.
  */
 
-const builtInTypes = require("./components/types");
-const builtInResponses = require("./components/responses");
-const builtInExceptionHandler = require("./components/exceptionHandler");
-const builtInPasswordsMock = require("./mocks/passwordsMock");
-const builtInMiddlewareMock = require("./mocks/middlewareMock");
-const builtInAuthMock = require("./mocks/authMock");
-const builtInDbProvider = require("./components/db");
-const builtInPageProvider = require("./providers/page");
-const builtInLogProvider = require("./providers/log");
-const builtInUserProvider = require("./providers/user");
-const builtInRouting = require('./components/routing');
+const { runTest } = require('../diligence');
+const { unauthorizedTestOpts } = require('./test-ops');
 
-export default {
-    builtInTypes,
-    builtInResponses,
-    builtInExceptionHandler,
-    builtInPasswordsMock,
-    builtInMiddlewareMock,
-    builtInAuthMock,
-    builtInDbProvider,
-    builtInPageProvider,
-    builtInLogProvider,
-    builtInUserProvider,
-    builtInRouting,
-};
+runTest({
+    name: 'authorized with mock auth & mock user',
+    opts: { mockAuth: true, ...unauthorizedTestOpts },
+    config: {
+        USE_MOCKS: true,
+        JWT_SECRET: 'jwt_secret'
+    },
+    cases: [{
+        name: 'authorized request',
+        steps: [{
+            username: 'spock',
+            request: 'GET /hello',
+            200: { msg: 'Hello, spock!' },
+        }],
+    }],
+});

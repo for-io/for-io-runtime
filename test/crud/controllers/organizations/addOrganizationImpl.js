@@ -24,14 +24,18 @@
  * SOFTWARE.
  */
 
-exports['CONTROLLER addOrganization'] = (db, types, responses, _) => {
+const { App } = require("../../../test-helpers");
 
-    return async function addOrganization(body, userId, log) {
+App.addEndpoint('addOrganization', {
+    verb: 'POST',
+    path: '/organizations',
+    middleware: ['auth'],
+
+    async controller(db, types, responses, _, body, userId, log) {
         let organization = types.Organization(body);
 
         let res = await db.organizations.insertOne(organization);
 
         return { _id: res.insertedId };
     }
-
-}
+});

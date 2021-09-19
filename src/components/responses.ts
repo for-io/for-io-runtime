@@ -24,13 +24,16 @@
  * SOFTWARE.
  */
 
-exports['SINGLETON responses__default'] = {
+import { AppSetup } from "..";
 
+const responses = {
     OK: {},
-
     CREATED: 201,
     FORBIDDEN: 403,
     NOT_FOUND: 404,
     INTERNAL_ERROR: 500,
-
 };
+
+export function registerResponses(app: AppSetup) {
+    app.addComponent({ name: 'responses', asDefault: true }, responses);
+}

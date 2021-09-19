@@ -24,6 +24,8 @@
  * SOFTWARE.
  */
 
+const { App } = require("../../src");
+
 class User {
     constructor({ data = {}, prefix = '', types, opts, err, util }) {
 
@@ -110,14 +112,14 @@ class AddUserBody {
     }
 }
 
-exports['TYPE User'] = () => User;
+App.addTypeDef('User', User);
 
-exports['SINGLETON typedefs'] = {
+App.addComponent('typedefs', {
     UpdateUserProfileParams,
     UpdateUserProfileBody,
     DeleteUserParams,
     GetUserProfileParams,
     AddUserBody,
-};
+});
 
-exports['TYPE LoginBody'] = () => LoginBody;
+App.addTypeDef('LoginBody', LoginBody);

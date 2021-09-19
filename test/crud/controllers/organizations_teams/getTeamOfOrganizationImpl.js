@@ -24,9 +24,14 @@
  * SOFTWARE.
  */
 
-exports['CONTROLLER getTeamOfOrganization'] = (db, types, responses, _) => {
+const { App } = require("../../../test-helpers");
 
-    return async function getTeamOfOrganization(organizationId, teamId2) {
+App.addEndpoint('getTeamOfOrganization', {
+    verb: 'GET',
+    path: '/organizations/:organizationId/teams/:teamId2',
+    middleware: ['auth'],
+
+    async controller(db, types, responses, _, organizationId, teamId2) {
         let organization = await db.organizations.findOne({ _id: organizationId })
         if (!organization) throw responses.NOT_FOUND;
 
@@ -35,5 +40,4 @@ exports['CONTROLLER getTeamOfOrganization'] = (db, types, responses, _) => {
 
         return types.Team(nestedTeam);
     }
-
-}
+});

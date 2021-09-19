@@ -24,9 +24,14 @@
  * SOFTWARE.
  */
 
-exports['CONTROLLER deleteUser'] = (db, types, responses, _) => {
+const { App } = require("../../../test-helpers");
 
-    return async function deleteUser(id, userId, log) {
+App.addEndpoint('deleteUser', {
+    verb: 'DELETE',
+    path: '/users/:id',
+    middleware: ['auth'],
+
+    async controller(db, responses, id, userId) {
         // users can delete only their own profile
         if (id !== userId) throw responses.FORBIDDEN;
 
@@ -36,5 +41,4 @@ exports['CONTROLLER deleteUser'] = (db, types, responses, _) => {
 
         return responses.OK;
     }
-
-}
+});

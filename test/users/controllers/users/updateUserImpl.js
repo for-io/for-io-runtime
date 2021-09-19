@@ -24,9 +24,14 @@
  * SOFTWARE.
  */
 
-exports['CONTROLLER updateUserProfile'] = (db, types, responses, _) => {
+const { App } = require("../../../test-helpers");
 
-    return async function updateUserProfile(id, body, userId, log) {
+App.addEndpoint('updateUserProfile', {
+    verb: 'PATCH',
+    path: '/users/:id',
+    middleware: ['auth'],
+
+    async controller(db, responses, _, id, body, userId) {
         // users can update only their own profile
         if (id !== userId) throw responses.FORBIDDEN;
 
@@ -43,5 +48,4 @@ exports['CONTROLLER updateUserProfile'] = (db, types, responses, _) => {
 
         return responses.OK;
     }
-
-}
+});

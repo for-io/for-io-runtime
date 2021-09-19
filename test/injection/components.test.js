@@ -24,28 +24,35 @@
  * SOFTWARE.
  */
 
+const { App } = require('../../src');
 const container = require('../../src/container');
 
 test('dependency chain across modules', () => {
     verify({
-        mod1: { 'SINGLETON foo': 'x' },
-        mod2: { 'SINGLETON bar': (foo) => foo + 'y' },
-        mod3: { 'SINGLETON baz': (bar) => bar + 'z' },
+        mod1() {
+            App.addComponent('foo', 'x');
+        },
+        mod2() {
+            App.addComponentFactory('bar', (foo) => foo + 'y');
+        },
+        mod3() {
+            App.addComponentFactory('baz', (bar) => bar + 'z');
+        },
     });
 });
 
 test('dependency chain inside module', () => {
     verify({
-        mod1: {
-            'SINGLETON foo': 'x',
-            'SINGLETON bar': (foo) => foo + 'y',
-            'SINGLETON baz': (bar) => bar + 'z',
+        mod1() {
+            App.addComponent('foo', 'x');
+            App.addComponentFactory('bar', (foo) => foo + 'y');
+            App.addComponentFactory('baz', (bar) => bar + 'z');
         },
     });
 });
 
 function verify(modules) {
-    const context = new container.DependencyInjection({ modules });
+    const context = new container.DependencyInjection({ modules, app: App });
 
     expect(context.getDependency('baz')).toBe('xyz');
     expect(context.getDependency('bar')).toBe('xy');

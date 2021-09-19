@@ -24,28 +24,35 @@
  * SOFTWARE.
  */
 
+const { App } = require('../../src');
 const container = require('../../src/container');
 
 test('circular dependency of 3 components across modules', () => {
     verify({
-        mod1: { 'SINGLETON foo': (baz) => baz + 'x' },
-        mod2: { 'SINGLETON bar': (foo) => foo + 'y' },
-        mod3: { 'SINGLETON baz': (bar) => bar + 'z' },
+        mod1() {
+            App.addComponentFactory('foo', (baz) => baz + 'x');
+        },
+        mod2() {
+            App.addComponentFactory('bar', (foo) => foo + 'y');
+        },
+        mod3() {
+            App.addComponentFactory('baz', (bar) => bar + 'z');
+        },
     });
 });
 
 test('circular dependency of 3 components inside module', () => {
     verify({
-        mod1: {
-            'SINGLETON foo': (baz) => baz + 'x',
-            'SINGLETON bar': (foo) => foo + 'y',
-            'SINGLETON baz': (bar) => bar + 'z'
+        mod1() {
+            App.addComponentFactory('foo', (baz) => baz + 'x');
+            App.addComponentFactory('bar', (foo) => foo + 'y');
+            App.addComponentFactory('baz', (bar) => bar + 'z');
         },
     });
 });
 
 function verify(modules) {
-    const context = new container.DependencyInjection({ modules });
+    const context = new container.DependencyInjection({ modules, app: App });
 
     expect(() => context.getDependency('foo')).toThrow('Detected circular dependency: foo -> baz -> bar -> foo');
     expect(() => context.getDependency('bar')).toThrow('Detected circular dependency: bar -> foo -> baz -> bar');

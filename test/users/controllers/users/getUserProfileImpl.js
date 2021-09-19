@@ -24,9 +24,14 @@
  * SOFTWARE.
  */
 
-exports['CONTROLLER getUserProfile'] = (db, responses, _) => {
+const { App } = require("../../../test-helpers");
 
-    return async function getUserProfile(id, log) {
+App.addEndpoint('getUserProfile', {
+    verb: 'GET',
+    path: '/users/:id',
+    middleware: ['auth'],
+
+    async controller(db, responses, id) {
         let profile = await db.users.findOne({ _id: id });
 
         delete profile.passwordHash;
@@ -35,5 +40,4 @@ exports['CONTROLLER getUserProfile'] = (db, responses, _) => {
 
         return profile;
     }
-
-}
+});

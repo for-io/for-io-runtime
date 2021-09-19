@@ -24,9 +24,8 @@
  * SOFTWARE.
  */
 
-import { App } from './app';
+export { App, AppSetup } from './app';
 import { appFactory } from './appFactory';
-import { DependencyInjection } from './container';
 import server from './server';
 
 async function initAndStartServer(opts: any) {
@@ -35,9 +34,7 @@ async function initAndStartServer(opts: any) {
     server.listen({ app, config });
 }
 
-export default {
-    DependencyInjection,
-    App,
+export const ForIo = {
     appFactory,
 
     start(opts: any) {

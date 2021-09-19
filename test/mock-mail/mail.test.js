@@ -24,30 +24,24 @@
  * SOFTWARE.
  */
 
-const { runTest } = require('api-diligence');
+const { runTest } = require('../diligence');
 const { appFactory } = require('../../src/appFactory');
+const { App } = require('../../src');
 
-const mod = {
+const mod = () => {
+    App.addEndpoint('POST /mail', (mail) => ({ mail: mail.send() }));
 
-    'API mailer'(mail) {
-        return {
-            'POST /mail'() {
-                return { mail: mail.send() };
-            }
-        };
-    },
-
-    'SINGLETON mail': {
+    App.addService('mail', {
         send() {
             return 'REAL';
         }
-    },
+    });
 
-    'MOCK mail': {
+    App.addMock('mail', {
         send() {
             return 'MOCK';
         }
-    },
+    });
 };
 
 const appSetup = { modules: { mod } };

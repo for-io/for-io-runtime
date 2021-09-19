@@ -24,8 +24,9 @@
  * SOFTWARE.
  */
 
-const { runTest } = require('api-diligence');
+const { runTest } = require('./diligence');
 const { appFactory } = require('../src/appFactory');
+const { isArray } = require('lodash');
 
 class Test {
 
@@ -53,8 +54,23 @@ class Test {
 
 }
 
-function test(name, appSetup) {
+function test(name, appSetupObjOrModulesArr) {
+    const appSetup = isArray(appSetupObjOrModulesArr)
+        ? { modules: _createModulesObj(appSetupObjOrModulesArr) }
+        : appSetupObjOrModulesArr;
+
     return new Test(name, appSetup);
+}
+
+function _createModulesObj(modulesArr) {
+    const modules = {};
+
+    for (let i = 0; i < modulesArr.length; i++) {
+        const mod = modulesArr[i];
+        modules[`testModule:${i + 1}`] = mod;
+    }
+
+    return modules;
 }
 
 module.exports = { test };

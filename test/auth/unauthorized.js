@@ -24,22 +24,13 @@
  * SOFTWARE.
  */
 
-import { AppSetup } from "..";
+const { App } = require("../../src");
 
-const USER_TYPE = '{ id: string, email : string }';
-
-function userIdProviderFactory(responses: any) {
-    return function userId(user: any) {
-        let userId = user ? user.id : undefined;
-
-        if (!userId) throw responses.FORBIDDEN;
-
-        return userId;
-    };
-}
-
-export function registerUser(app: AppSetup) {
-    app.addProvider({ name: 'user', type: USER_TYPE }, (req: any) => req.user);
-
-    app.addProviderFactory({ name: 'userId', type: 'string' }, userIdProviderFactory);
-}
+App.addEndpoint('hello', {
+    verb: "GET",
+    path: "/hello",
+    middleware: ['auth'],
+    controller(userId) {
+        return { msg: `Hello, ${userId}!` };
+    }
+});

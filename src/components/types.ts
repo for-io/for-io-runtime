@@ -24,10 +24,14 @@
  * SOFTWARE.
  */
 
-exports['SINGLETON types__default'] = (typeRegistry: any, typedefs: any) => {
+import { AppSetup } from "..";
 
+function typesFactory(typeRegistry: any, typedefs: any) {
     typeRegistry.addTypes(typedefs);
 
     return typeRegistry.getTypes();
+}
 
-};
+export function registerTypes(app: AppSetup) {
+    app.addServiceFactory({ name: 'types', asDefault: true }, typesFactory);
+}

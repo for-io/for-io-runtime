@@ -24,29 +24,24 @@
  * SOFTWARE.
  */
 
-const { runTest } = require('api-diligence');
+const { runTest } = require('../diligence');
 const { appFactory } = require('../../src/appFactory');
+const { App } = require('../../src');
 
-const mod1 = {
-    'API hello': {
-        verb: "GET", path: "/hello", run: (foo) => foo,
-    },
+const mod1 = () => {
+    App.addEndpoint('GET /hello', (foo) => foo);
 };
 
-const mod2 = {
-    'PROVIDER foo'() {
-        return (bar) => bar + 'x';
-    },
-
-    'PROVIDER bar'() {
-        return (foo) => foo + 'y';
-    },
-}
+const mod2 = () => {
+    App.addProvider('foo', (bar) => bar + 'x');
+    App.addProvider('bar', (foo) => foo + 'y');
+};
 
 const error = jest.fn(() => { });
+const logger = { error };
 
-const mod3 = {
-    'SINGLETON logger': { error },
+const mod3 = () => {
+    App.addComponent('logger', logger);
 };
 
 function onDone() {

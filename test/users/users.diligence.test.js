@@ -25,7 +25,7 @@
  */
 
 const path = require('path');
-const { runApiDiligence } = require('api-diligence');
+const { runApiDiligence } = require('../diligence');
 const { appFactory } = require('../../src/appFactory');
 const appSetup = require('./appSetup');
 

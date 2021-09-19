@@ -24,25 +24,17 @@
  * SOFTWARE.
  */
 
-const { runTest } = require('api-diligence');
+const { runTest } = require('../diligence');
 const { appFactory } = require('../../src/appFactory');
+const { App } = require('../../src');
 
-const mod1 = {
-    'CONTROLLER hello': () => {
-        return (name) => ({ msg: `Hello, ${name}!` })
-    },
-
-    'API hello': {
-        verb: "GET",
-        path: "/hello",
-    },
+const mod1 = () => {
+    App.addEndpoint('GET /hello', (name) => ({ msg: `Hello, ${name}!` }));
 };
 
-const mod2 = {
-    'PROVIDER name'() {
-        return (query) => query.name.toUpperCase();
-    }
-}
+const mod2 = () => {
+    App.addProvider('name', (query) => query.name.toUpperCase());
+};
 
 const appSetup = { modules: { mod1, mod2 } };
 

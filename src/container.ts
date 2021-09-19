@@ -24,9 +24,13 @@
  * SOFTWARE.
  */
 
-import utils from './utils';
-import invokers from './invokers';
+import { forOwn, Function0 } from 'lodash';
+import { AppSetup } from '.';
+import { AppSetupElements, AppSetupWrappedValue } from './app';
+import { DEFAULT_SUFFIX, GETTER_SUFFIX, OPTIONAL_SUFFIX } from './constants';
 import { DependencyTracker } from './dep-tracker';
+import * as invokers from './invokers';
+import utils from './utils';
 
 const EXPORT_KEY_REGEX = /^(SINGLETON|MOCK|MEMBER|API|CONTROLLER|PROVIDER|TYPE)\s+([\w\.\$]+)$/;
 const SEGMENT_NAME_REGEX = /^[A-Z][A-Z_]*$/;
@@ -35,25 +39,43 @@ const MEMBER_SEGMENT_NAME_REGEX = /^[a-z_\$][\w\$]*\.[a-z_\$][\w\$]*$/;
 
 const SINGLETON = 'SINGLETON';
 const MOCK = 'MOCK';
+const PROVIDER = 'PROVIDER';
 const MEMBER = 'MEMBER';
 
-const GETTER_SUFFIX = '__getter';
-const DEFAULT_SUFFIX = '__default';
-const OPTIONAL_SUFFIX = '__optional';
+export interface DIContext {
+    getDependency(name: string): any;
+    getDependencyIfExists(name: string): any;
+    getSegments(segmentKey: string): any[];
+    getGroup(name: string): any;
+}
+
+type Segment = {
+    name: string,
+    type?: string,
+    moduleName?: string,
+    dependencies: string[],
+    exported: any,
+    value?: any,
+    real?: boolean,
+}
+
+type DepSearchOpts = {
+    optional?: boolean,
+}
 
 function debug(...args: any[]) {
     // console.debug(...args)
 }
 
-function isValidGroupName(name: any) {
+function isValidGroupName(name: string) {
     return !!name.match(GROUP_NAME_REGEX) && name.indexOf('__') < 0;
 }
 
-function isValidExportKey(name: any) {
+function isValidExportKey(name: string) {
     return !!name.match(EXPORT_KEY_REGEX);
 }
 
-function isValidSegmentKey(name: any) {
+function isValidSegmentKey(name: string) {
     return !!name.match(SEGMENT_NAME_REGEX) && name.indexOf('__') < 0;
 }
 
@@ -69,13 +91,13 @@ function validateSegmentKey(segmentKey: any) {
     }
 }
 
-function validateMemberSegmentName(name: any) {
+function validateMemberSegmentName(name: string) {
     if (!MEMBER_SEGMENT_NAME_REGEX.test(name)) {
         throw new Error(`Invalid member segment name: '${name}'`);
     }
 }
 
-function validateGroupName(groupName: any) {
+function validateGroupName(groupName: string) {
     if (!isValidGroupName(groupName)) {
         throw new Error(`Invalid group name: '${groupName}'`);
     }
@@ -93,7 +115,7 @@ function segmentKeyToGroupName(segmentKey: any) {
     }
 }
 
-function groupNameToSegmentKey(groupName: any) {
+function groupNameToSegmentKey(groupName: string) {
     validateGroupName(groupName);
 
     switch (groupName) {
@@ -105,30 +127,32 @@ function groupNameToSegmentKey(groupName: any) {
     }
 }
 
-function isValidGetterName(name: any) {
+function isValidGetterName(name: string) {
     return name.endsWith(GETTER_SUFFIX);
 }
 
-function getTargetOfGetter(name: any) {
+function getTargetOfGetter(name: string) {
     return name.substring(0, name.length - GETTER_SUFFIX.length);
 }
 
-export class DependencyInjection {
-    _components: any;
-    _continueOnErrors: any;
-    _createdOn: any;
-    _depInfo: any;
-    _factories: any;
-    _getters: any;
-    _groups: any;
-    _memberSegmentsByTarget: any;
-    _mockFactories: any;
-    _mocks: any;
-    _moduleNames: any;
-    _require: any;
-    _segments: any;
-    _segmentsByKey: any;
-    _useMocks: any;
+export class DependencyInjection implements DIContext {
+
+    private _createdOn: any;
+    private _depInfo: any;
+    private _tsTypes: any;
+    private _components: any;
+    private _componentFactories: any;
+    private _mocks: any;
+    private _mockFactories: any;
+    private _getters: any;
+    private _groups: any;
+    private _memberSegmentsByTarget: any;
+    private _moduleNames: any;
+    private _require: any;
+    private _segments: any;
+    private _segmentsByKey: any;
+    private _useMocks: any;
+    private _continueOnErrors: any;
 
     constructor(opts: any) {
         debug('Initializing DI context...');
@@ -139,12 +163,13 @@ export class DependencyInjection {
         this._useMocks = opts.useMocks;
         this._continueOnErrors = opts.continueOnErrors;
         this._moduleNames = opts.moduleNames;
+        this._tsTypes = {}; // init this before processing the elements
 
-        this._components = Object.assign({}, opts.components || {});
-        this._mocks = Object.assign({}, opts.mocks || {});
+        this._components = {};
+        this._componentFactories = {};
 
-        this._factories = Object.assign({}, opts.factories || {});
-        this._mockFactories = Object.assign({}, opts.mockFactories || {});
+        this._mocks = {};
+        this._mockFactories = {};
 
         this._segmentsByKey = {};
         this._memberSegmentsByTarget = {};
@@ -157,18 +182,26 @@ export class DependencyInjection {
             this.logError = opts.logError.bind(this);
         }
 
+        const app: AppSetup = opts.app;
+        if (!app) {
+            throw new Error('The app setup (opts.app) must be provided!');
+        }
+
         try {
             // register provided modules
             if (opts.modules) {
-                this._registerModules(opts.modules);
+                this._registerModules(opts.modules, app);
             }
 
-            // load modules
+            // load modules, based on the provided module names
             if (opts.moduleNames) {
-                this._loadModules(opts.moduleNames);
+                this._loadModules(opts.moduleNames, app);
             }
 
-            // initialize
+            // at this moment, the app: AppSetup is initialized by the loaded modules
+            this._registerProvidedElements(app.getElements());
+
+            // initialize the DI context
             this._init();
 
             debug('DI context is ready', this.info());
@@ -179,89 +212,150 @@ export class DependencyInjection {
         }
     }
 
-    _loadModule(moduleName: any) {
-        try {
-            this._addModuleToSeg(this._require(moduleName), moduleName);
+    private _registerProvidedElements(elements: AppSetupElements) {
+        // first init components (order matters for ts types def priority)
+        const endpoints = this._extractValuesAndUpdateTsTypes(elements.endpoints);
+        const componentFactories = this._extractValuesAndUpdateTsTypes(elements.componentFactories);
+        const providerFactories = this._extractValuesAndUpdateTsTypes(elements.providerFactories);
+        const memberFactories = this._extractValuesAndUpdateTsTypes(elements.memberFactories);
+        const typeDefFactories = this._extractValuesAndUpdateTsTypes(elements.typeDefFactories);
 
+        // then init the mocks (order matters for ts types def priority)
+        const mockFactories = this._extractValuesAndUpdateTsTypes(elements.mockFactories);
+
+        // register provided segments (components, mocks, providers etc.)
+        forOwn(endpoints, (elem, name) => this._addSegment(elem, name, 'API'));
+        forOwn(componentFactories, (elem, name) => this._addSegment(elem, name, SINGLETON));
+        forOwn(mockFactories, (elem, name) => this._addSegment(elem, name, MOCK));
+        forOwn(providerFactories, (elem, name) => this._addSegment(elem, name, PROVIDER));
+        forOwn(memberFactories, (elem, name) => this._addSegment(elem, name, MEMBER));
+        forOwn(typeDefFactories, (elem, name) => this._addSegment(elem, name, 'TYPE'));
+    }
+
+    _extractValuesAndUpdateTsTypes(wrappedValuesDict: any) {
+        const unwrappedValues: any = {};
+
+        forOwn(wrappedValuesDict || {}, (wrappedVal: AppSetupWrappedValue, name) => {
+            utils.def(wrappedVal, 'wrappedVal');
+            utils.def(wrappedVal.value, 'wrapped value');
+
+            unwrappedValues[name] = wrappedVal.value;
+
+            if (wrappedVal.type && !this._tsTypes[name]) {
+                this._tsTypes[name] = wrappedVal.type;
+            }
+        });
+
+        return wrappedValuesDict;
+        // return unwrappedValues;
+    }
+
+    _loadModule(moduleName: string) {
+        let mod;
+
+        try {
+            mod = this._require(moduleName);
         } catch (e) {
             this.logError(e);
+            return;
+        }
+
+        if (utils.isObject(mod)) {
+            let keys = Object.keys(mod);
+            if (keys.length > 0) {
+                throw new Error('Exporting components from modules is not supported anymore! Exported properties: ' + keys.join(', '));
+            }
         }
     }
 
-    _loadModules(moduleNames: any) {
+    _loadModules(moduleNames: any, app: AppSetup) {
         for (let moduleName of moduleNames.src || []) {
-            this._loadModule(moduleName);
+            this._executeWithinModule(app, moduleName, () => {
+                this._loadModule(moduleName);
+            });
         }
 
         for (let moduleName of moduleNames.test || []) {
-            this._loadModule(moduleName);
+            this._executeWithinModule(app, moduleName, () => {
+                this._loadModule(moduleName);
+            });
         }
     }
 
-    _registerModules(modules: any) {
+    _registerModules(modules: any, app: AppSetup) {
         if (!utils.isObject(modules)) throw new Error('The modules must be an object, with filenames as keys and modules as values!');
 
         for (const moduleName in modules) {
             if (modules.hasOwnProperty(moduleName)) {
                 const mod = modules[moduleName];
-                this._addModuleToSeg(mod, moduleName);
+
+                this._executeWithinModule(app, moduleName, () => {
+                    this._importSegmentsFromModule(mod, moduleName)
+                });
             }
         }
     }
 
-    _addModuleToSeg(mod: any, moduleName: any) {
-        if (!utils.isObject(mod)) throw new Error(`The module '${moduleName}' must export an object!`);
+    _executeWithinModule(app: AppSetup, moduleName: string, fn: Function0<void>) {
+        app.setCurrentModuleName(moduleName);
 
-        let foundSegKey = false;
+        try {
+            fn();
 
-        for (const exportKey in mod) {
-            if (mod.hasOwnProperty(exportKey)) {
-                validateExportKey(exportKey);
-
-                foundSegKey = true;
-                let exportedVal = mod[exportKey];
-
-                let m: any = exportKey.match(EXPORT_KEY_REGEX);
-                utils.must(!!m);
-                let segmentKey = m[1];
-                let name = m[2];
-
-                let dependencies = utils.isFunction(exportedVal) ? invokers.getParamNames(exportedVal) : [];
-
-                let segment = {
-                    name,
-                    moduleName,
-                    dependencies,
-                    exported: exportedVal,
-                };
-
-                this._getSegs(segmentKey).push(segment);
-
-                if (segmentKey === MEMBER) {
-                    validateMemberSegmentName(name);
-                    let targetName = name.split('.')[0];
-                    this._getMemberSegs(targetName).push(segment);
-                }
-            }
+        } finally {
+            app.setCurrentModuleName(undefined);
         }
-
-        if (!foundSegKey) throw new Error(`The module '${moduleName}' must export at least one segment!`);
     }
 
-    _getSegs(segmentKey: any) {
+    _importSegmentsFromModule(mod: any, moduleName: string) {
+        if (utils.isFunction(mod)) {
+            // NEW DESIGN - the provided modules can be functions that simply need to be executed
+            mod();
+            return;
+        } else {
+            throw new Error(`The provided modules must be functions, but module "${moduleName}" has type: ${typeof mod}`);
+        }
+    }
+
+    private _addSegment(wrappedVal: AppSetupWrappedValue, name: string, segmentKey: string) {
+        let dependencies = this._getDependencies(wrappedVal);
+
+        let segment: Segment = {
+            name,
+            type: wrappedVal.type,
+            moduleName: wrappedVal.moduleName,
+            dependencies,
+            exported: wrappedVal.value,
+            real: segmentKey != MOCK,
+        };
+
+        this._getSegs(segmentKey).push(segment);
+
+        if (segmentKey === MEMBER) {
+            validateMemberSegmentName(name);
+            let targetName = name.split('.')[0];
+            this._getMemberSegs(targetName).push(segment);
+        }
+    }
+
+    private _getDependencies(segmentVal: any) {
+        return utils.isFunction(segmentVal) ? invokers.getParamNames(segmentVal) : [];
+    }
+
+    _getSegs(segmentKey: any): Segment[] {
         return this._segmentsByKey[segmentKey] = this._segmentsByKey[segmentKey] || [];
     }
 
-    _getMemberSegs(targetName: any) {
+    _getMemberSegs(targetName: string) {
         return this._memberSegmentsByTarget[targetName] = this._memberSegmentsByTarget[targetName] || [];
     }
 
     _init() {
         if (this._useMocks) {
-            this._initComponents(this._segmentsByKey[MOCK] || [], false);
+            this._initSegments(this._segmentsByKey[MOCK] || [], false);
         }
 
-        this._initComponents(this._segmentsByKey[SINGLETON] || [], true);
+        this._initSegments(this._segmentsByKey[SINGLETON] || [], true);
 
         for (const segmentKey in this._segmentsByKey) {
             if (this._segmentsByKey.hasOwnProperty(segmentKey)) {
@@ -277,7 +371,7 @@ export class DependencyInjection {
         this._importMembers(this._segmentsByKey[MEMBER] || []);
     }
 
-    _initComponents(segments: any, real: any) {
+    _initSegments(segments: Segment[], real: boolean) {
         for (const segment of segments) {
 
             const name = segment.name;
@@ -286,7 +380,7 @@ export class DependencyInjection {
             segment.real = real;
 
             if (real) {
-                if ((name in this._components) || (name in this._factories)) {
+                if ((name in this._components) || (name in this._componentFactories)) {
                     throw new Error(`Detected duplicate definition of the component '${name}'`);
                 }
             } else {
@@ -302,7 +396,7 @@ export class DependencyInjection {
                 debug('Registering factory for component: ' + name);
 
                 if (real) {
-                    this._factories[name] = comp;
+                    this._componentFactories[name] = comp;
                 } else {
                     this._mockFactories[name] = comp;
                 }
@@ -322,7 +416,7 @@ export class DependencyInjection {
         }
     }
 
-    _createGetterWithCaching(targetName: any) {
+    _createGetterWithCaching(targetName: string) {
         let retrieved = false;
         let value: any; // cache the value
 
@@ -336,11 +430,11 @@ export class DependencyInjection {
         }
     }
 
-    _findDependencyWithTracking(name: any) {
+    _findDependencyWithTracking(name: string, opts: DepSearchOpts = {}) {
         this._depInfo.enter(name);
 
         try {
-            return this._findDependency(name);
+            return this._findDependency(name, opts);
 
         } finally {
             this._depInfo.leave(name);
@@ -348,9 +442,13 @@ export class DependencyInjection {
     }
 
     // must be called through _findDependencyWithTracking()
-    _findDependency(name: any) {
-        let isOptional = name.endsWith(OPTIONAL_SUFFIX);
-        if (isOptional) name = name.substring(0, name.length - OPTIONAL_SUFFIX.length);
+    _findDependency(name: string, opts: DepSearchOpts = {}) {
+        let isOptional = opts.optional;
+
+        if (name.endsWith(OPTIONAL_SUFFIX)) {
+            isOptional = true;
+            name = name.substring(0, name.length - OPTIONAL_SUFFIX.length);
+        }
 
         if (!utils.isValidName(name)) throw new Error(`Invalid name: '${name}'`);
 
@@ -425,7 +523,7 @@ export class DependencyInjection {
         }
 
         // component factory
-        if (this._factories.hasOwnProperty(name)) {
+        if (this._componentFactories.hasOwnProperty(name)) {
             return this._produceComponent(name);
         }
 
@@ -436,7 +534,7 @@ export class DependencyInjection {
         }
 
         // default component factory
-        if (this._factories.hasOwnProperty(defaultName)) {
+        if (this._componentFactories.hasOwnProperty(defaultName)) {
             return this._produceComponent(defaultName);
         }
 
@@ -448,9 +546,9 @@ export class DependencyInjection {
         }
     }
 
-    _produceComponent(name: any) {
-        const factory = this._factories[name];
-        if (!factory) throw new Error(`The factory '${name}' doesn't exist!`);
+    _produceComponent(name: string) {
+        const factory = this._componentFactories[name];
+        if (!factory) throw new Error(`The component factory '${name}' doesn't exist!`);
 
         const chain = this._depInfo.getChain();
         debug(`Creating component '${name}' (dependency chain: ${chain})`);
@@ -458,13 +556,13 @@ export class DependencyInjection {
         const comp = this._produce(factory);
         this._components[name] = comp;
 
-        const segment = this._segments[name];
+        const segment = this._getOrCreateSegment(name, factory, true);
         segment.value = comp;
 
         return comp;
     }
 
-    _produceMock(name: any) {
+    _produceMock(name: string) {
         const factory = this._mockFactories[name];
         if (!factory) throw new Error(`The mock factory '${name}' doesn't exist!`);
 
@@ -474,21 +572,31 @@ export class DependencyInjection {
         const mock = this._produce(factory);
         this._mocks[name] = mock;
 
-        const segment = this._segments[name];
+        const segment = this._getOrCreateSegment(name, factory, false);
         segment.value = mock;
 
         return mock;
     }
 
-    _produce(factory: any) {
-        return invokers.invoke(factory, (name: any) => this._findDependencyWithTracking(name));
+    private _getOrCreateSegment(name: string, exportedVal: any, real: boolean) {
+        let segment: Segment = this._segments[name];
+
+        if (!segment) {
+            throw new Error(`Found uninitialized segment: '${name}'`);
+        }
+
+        return segment;
     }
 
-    _isInitialized(segment: any) {
+    _produce(factory: any) {
+        return invokers.invoke(factory, (name: string) => this._findDependencyWithTracking(name));
+    }
+
+    _isInitialized(segment: Segment) {
         return ('value' in segment);
     }
 
-    _initSegment(segment: any) {
+    _initSegment(segment: Segment) {
         const segmentName = segment.moduleName ? `${segment.moduleName}/${segment.name}` : segment.name;
 
         this._depInfo.enter(segmentName);
@@ -515,7 +623,7 @@ export class DependencyInjection {
         return segment.value;
     }
 
-    _importGroup(groupName: any, segmentKey?: string) {
+    _importGroup(groupName: string, segmentKey?: string) {
         if (this._groups.hasOwnProperty(groupName)) return this._groups[groupName];
 
         debug(`Importing group '${groupName}' (segment key: '${segmentKey}')`);
@@ -542,10 +650,10 @@ export class DependencyInjection {
         return group;
     }
 
-    _importMembers(segments: any) {
+    _importMembers(segments: Segment[]) {
         debug(`Importing ${segments.length} members`);
 
-        const pendingSegments = segments.filter((s: any) => !this._isInitialized(s));
+        const pendingSegments = segments.filter(seg => !this._isInitialized(seg));
 
         for (const segment of pendingSegments) {
             const [targetName, memberName] = segment.name.split('.');
@@ -563,16 +671,20 @@ export class DependencyInjection {
         }
     }
 
-    getDependency(name: any) {
+    getDependency(name: string) {
         return this._findDependencyWithTracking(name);
     }
 
-    getSegments(segmentKey: any) {
+    getDependencyIfExists(name: string) {
+        return this._findDependencyWithTracking(name, { optional: true });
+    }
+
+    getSegments(segmentKey: string) {
         validateSegmentKey(segmentKey);
         return this._segmentsByKey[segmentKey];
     }
 
-    getGroup(name: any) {
+    getGroup(name: string) {
         return this._groups[name];
     }
 
@@ -587,8 +699,8 @@ export class DependencyInjection {
             segmentsByKey: Object.keys(this._segmentsByKey),
             memberSegmentsByTarget: Object.keys(this._memberSegmentsByTarget),
             components: Object.keys(this._components),
+            componentFactories: Object.keys(this._componentFactories),
             mocks: Object.keys(this._mocks),
-            factories: Object.keys(this._factories),
             mockFactories: Object.keys(this._mockFactories),
             groups: Object.keys(this._groups),
             getters: Object.keys(this._getters),
@@ -596,7 +708,7 @@ export class DependencyInjection {
     }
 
     execute(func: any) {
-        invokers.invoke(func, (name: any) => this._findDependencyWithTracking(name));
+        invokers.invoke(func, (name: string) => this._findDependencyWithTracking(name));
     }
 
     iterateSegments(fn: any) {

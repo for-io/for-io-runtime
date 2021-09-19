@@ -24,22 +24,36 @@
  * SOFTWARE.
  */
 
-import { AppSetup } from "..";
+const path = require('path');
+const { appFactory } = require('../../src/appFactory');
+const { runApiDiligence } = require('../diligence');
+const appSetup = require('./appSetup');
 
-const USER_TYPE = '{ id: string, email : string }';
+const tokens = {};
+async function getAuthToken({ username, agent }) {
+    if (!tokens[username]) {
+        let resp = await agent.post('/login')
+            .send({ username, password: username })
+            .timeout(1000)
+            .catch(err => {
+                console.error(err);
+                throw err;
+            });
 
-function userIdProviderFactory(responses: any) {
-    return function userId(user: any) {
-        let userId = user ? user.id : undefined;
+        if (resp.statusCode !== 200) throw new Error('Expected successful login!');
 
-        if (!userId) throw responses.FORBIDDEN;
-
-        return userId;
-    };
+        tokens[username] = resp.body.token;
+    }
+    return tokens[username];
 }
 
-export function registerUser(app: AppSetup) {
-    app.addProvider({ name: 'user', type: USER_TYPE }, (req: any) => req.user);
-
-    app.addProviderFactory({ name: 'userId', type: 'string' }, userIdProviderFactory);
-}
+// run tests with real auth
+runApiDiligence({
+    testsRoot: path.join(__dirname, 'api-diligence'),
+    test: {
+        tags: ['real-auth'],
+        username: 'spock',
+        opts: { appSetup, appFactory, getAuthToken },
+        config: { USE_MOCKS: false },
+    },
+});

@@ -1,3 +1,3 @@
-import ForIo from './index';
+import { ForIo } from './index';
 
 ForIo.start({});

@@ -24,9 +24,14 @@
  * SOFTWARE.
  */
 
-exports['CONTROLLER listUsers'] = (db, types, responses, _) => {
+const { App } = require("../../../test-helpers");
 
-    return async function listUsers(page, log) {
+App.addEndpoint('listUsers', {
+    verb: 'GET',
+    path: '/users',
+    middleware: ['auth'],
+
+    async controller(db, _, page) {
         let query = {};
 
         let options = {
@@ -42,5 +47,4 @@ exports['CONTROLLER listUsers'] = (db, types, responses, _) => {
 
         return await db.users.find(query, options).toArray();
     }
-
-}
+});

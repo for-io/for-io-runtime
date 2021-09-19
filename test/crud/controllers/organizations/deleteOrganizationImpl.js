@@ -24,9 +24,14 @@
  * SOFTWARE.
  */
 
-exports['CONTROLLER deleteOrganization'] = (db, types, responses, _) => {
+const { App } = require("../../../test-helpers");
 
-    return async function deleteOrganization(organizationId, userId, log) {
+App.addEndpoint('deleteOrganization', {
+    verb: 'DELETE',
+    path: '/organizations/:organizationId',
+    middleware: ['auth'],
+
+    async controller(db, types, responses, _, organizationId, userId, log) {
         // check if the organization exists
         if (!await db.organizations.exists({ _id: organizationId })) throw responses.NOT_FOUND;
 
@@ -40,5 +45,4 @@ exports['CONTROLLER deleteOrganization'] = (db, types, responses, _) => {
 
         return responses.OK;
     }
-
-}
+});

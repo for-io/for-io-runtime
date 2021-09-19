@@ -24,44 +24,47 @@
  * SOFTWARE.
  */
 
-import builtInModules from './builtInModules';
+import { App } from './app';
+import { registerBuiltInComponents } from './built-ins';
 import { DependencyInjection } from './container';
-import { DependencyTracker } from './dep-tracker';
-import invokers from './invokers';
-import { typeRegistry } from './type-registry';
 
-export function createAppContext({
-    modules,
-    moduleNames,
-    components = {},
-    config = {},
-    require
-}: any) {
+export type ComponentsSetup = {
+    _?: any,
+    config?: any,
+    router?: any,
+    mongodb: any,
+    database?: any,
+    logger__default?: any,
+    HTTP_STATUS_CODES?: any,
+}
 
-    const builtInComponents = {
-        invokers,
-        typeRegistry,
-        DependencyTracker,
-        typedefs__default: {},
-        controllers__default: {},
-        api__default: {},
-        config__default: {},
-        logger__default: console,
-    };
+export type AppContextOpts = {
+    modules: any,
+    moduleNames: string[],
+    components: ComponentsSetup,
+    componentFactories: any,
+    config: any,
+    require: any,
+}
 
-    const allModules = Object.assign({}, builtInModules, modules);
-    const allComponents = Object.assign(builtInComponents, components);
+export function createAppContext(opts: AppContextOpts) {
+    App.reset(); // reset the default app
+    const app = App; // using the default app
+
+    registerBuiltInComponents(app);
+    app.addComponents(opts.components || {});
+    app.addComponentFactories(opts.componentFactories || {});
 
     const context = new DependencyInjection({
-        components: allComponents,
-        modules: allModules,
-        moduleNames,
-        useMocks: config.USE_MOCKS,
-        continueOnErrors: config.CONTINUE_ON_ERRORS,
+        app,
+        modules: opts.modules,
+        moduleNames: opts.moduleNames,
+        useMocks: opts.config.USE_MOCKS,
+        continueOnErrors: opts.config.CONTINUE_ON_ERRORS,
         require,
     });
 
-    // trigger initialization of the top-level component
+    // trigger an initialization of the top-level component
     context.getDependency('routing');
 
     return context;

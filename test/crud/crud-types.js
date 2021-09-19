@@ -24,6 +24,8 @@
  * SOFTWARE.
  */
 
+const { App } = require("../../src");
+
 class Organization {
     constructor({ data = {}, prefix = '', types, opts, err, util }) {
 
@@ -163,7 +165,7 @@ class ListTeamsOfOrganizationParams {
     }
 }
 
-exports['SINGLETON typedefs'] = {
+App.addComponent('typedefs', {
     Organization,
     Team,
     AddOrganizationBody,
@@ -178,4 +180,4 @@ exports['SINGLETON typedefs'] = {
     DeleteTeamOfOrganizationParams,
     GetTeamOfOrganizationParams,
     ListTeamsOfOrganizationParams,
-};
+});
