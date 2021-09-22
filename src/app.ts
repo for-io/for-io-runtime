@@ -1,10 +1,11 @@
-import { forOwn, isString } from "lodash";
+import { forOwn, Function0, isString } from "lodash";
 import { DEFAULT_SUFFIX } from "./constants";
 
 const { cloneDeep } = require("lodash");
 
 type AppSetupOpts = {
     name: string,
+    moduleName?: string,
     asDefault?: boolean,
     type?: string,
 };
@@ -146,17 +147,30 @@ export class AppSetup {
     wrapValueWithOpts(optsOrName: AppSetupOptsOrName, value: any) {
         let wrap: AppSetupWrappedValue;
 
-        const moduleName = this._currentModuleName;
+        const moduleName = this._currentModuleName || 'provided';
 
         if (isString(optsOrName)) {
             wrap = { name: optsOrName, moduleName, value };
 
         } else {
             const name = getNameFrom(optsOrName);
-            wrap = { ...cloneDeep(optsOrName), name, moduleName, value };
+
+            // the module name can be overwritten by the opts
+            wrap = { moduleName, ...cloneDeep(optsOrName), name, value };
         }
 
         return wrap;
+    }
+
+    executeWithinModule(moduleName: string, fn: Function0<void>) {
+        this.setCurrentModuleName(moduleName);
+
+        try {
+            fn();
+
+        } finally {
+            this.setCurrentModuleName(undefined);
+        }
     }
 
     print() {

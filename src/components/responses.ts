@@ -26,6 +26,8 @@
 
 import { AppSetup } from "..";
 
+const moduleName = 'built-in:components/responses.ts';
+
 const responses = {
     OK: {},
     CREATED: 201,
@@ -35,5 +37,5 @@ const responses = {
 };
 
 export function registerResponses(app: AppSetup) {
-    app.addComponent({ name: 'responses', asDefault: true }, responses);
+    app.addComponent({ name: 'responses', asDefault: true, moduleName }, responses);
 }

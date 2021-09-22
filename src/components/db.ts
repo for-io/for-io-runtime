@@ -26,6 +26,8 @@
 
 import { AppSetup } from "..";
 
+const moduleName = 'built-in:components/db.ts';
+
 function dbFactory(config: any, database: any, mongodb__getter: any, mongoCollectionExtensions__optional__getter: any) {
 
     switch (config.DB_TYPE) {
@@ -185,7 +187,7 @@ function removeRefFactory(responses: any) {
 }
 
 export function registerDb(app: AppSetup) {
-    app.addServiceFactory({ name: 'db', asDefault: true }, dbFactory);
+    app.addServiceFactory({ name: 'db', asDefault: true, moduleName }, dbFactory);
 
     const target = 'mongoCollectionExtensions';
     app.addMemberFactory(`${target}.exists`, existsFactory);

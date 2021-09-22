@@ -26,6 +26,8 @@
 
 import { AppSetup } from "..";
 
+const moduleName = 'built-in:providers/user.ts';
+
 const USER_TYPE = '{ id: string, email : string }';
 
 function userIdProviderFactory(responses: any) {
@@ -39,7 +41,7 @@ function userIdProviderFactory(responses: any) {
 }
 
 export function registerUser(app: AppSetup) {
-    app.addProvider({ name: 'user', type: USER_TYPE }, (req: any) => req.user);
+    app.addProvider({ name: 'user', type: USER_TYPE, moduleName }, (req: any) => req.user);
 
-    app.addProviderFactory({ name: 'userId', type: 'string' }, userIdProviderFactory);
+    app.addProviderFactory({ name: 'userId', type: 'string', moduleName }, userIdProviderFactory);
 }

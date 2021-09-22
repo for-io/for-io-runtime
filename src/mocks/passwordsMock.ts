@@ -26,6 +26,8 @@
 
 import { AppSetup } from "..";
 
+const moduleName = 'built-in:mocks/passwordsMock.ts';
+
 const passwordsMock = {
 
     async hash(plaintextPassword: any) {
@@ -40,5 +42,5 @@ const passwordsMock = {
 };
 
 export function registerPasswordsMock(app: AppSetup) {
-    app.addMock({ name: 'passwords', asDefault: true }, passwordsMock);
+    app.addMock({ name: 'passwords', asDefault: true, moduleName }, passwordsMock);
 }

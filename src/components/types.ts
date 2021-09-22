@@ -26,6 +26,8 @@
 
 import { AppSetup } from "..";
 
+const moduleName = 'built-in:components/types.ts';
+
 function typesFactory(typeRegistry: any, typedefs: any) {
     typeRegistry.addTypes(typedefs);
 
@@ -33,5 +35,5 @@ function typesFactory(typeRegistry: any, typedefs: any) {
 }
 
 export function registerTypes(app: AppSetup) {
-    app.addServiceFactory({ name: 'types', asDefault: true }, typesFactory);
+    app.addServiceFactory({ name: 'types', asDefault: true, moduleName }, typesFactory);
 }

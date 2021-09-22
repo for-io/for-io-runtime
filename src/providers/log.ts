@@ -26,6 +26,8 @@
 
 import { AppSetup } from "..";
 
+const moduleName = 'built-in:providers/log.ts';
+
 function loggerFactory(logger: any) {
 
     return function log() {
@@ -36,5 +38,5 @@ function loggerFactory(logger: any) {
 }
 
 export function registerLog(app: AppSetup) {
-    app.addProviderFactory({ name: 'log', asDefault: true }, loggerFactory);
+    app.addProviderFactory({ name: 'log', asDefault: true, moduleName }, loggerFactory);
 }

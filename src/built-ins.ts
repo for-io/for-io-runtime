@@ -41,23 +41,25 @@ import { registerUser } from "./providers/user";
 import { typeRegistry } from './type-registry';
 
 export function registerBuiltInComponents(app: AppSetup) {
-    app.addService({ name: 'invokers' }, invokers);
-    app.addService({ name: 'typeRegistry' }, typeRegistry);
-    app.addService({ name: 'DependencyTracker' }, DependencyTracker);
+    app.executeWithinModule('internal', () => {
+        app.addService({ name: 'invokers' }, invokers);
+        app.addService({ name: 'typeRegistry' }, typeRegistry);
+        app.addService({ name: 'DependencyTracker' }, DependencyTracker);
 
-    app.addComponent({ name: 'typedefs', asDefault: true }, {});
-    app.addComponent({ name: 'controllers', asDefault: true }, {});
-    app.addComponent({ name: 'api', asDefault: true }, {});
+        app.addComponent({ name: 'typedefs', asDefault: true }, {});
+        app.addComponent({ name: 'controllers', asDefault: true }, {});
+        app.addComponent({ name: 'api', asDefault: true }, {});
 
-    registerTypes(app);
-    registerResponses(app);
-    registerPasswordsMock(app);
-    registerAuthMiddlewareFactoryMock(app);
-    registerAuthMock(app);
-    registerExceptionHandler(app);
-    registerDb(app); // fixme complete members
-    registerPageProvider(app);
-    registerLog(app);
-    registerUser(app);
-    registerRouting(app);
+        registerTypes(app);
+        registerResponses(app);
+        registerPasswordsMock(app);
+        registerAuthMiddlewareFactoryMock(app);
+        registerAuthMock(app);
+        registerExceptionHandler(app);
+        registerDb(app); // fixme complete members
+        registerPageProvider(app);
+        registerLog(app);
+        registerUser(app);
+        registerRouting(app);
+    });
 }

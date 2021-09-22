@@ -43,7 +43,7 @@ export type AppContextOpts = {
     moduleNames: string[],
     components: ComponentsSetup,
     componentFactories: any,
-    config: any,
+    config: { USE_MOCKS?: boolean, CONTINUE_ON_ERRORS?: boolean },
     require: any,
 }
 

@@ -31,6 +31,8 @@ import { DIContext } from '../container';
 import { sortRoutes } from '../route-sorter';
 import utils from '../utils';
 
+const moduleName = 'built-in:components/routing.ts';
+
 function routing(__context: DIContext, router: any, api: any, auth: any, config: any, controllers: any,
     types: any, providers: any, exceptionHandler: any, logger: any, invokers: any, DependencyTracker: any) {
 
@@ -223,8 +225,9 @@ function routing(__context: DIContext, router: any, api: any, auth: any, config:
             utils.def(route.name, 'route.name');
             utils.def(route.verb, 'route.verb');
             utils.def(route.path, 'route.path');
+            utils.def(route.controller, 'route.controller');
 
-            const controller = _findController(route, controllers);
+            const controller = route.controller; // _findController(route, controllers);
 
             const method = router[route.verb.toLowerCase()].bind(router);
 
@@ -248,6 +251,7 @@ function routing(__context: DIContext, router: any, api: any, auth: any, config:
                 method(...args);
 
             } else {
+                // FIXME this is not needed anymore!
                 const errMsg = `Cannot find a controller for API endpoint: "${route.name}"`;
 
                 if (config.NODE_ENV === 'dev' || config.NODE_ENV === 'test') {
@@ -281,5 +285,5 @@ function routing(__context: DIContext, router: any, api: any, auth: any, config:
 }
 
 export function registerRouting(app: AppSetup) {
-    app.addComponentFactory({ name: 'routing' }, routing);
+    app.addComponentFactory({ name: 'routing', asDefault: true, moduleName }, routing);
 }

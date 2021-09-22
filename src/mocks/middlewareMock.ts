@@ -26,6 +26,8 @@
 
 import { AppSetup } from "..";
 
+const moduleName = 'built-in:mocks/middlewareMock.ts';
+
 const authMiddlewareFactoryMock = {
 
     createMiddleware(route: any) {
@@ -45,5 +47,5 @@ const authMiddlewareFactoryMock = {
 };
 
 export function registerAuthMiddlewareFactoryMock(app: AppSetup) {
-    app.addMock({ name: 'authMiddlewareFactory', asDefault: true }, authMiddlewareFactoryMock);
+    app.addMock({ name: 'authMiddlewareFactory', asDefault: true, moduleName }, authMiddlewareFactoryMock);
 }

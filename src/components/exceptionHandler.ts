@@ -26,6 +26,8 @@
 
 import { AppSetup } from "..";
 
+const moduleName = 'built-in:components/exceptionHandler.ts';
+
 function exceptionHandlerFactory(logger: any, HTTP_STATUS_CODES: any) {
 
     return async (res: any, exception: any) => {
@@ -62,5 +64,5 @@ function exceptionHandlerFactory(logger: any, HTTP_STATUS_CODES: any) {
 }
 
 export function registerExceptionHandler(app: AppSetup) {
-    app.addServiceFactory({ name: 'exceptionHandler', asDefault: true }, exceptionHandlerFactory);
+    app.addServiceFactory({ name: 'exceptionHandler', asDefault: true, moduleName }, exceptionHandlerFactory);
 }

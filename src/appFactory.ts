@@ -45,14 +45,15 @@ export async function appFactory(appSetup: any = {}) {
   const router = appSetup.router || express.Router();
   const moduleNames = getModuleNames(appSetup, config);
 
-  const components = Object.assign({
+  const components = {
     _,
     config,
     router,
     logger__default: logger,
     HTTP_STATUS_CODES,
     passwords__default: passwordsService,
-  }, appSetup.components);
+    ...appSetup.components
+  };
 
   const componentFactories = {
     expressApp__default: expressAppFactory,

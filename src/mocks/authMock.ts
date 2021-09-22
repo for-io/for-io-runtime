@@ -26,6 +26,8 @@
 
 import { AppSetup } from "..";
 
+const moduleName = 'built-in:mocks/authMock.ts';
+
 const authMock = {
 
     signToken(payload: any) {
@@ -35,5 +37,5 @@ const authMock = {
 };
 
 export function registerAuthMock(app: AppSetup) {
-    app.addMock({ name: 'auth', asDefault: true }, authMock);
+    app.addMock({ name: 'auth', asDefault: true, moduleName }, authMock);
 }

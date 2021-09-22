@@ -270,13 +270,13 @@ export class DependencyInjection implements DIContext {
 
     _loadModules(moduleNames: any, app: AppSetup) {
         for (let moduleName of moduleNames.src || []) {
-            this._executeWithinModule(app, moduleName, () => {
+            app.executeWithinModule(moduleName, () => {
                 this._loadModule(moduleName);
             });
         }
 
         for (let moduleName of moduleNames.test || []) {
-            this._executeWithinModule(app, moduleName, () => {
+            app.executeWithinModule(moduleName, () => {
                 this._loadModule(moduleName);
             });
         }
@@ -289,21 +289,10 @@ export class DependencyInjection implements DIContext {
             if (modules.hasOwnProperty(moduleName)) {
                 const mod = modules[moduleName];
 
-                this._executeWithinModule(app, moduleName, () => {
+                app.executeWithinModule(moduleName, () => {
                     this._importSegmentsFromModule(mod, moduleName)
                 });
             }
-        }
-    }
-
-    _executeWithinModule(app: AppSetup, moduleName: string, fn: Function0<void>) {
-        app.setCurrentModuleName(moduleName);
-
-        try {
-            fn();
-
-        } finally {
-            app.setCurrentModuleName(undefined);
         }
     }
 

@@ -26,6 +26,8 @@
 
 import { AppSetup } from "..";
 
+const moduleName = 'built-in:providers/page.ts';
+
 function pageProvider(params: any) {
     const DEFAULT_PAGE_SIZE = 10;
     const MAX_PAGE_SIZE = 100;
@@ -38,5 +40,5 @@ function pageProvider(params: any) {
 };
 
 export function registerPageProvider(app: AppSetup) {
-    app.addProvider({ name: 'page', asDefault: true }, pageProvider);
+    app.addProvider({ name: 'page', asDefault: true, moduleName }, pageProvider);
 }
