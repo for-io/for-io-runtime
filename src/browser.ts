@@ -24,11 +24,6 @@
  * SOFTWARE.
  */
 
-import { createAppContext } from './appcontext';
-import { DependencyInjection } from './container';
-export { App } from './app';
-export { typeRegistry } from './type-registry';
+export { AppSetup } from './app';
+export { createAppContext } from './appcontext';
 
-export const container = { DependencyInjection };
-
-export const appcontext = { createAppContext };

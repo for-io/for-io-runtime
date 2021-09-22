@@ -54,7 +54,7 @@ export function getParamNames(func: any) {
 
     for (const name of paramNames) {
         if (!utils.isValidName(name)) {
-            throw new Error(`Invalid parameter names: '${paramsStr}' of function:\n${JSON.stringify(func)}`);
+            throw new Error(`Invalid parameter names: '${paramsStr}' of function:\n${func}`);
         }
     }
 

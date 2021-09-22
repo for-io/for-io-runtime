@@ -64,10 +64,10 @@ function dbFactory(config: any, database: any, mongodb__getter: any, mongoCollec
         }
 
         return new Proxy(dbTarget, {
-            get: function (target, propName, receiver) {
+            get: function (target: any, propName: string, receiver: any) {
 
                 // if not a symbol and not an existing property and not internal
-                if (typeof propName === 'string' && !target.hasOwnProperty(propName) && !propName.startsWith('__')) {
+                if (isCollProperty(target, propName)) {
                     target[propName] = extendTable(tableFactory(propName));
                 }
 
@@ -77,6 +77,14 @@ function dbFactory(config: any, database: any, mongodb__getter: any, mongoCollec
     }
 
 };
+
+function isCollProperty(target: any, propName: string) {
+    return typeof propName === 'string'
+        && !target.hasOwnProperty(propName)
+        && !propName.startsWith('__')
+        && propName !== 'then'
+        && propName !== 'toJSON';
+}
 
 function existsFactory(responses: any) {
 

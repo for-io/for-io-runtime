@@ -44,7 +44,6 @@ module.exports = {
     output: {
         path: path.resolve(__dirname, 'dist'),
         filename: 'ForIoRuntime.js',
-        library: 'ForIoRuntime',
         libraryTarget: 'commonjs-module',
     },
 };

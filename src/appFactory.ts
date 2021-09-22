@@ -28,6 +28,7 @@ import express from 'express';
 import { STATUS_CODES as HTTP_STATUS_CODES } from 'http';
 import _ from 'lodash';
 import path from 'path';
+import { App } from '.';
 import { createAppContext } from './appcontext';
 import { authFactory, authMiddlewareFactoryService } from "./server-modules/auth";
 import { connectToDb } from './server-modules/dbconn';
@@ -65,7 +66,10 @@ export async function appFactory(appSetup: any = {}) {
     Object.assign(components, await connectToDb(config));
   }
 
+  App.reset(); // reset the default app before creating the context
+
   const context = createAppContext({
+    app: App, // using the default app
     modules,
     moduleNames,
     components,
@@ -84,9 +88,9 @@ export async function appFactory(appSetup: any = {}) {
     });
   }
 
-  const app = context.getDependency('expressApp');
+  const expressApp = context.getDependency('expressApp');
 
-  return { app, config };
+  return { app: expressApp, config };
 }
 
 function getModuleNames(appSetup: any, config: any) {

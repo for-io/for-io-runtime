@@ -28,7 +28,7 @@ const { runTest } = require('../diligence');
 const { appFactory } = require('../../src/appFactory');
 const { App } = require('../../src');
 
-const mod = () => {
+const mod = (config) => {
     App.addEndpoint('POST /mail', (mail) => ({ mail: mail.send() }));
 
     App.addService('mail', {

@@ -24,7 +24,7 @@
  * SOFTWARE.
  */
 
-import { App } from './app';
+import { AppSetup } from '.';
 import { registerBuiltInComponents } from './built-ins';
 import { DependencyInjection } from './container';
 
@@ -39,6 +39,7 @@ export type ComponentsSetup = {
 }
 
 export type AppContextOpts = {
+    app: AppSetup,
     modules: any,
     moduleNames: string[],
     components: ComponentsSetup,
@@ -48,8 +49,7 @@ export type AppContextOpts = {
 }
 
 export function createAppContext(opts: AppContextOpts) {
-    App.reset(); // reset the default app
-    const app = App; // using the default app
+    const app = opts.app;
 
     registerBuiltInComponents(app);
     app.addComponents(opts.components || {});
