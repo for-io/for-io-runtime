@@ -1,7 +1,7 @@
 /*!
  * for-io-runtime
  *
- * Copyright (c) 2019-2020 Nikolche Mihajlovski and EPFL
+ * Copyright (c) 2019-2021 Nikolche Mihajlovski and EPFL
  * 
  * MIT License
  * 
