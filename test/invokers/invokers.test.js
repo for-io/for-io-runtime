@@ -24,24 +24,35 @@
  * SOFTWARE.
  */
 
-const { runTest } = require('../diligence');
-const { appFactory } = require('../../src/appFactory');
-const { App } = require('../../src');
+const { invoke, invokeAsync } = require("../../src/invokers");
 
-const mod1 = () => {
-    App.addEndpoint('GET /hello', ({ query }) => ({ msg: `Hello, ${query.name}!` }));
-};
+const args = { x: 3, y: 4, z: 5 };
 
-const appSetup = { modules: { mod1 } };
+describe('invokers', () => {
 
-runTest({
-    name: 'hello',
-    opts: { appSetup, appFactory },
-    cases: [{
-        name: 'say hello',
-        steps: [{
-            request: 'GET /hello?name=spock',
-            200: { msg: 'Hello, spock!' },
-        }],
-    }],
+    it('should invoke fn with params as list', () => {
+        let ret = invoke((x, y) => x + y, (paramName) => args[paramName]);
+
+        expect(ret).toEqual(7);
+    });
+
+    it('should invoke fn with params as obj', () => {
+        let ret = invoke(({ y, z }) => y + z, (paramName) => args[paramName]);
+
+        expect(ret).toEqual(9);
+    });
+
+
+    it('should invoke fn with params as list with async arg provider', async () => {
+        let ret = await invokeAsync(async (x, y) => x + y, async (paramName) => await args[paramName]);
+
+        expect(ret).toEqual(7);
+    });
+
+    it('should invoke fn with params as obj with async arg provider', async () => {
+        let ret = await invokeAsync(async ({ y, z }) => y + z, async (paramName) => await args[paramName]);
+
+        expect(ret).toEqual(9);
+    });
+
 });

@@ -29,7 +29,12 @@ import utils from './utils';
 const STRIP_COMMENTS_REGEX = /((\/\/.*$)|(\/\*[\S\s]*?\*\/))/mg;
 const ARGUMENT_NAMES_REGEX = /([^\s,]+)/g;
 
-export function getParamNames(func: any) {
+export type ParamsInfo = {
+    paramNames: string[],
+    asObject: boolean,
+}
+
+export function getParamsInfo(func: any): ParamsInfo {
     let fnStr = func.toString().replace(STRIP_COMMENTS_REGEX, '').trim();
     if (fnStr.startsWith('async ')) {
         fnStr = fnStr.substring(6);
@@ -50,6 +55,12 @@ export function getParamNames(func: any) {
 
     paramsStr = paramsStr.trim();
 
+    let asObject = paramsStr.startsWith('{') && paramsStr.endsWith('}');
+
+    if (asObject) {
+        paramsStr = paramsStr.substring(1, paramsStr.length - 2);
+    }
+
     const paramNames = paramsStr.match(ARGUMENT_NAMES_REGEX) || [];
 
     for (const name of paramNames) {
@@ -58,7 +69,7 @@ export function getParamNames(func: any) {
         }
     }
 
-    return paramNames;
+    return { paramNames, asObject };
 }
 
 export function invoke(func: any, argProvider: any, thiz?: any) {
@@ -67,8 +78,21 @@ export function invoke(func: any, argProvider: any, thiz?: any) {
 
     thiz = thiz || func;
 
-    const paramNames = getParamNames(func);
-    const args = paramNames.map(argProvider);
+    const paramsInfo = getParamsInfo(func);
+
+    let args;
+    if (paramsInfo.asObject) {
+        const argObj: any = {};
+
+        for (const paramName of paramsInfo.paramNames) {
+            argObj[paramName] = argProvider(paramName);
+        }
+
+        args = [argObj];
+
+    } else {
+        args = paramsInfo.paramNames.map(argProvider);
+    }
 
     return func.apply(thiz, args);
 }
@@ -79,11 +103,22 @@ export async function invokeAsync(func: any, asyncArgProvider: any, thiz: any) {
 
     thiz = thiz || func;
 
-    const paramNames = getParamNames(func);
+    const paramsInfo = getParamsInfo(func);
     const args = [];
 
-    for (const paramName of paramNames) {
-        args.push(await asyncArgProvider(paramName));
+    if (paramsInfo.asObject) {
+        const argObj: any = {};
+
+        for (const paramName of paramsInfo.paramNames) {
+            argObj[paramName] = await asyncArgProvider(paramName);
+        }
+
+        args.push(argObj);
+
+    } else {
+        for (const paramName of paramsInfo.paramNames) {
+            args.push(await asyncArgProvider(paramName));
+        }
     }
 
     return await func.apply(thiz, args);

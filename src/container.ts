@@ -327,8 +327,8 @@ export class DependencyInjection implements DIContext {
         }
     }
 
-    private _getDependencies(segmentVal: any) {
-        return utils.isFunction(segmentVal) ? invokers.getParamNames(segmentVal) : [];
+    private _getDependencies(segmentVal: any): string[] {
+        return utils.isFunction(segmentVal) ? invokers.getParamsInfo(segmentVal).paramNames : [];
     }
 
     _getSegs(segmentKey: any): Segment[] {
