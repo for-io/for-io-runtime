@@ -28,7 +28,7 @@ import express from 'express';
 import { STATUS_CODES as HTTP_STATUS_CODES } from 'http';
 import _ from 'lodash';
 import path from 'path';
-import { App } from '.';
+import { App } from './app';
 import { createAppContext } from './appcontext';
 import { authFactory, authMiddlewareFactoryService } from "./server-modules/auth";
 import { connectToDb } from './server-modules/dbconn';

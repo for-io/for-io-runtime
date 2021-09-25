@@ -24,9 +24,8 @@
  * SOFTWARE.
  */
 
-import { forOwn, Function0 } from 'lodash';
-import { AppSetup } from '.';
-import { AppSetupElements, AppSetupWrappedValue } from './app';
+import { forOwn } from 'lodash';
+import { AppSetup, AppSetupElements, AppSetupWrappedValue } from './app';
 import { DEFAULT_SUFFIX, GETTER_SUFFIX, OPTIONAL_SUFFIX } from './constants';
 import { DependencyTracker } from './dep-tracker';
 import * as invokers from './invokers';

@@ -24,7 +24,7 @@
  * SOFTWARE.
  */
 
-import { AppSetup } from '.';
+import { AppSetup } from './app';
 import { registerBuiltInComponents } from './built-ins';
 import { DependencyInjection } from './container';
 
@@ -55,13 +55,15 @@ export function createAppContext(opts: AppContextOpts) {
     app.addComponents(opts.components || {});
     app.addComponentFactories(opts.componentFactories || {});
 
+    const fnRequire = require;
+
     const context = new DependencyInjection({
         app,
         modules: opts.modules,
         moduleNames: opts.moduleNames,
         useMocks: opts.config.USE_MOCKS,
         continueOnErrors: opts.config.CONTINUE_ON_ERRORS,
-        require,
+        require: fnRequire,
     });
 
     // trigger an initialization of the top-level component
