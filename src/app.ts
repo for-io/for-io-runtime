@@ -144,7 +144,7 @@ export class AppSetup {
         };
     }
 
-    wrapValueWithOpts(optsOrName: AppSetupOptsOrName, value: any) {
+    private wrapValueWithOpts(optsOrName: AppSetupOptsOrName, value: any) {
         let wrap: AppSetupWrappedValue;
 
         const moduleName = this._currentModuleName || 'provided';

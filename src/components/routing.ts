@@ -36,13 +36,13 @@ const moduleName = 'built-in:components/routing.ts';
 function routing(__context: DIContext, router: any, api: any, auth: any, config: any, controllers: any,
     types: any, providers: any, exceptionHandler: any, logger: any, invokers: any, DependencyTracker: any) {
 
-    async function run(name: any, controller: any, req: any, res: any, next: any, specification: any) {
+    async function run(name: string, controller: any, req: any, res: any, next: any, specification: any) {
 
         let _exception: any; // will be set if the controller throws an exception
 
         let _dataObjs: any = {}; // a cache for data objects (params, query, body, headers, cookies)
 
-        function initDataObj(name: any) {
+        function initDataObj(name: string) {
             let typeName = specification.typeNames ? specification.typeNames[name] : undefined;
 
             if (typeName) {
@@ -59,7 +59,7 @@ function routing(__context: DIContext, router: any, api: any, auth: any, config:
             }
         }
 
-        function provideDataObj(name: any) {
+        function provideDataObj(name: string) {
             if (!(name in _dataObjs)) {
                 _dataObjs[name] = initDataObj(name);
             }
@@ -67,7 +67,7 @@ function routing(__context: DIContext, router: any, api: any, auth: any, config:
             return _dataObjs[name];
         }
 
-        function getDataParamOrComponent(name: any) {
+        function getDataParamOrComponent(name: string) {
             let comp = __context.getDependencyIfExists(name);
             if (comp !== undefined) return comp;
 
@@ -78,7 +78,7 @@ function routing(__context: DIContext, router: any, api: any, auth: any, config:
             throw new Error(`Unknown parameter/component name: '${name}'`);
         }
 
-        async function provide(name: any, depTracker: any) {
+        async function provide(name: string, depTracker: any) {
             depTracker.enter(name);
 
             try {
@@ -90,13 +90,13 @@ function routing(__context: DIContext, router: any, api: any, auth: any, config:
         }
 
         // must be called only by provide(...)
-        async function _provide(name: any, depTracker: any) {
+        async function _provide(name: string, depTracker: any) {
 
             if (providers.hasOwnProperty(name)) {
-                return await invokers.invokeAsync(providers[name], async (depName: any) => await provide(depName, depTracker));
+                return await invokers.invokeAsync(providers[name], async (depName: string) => await provide(depName, depTracker));
 
             } else if (providers.hasOwnProperty(name + DEFAULT_SUFFIX)) {
-                return await invokers.invokeAsync(providers[name + DEFAULT_SUFFIX], async (depName: any) => await provide(depName, depTracker));
+                return await invokers.invokeAsync(providers[name + DEFAULT_SUFFIX], async (depName: string) => await provide(depName, depTracker));
             }
 
             switch (name) {
@@ -146,7 +146,7 @@ function routing(__context: DIContext, router: any, api: any, auth: any, config:
                 throw new Error(`Undefined controller for API endpoint '${name}'!`);
             }
 
-            result = await invokers.invokeAsync(controller, async (depName: any) => await provide(depName, apiDepTracker));
+            result = await invokers.invokeAsync(controller, async (depName: string) => await provide(depName, apiDepTracker));
 
         } catch (exception) {
             res._exception = exception; // make the exception accessible through the response (needed for the IDE)
@@ -160,7 +160,7 @@ function routing(__context: DIContext, router: any, api: any, auth: any, config:
 
             try {
                 apiDepTracker.enter('exceptionHandler');
-                result = await invokers.invokeAsync(exceptionHandler, async (depName: any) => await provide(depName, apiDepTracker));
+                result = await invokers.invokeAsync(exceptionHandler, async (depName: string) => await provide(depName, apiDepTracker));
             } catch (err) {
                 logger.error('An error was thrown by the exception handler!', err);
                 next(err);
@@ -173,7 +173,7 @@ function routing(__context: DIContext, router: any, api: any, auth: any, config:
         }
     }
 
-    function _fnToRoute(name: any, fn: any) {
+    function _fnToRoute(name: string, fn: any) {
         const { verb, path } = utils.extractRoute(name);
 
         return { name, verb, path, controller: fn };
