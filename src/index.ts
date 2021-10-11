@@ -25,18 +25,19 @@
  */
 
 export { App, AppSetup } from './app';
-import { appFactory } from './appFactory';
+export { PrimitiveTypes, ValidationErrors, TypeImplUtils, TypeImplOpts, EntityOptions, TypeInstanceFactory, ForIoType } from './type-registry';
+import { appFactory as createApp } from './appFactory';
 import server from './server';
 
+export const appFactory = createApp;
+
 async function initAndStartServer(opts: any) {
-    const { app, config } = opts.app ? opts : await appFactory(opts);
+    const { app, config } = opts.app ? opts : await createApp(opts);
 
     server.listen({ app, config });
 }
 
 export const ForIo = {
-    appFactory,
-
     start(opts: any) {
         initAndStartServer(opts).catch(e => console.log('Error while starting the server!', e));
     }

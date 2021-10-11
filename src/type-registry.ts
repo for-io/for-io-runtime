@@ -24,26 +24,83 @@
  * SOFTWARE.
  */
 
+import { forOwn } from 'lodash';
 import utils from './utils';
 
 const ERR_DATA_VALIDATION = 'Data validation errors!';
 
 const NO_VAL = null;
 
-const _types: any = {};
+type InternalTypeInstanceFactory = (
+    data: any,
+    opts?: EntityOptions,
+    err?: ValidationErrors,
+    name?: string,
+    types?: TypeFactories,
+    util?: TypeImplUtils
+) => any;
 
-const _util = { _has, _coll };
+export type TypeInstanceFactory = (
+    data: any,
+    opts?: EntityOptions,
+    err?: ValidationErrors,
+    name?: string,
+) => any;
 
-function _registerType(typeName: any, factory: any, isBuiltIn: any) {
+export type ForIoType = {
+    validate(): void;
+    isValid(): boolean;
+    getValidationErrors(): any;
+}
+
+type DataTypeOptions = {
+    name?: string,
+    validation?: boolean,
+};
+
+export type EntityOptions = {
+    name?: string,
+    validation?: boolean,
+    defaults?: true,
+};
+
+export type TypeImplOpts = {
+    data: any,
+    prefix: string,
+    opts?: EntityOptions,
+    err?: ValidationErrors,
+    types: TypeFactories,
+    util: TypeImplUtils,
+};
+
+export type TypeImplUtils = {
+    _has(val: any): boolean;
+    _coll(factory: InternalTypeInstanceFactory, val: any, opts: EntityOptions, err: ValidationErrors, name: string): any[];
+};
+
+type TypeFactories = Record<string, InternalTypeInstanceFactory>;
+
+const _types: TypeFactories = {};
+
+const _util: TypeImplUtils = { _has, _coll };
+
+function _registerType(typeName: string, factory: TypeInstanceFactory, isBuiltIn: boolean) {
     _types[typeName] = _wrap(factory, isBuiltIn);
     _types[`${typeName}Array`] = _wrap(_arrayFactory(factory), isBuiltIn);
 }
 
-class _ValidationErrors {
-    errors: any;
-    prefix: any;
+type ErrorsHolder = {
+    hasErrors: boolean,
+    details: any,
+};
 
-    constructor(errors?: any, prefix = '') {
+export class ValidationErrors {
+
+    private errors: ErrorsHolder;
+
+    private prefix: string;
+
+    constructor(errors?: ErrorsHolder, prefix: string = '') {
         this.errors = errors || {
             hasErrors: false,
             details: {},
@@ -52,7 +109,7 @@ class _ValidationErrors {
         this.prefix = prefix;
     }
 
-    error(name: any, msg: any) {
+    error(name: string, msg: string) {
         this.errors.hasErrors = true;
 
         const key = this.prefix + name;
@@ -62,23 +119,23 @@ class _ValidationErrors {
         }
     }
 
-    no(name: any) {
+    no(name: string) {
         this.error(name, 'Missing value');
         return NO_VAL;
     }
 
-    wrongType(name: any, type: any, val: any) {
+    wrongType(name: string, type: string, val: any) {
         this.error(name, `Must be ${type}`);
     }
 
-    verify(cond: any, name: any, msg: any) {
+    verify(cond: boolean, name: string, msg: string) {
         if (!cond) {
             this.error(name, msg);
         }
     }
 
-    nested(name: any) {
-        return new _ValidationErrors(this.errors, this.prefix + name + '.');
+    nested(name: string) {
+        return new ValidationErrors(this.errors, this.prefix + name + '.');
     }
 
     hasErrors() {
@@ -99,9 +156,13 @@ function _validationErr(details: any) {
     return e;
 }
 
-function _error(err: any, opts: any, name: any, msg: any) {
+function _error(err: ValidationErrors, opts: DataTypeOptions, msg: string) {
+    let name = opts ? opts.name : undefined;
+
     if (err) {
+        if (name === undefined) throw new Error('The name of the type instance be defined!');
         err.error(name, msg);
+
     } else {
         let validate = opts && opts.validation;
         let errMsg = name ? `${name}: ${msg}` : msg;
@@ -109,9 +170,13 @@ function _error(err: any, opts: any, name: any, msg: any) {
     }
 }
 
-function _wrongType(err: any, opts: any, name: any, type: any, val: any) {
+function _wrongType(err: ValidationErrors | undefined, opts: DataTypeOptions | undefined, type: string, val: any) {
+    let name = opts ? opts.name : undefined;
+
     if (err) {
-        err.wrongType(name, type, val)
+        if (name === undefined) throw new Error('The name of the type instance be defined!');
+        err.wrongType(name, type, val);
+
     } else {
         let validate = opts && opts.validation;
         let errMsg = name ? `'${name}' must be ${type}!` : `Must be ${type}!`;
@@ -121,16 +186,16 @@ function _wrongType(err: any, opts: any, name: any, type: any, val: any) {
 
 const _builtInTypes = {
 
-    _float(val: any, opts: any, err: any, name: any) {
+    _float(val: any, opts: DataTypeOptions, err: ValidationErrors): number | null {
         if (utils.isNumber(val)) {
             return parseFloat(val);
         } else {
-            _wrongType(err, opts, name, 'float', val);
+            _wrongType(err, opts, 'float', val);
             return NO_VAL;
         }
     },
 
-    _int(val: any, opts: any, err: any, name: any) {
+    _int(val: any, opts: DataTypeOptions, err: ValidationErrors) {
         if (utils.isNumber(val)) {
             let n = parseFloat(val);
 
@@ -139,11 +204,11 @@ const _builtInTypes = {
             }
         }
 
-        _wrongType(err, opts, name, 'integer', val);
+        _wrongType(err, opts, 'integer', val);
         return NO_VAL;
     },
 
-    _uint(val: any, opts: any, err: any, name: any) {
+    _uint(val: any, opts: DataTypeOptions, err: ValidationErrors) {
         if (utils.isNumber(val)) {
             let n = parseFloat(val);
 
@@ -151,26 +216,26 @@ const _builtInTypes = {
                 if (n >= 0) {
                     return n;
                 } else {
-                    _error(err, opts, name, 'Cannot be negative');
+                    _error(err, opts, 'Cannot be negative');
                     return NO_VAL;
                 }
             }
         }
 
-        _wrongType(err, opts, name, 'integer', val);
+        _wrongType(err, opts, 'integer', val);
         return NO_VAL;
     },
 
-    _byte(val: any, opts: any, err: any, name: any) {
+    _byte(val: any, opts: DataTypeOptions, err: ValidationErrors) {
         if (utils.isNumber(val)) {
             let n = parseFloat(val);
 
             if (Number.isInteger(n)) {
                 if (n >= 256) {
-                    _error(err, opts, name, 'Must be < 256');
+                    _error(err, opts, 'Must be < 256');
                     return NO_VAL;
                 } else if (n < 0) {
-                    _error(err, opts, name, 'Cannot be negative');
+                    _error(err, opts, 'Cannot be negative');
                     return NO_VAL;
                 } else {
                     return n;
@@ -178,29 +243,29 @@ const _builtInTypes = {
             }
         }
 
-        _wrongType(err, opts, name, 'byte', val);
+        _wrongType(err, opts, 'byte', val);
         return NO_VAL;
     },
 
-    _string(val: any, opts: any, err: any, name: any) {
+    _string(val: any, opts: DataTypeOptions, err: ValidationErrors) {
         if (utils.isString(val)) {
             return val;
         } else {
-            _wrongType(err, opts, name, 'string', val);
+            _wrongType(err, opts, 'string', val);
             return NO_VAL;
         }
     },
 
-    _email(val: any, opts: any, err: any, name: any) {
+    _email(val: any, opts: DataTypeOptions, err: ValidationErrors) {
         if (utils.isString(val) && EMAIL_REGEX.test(val)) {
             return val;
         } else {
-            _wrongType(err, opts, name, 'email', val);
+            _wrongType(err, opts, 'email', val);
             return NO_VAL;
         }
     },
 
-    _boolean(val: any, opts: any, err: any, name: any) {
+    _boolean(val: any, opts: DataTypeOptions, err: ValidationErrors) {
         if (utils.isBoolean(val)) {
             return val;
         } else {
@@ -209,17 +274,17 @@ const _builtInTypes = {
             } else if (val === 'false' || val === 'n' || val == 0) {
                 return false;
             } else {
-                _wrongType(err, opts, name, 'boolean', val);
+                _wrongType(err, opts, 'boolean', val);
                 return NO_VAL;
             }
         }
     },
 
-    _object(val: any, opts: any, err: any, name: any) {
+    _object(val: any, opts: DataTypeOptions, err: ValidationErrors) {
         if (utils.isObject(val)) {
             return val;
         } else {
-            _wrongType(err, opts, name, 'object', val);
+            _wrongType(err, opts, 'object', val);
             return {};
         }
     },
@@ -230,13 +295,15 @@ function _has(val: any) {
     return val !== undefined && val !== null;
 }
 
-function _coll(factory: any, val: any, opts: any, err: any, name: any) {
+function _coll(factory: InternalTypeInstanceFactory, val: any, opts?: EntityOptions, err?: ValidationErrors, name?: string): any[] {
+    name = opts?.name || name || '';
+
     if (val !== undefined && val !== null) {
 
         if (utils.isArray(val)) {
             return val.map((item: any, index: any) => factory(item, opts, err, name + index + '.', _types, _util));
         } else {
-            _wrongType(err, opts, name, 'array', val);
+            _wrongType(err, opts, 'array', val);
             return [];
         }
 
@@ -245,52 +312,78 @@ function _coll(factory: any, val: any, opts: any, err: any, name: any) {
     }
 }
 
-function _arrayFactory(itemFactory: any) {
-    return (arr: any, opts: any, err: any, name: any) => _coll(itemFactory, arr, opts, err, name || '');
+function _arrayFactory(itemFactory: InternalTypeInstanceFactory): TypeInstanceFactory {
+    return (arr: any, opts?: EntityOptions, err?: ValidationErrors, name?: string) => _coll(itemFactory, arr, opts, err, name);
 }
 
-function _wrap(factory: any, isBuiltIn: any) {
-    return function (value: any, opts: any) {
-        // NOTE opts can be undefined!
-        const isRoot = arguments.length <= 2;
+function _wrap(factory: InternalTypeInstanceFactory, isBuiltIn: boolean): TypeInstanceFactory {
+    return function (value: any, opts?: EntityOptions, err?: ValidationErrors, name?: string): ForIoType {
 
-        let _err = arguments[2];
-        if (isRoot && !isBuiltIn) _err = new _ValidationErrors();
+        const isRoot = err === undefined && name === undefined;
+        if (isRoot && !isBuiltIn) err = new ValidationErrors();
+        if (isRoot && opts && opts.name) name = opts.name;
 
-        let _name = arguments[3];
-        if (isRoot && opts && opts.name) _name = opts.name;
+        const result: ForIoType = factory(value, opts, err, name, _types, _util);
 
-        const result = factory(value, opts, _err, _name, _types, _util);
-
-        function validate(this: any) {
-            if (_err.hasErrors()) {
-                throw _validationErr(_err.details());
-            }
-
-            return this;
-        }
-
-        function isValid() {
-            return !_err.hasErrors();
-        }
-
-        function getValidationErrors() {
-            return _err.details();
-        }
-
-        if (isRoot) {
-            if (utils.isObject(result) || utils.isArray(result)) {
-                result.validate = validate.bind(result);
-                result.isValid = isValid.bind(result);
-                result.getValidationErrors = getValidationErrors.bind(result);
-            }
+        if (isRoot && err !== undefined && (utils.isObject(result) || utils.isArray(result))) {
+            bindValidationMethods(result, err);
         }
 
         return result;
     };
 }
 
-const _defaultTypes: any = {
+function bindValidationMethods(result: ForIoType, errors: ValidationErrors) {
+
+    function validate(this: ForIoType) {
+        if (errors.hasErrors()) {
+            throw _validationErr(errors.details());
+        }
+
+        return this;
+    }
+
+    function isValid() {
+        return !errors.hasErrors();
+    }
+
+    function getValidationErrors() {
+        return errors.details();
+    }
+
+    result.validate = validate.bind(result);
+    result.isValid = isValid.bind(result);
+    result.getValidationErrors = getValidationErrors.bind(result);
+}
+
+
+export type PrimitiveTypes = {
+    float(val: any, opts?: DataTypeOptions, err?: ValidationErrors): number | null,
+    double(val: any, opts?: DataTypeOptions, err?: ValidationErrors): number | null,
+    number(val: any, opts?: DataTypeOptions, err?: ValidationErrors): number | null,
+    int(val: any, opts?: DataTypeOptions, err?: ValidationErrors): number | null,
+    int32(val: any, opts?: DataTypeOptions, err?: ValidationErrors): number | null,
+    int64(val: any, opts?: DataTypeOptions, err?: ValidationErrors): number | null,
+    integer(val: any, opts?: DataTypeOptions, err?: ValidationErrors): number | null,
+    uint(val: any, opts?: DataTypeOptions, err?: ValidationErrors): number | null,
+    byte(val: any, opts?: DataTypeOptions, err?: ValidationErrors): number | null,
+    string(val: any, opts?: DataTypeOptions, err?: ValidationErrors): string | null,
+    text(val: any, opts?: DataTypeOptions, err?: ValidationErrors): string | null,
+    email(val: any, opts?: DataTypeOptions, err?: ValidationErrors): string | null,
+    userid(val: any, opts?: DataTypeOptions, err?: ValidationErrors): string | null,
+    username(val: any, opts?: DataTypeOptions, err?: ValidationErrors): string | null,
+    boolean(val: any, opts?: DataTypeOptions, err?: ValidationErrors): boolean | null,
+    date(val: any, opts?: DataTypeOptions, err?: ValidationErrors): string | null,
+    datetime(val: any, opts?: DataTypeOptions, err?: ValidationErrors): string | null,
+    object(val: any, opts?: DataTypeOptions, err?: ValidationErrors): object | null,
+    binary(val: any, opts?: DataTypeOptions, err?: ValidationErrors): string | null,
+    base64(val: any, opts?: DataTypeOptions, err?: ValidationErrors): string | null,
+    password(val: any, opts?: DataTypeOptions, err?: ValidationErrors): string | null,
+    uri(val: any, opts?: DataTypeOptions, err?: ValidationErrors): string | null,
+    uuid(val: any, opts?: DataTypeOptions, err?: ValidationErrors): string | null,
+};
+
+const _defaultTypes: PrimitiveTypes = {
     'float': _builtInTypes._float,
     'double': _builtInTypes._float,
     'number': _builtInTypes._float,
@@ -316,31 +409,25 @@ const _defaultTypes: any = {
     'uuid': _builtInTypes._string,
 };
 
-for (const typeName in _defaultTypes) {
-    if (_defaultTypes.hasOwnProperty(typeName)) {
-        const factory = _defaultTypes[typeName];
-        _registerType(typeName, factory, true);
-    }
-}
+forOwn(_defaultTypes, (factory: InternalTypeInstanceFactory, typeName: string) => {
+    _registerType(typeName, factory, true);
+});
 
 function getTypes() {
     return _types;
 }
 
-function addTypes(types: any) {
-    for (const typeName in types) {
-        if (types.hasOwnProperty(typeName)) {
-            const typeClass = types[typeName];
-            _registerType(typeName, (data: any, opts: any, err: any, name = '') => new typeClass({
-                data,
-                prefix: name,
-                types: _types,
-                opts,
-                err,
-                util: _util,
-            }), false);
-        }
-    }
+function addTypes(types: Record<string, any>) {
+    forOwn(types, (typeClass: new (args: TypeImplOpts) => any, typeName: string) => {
+        _registerType(typeName, (data: any, opts?: EntityOptions, err?: ValidationErrors, name: string = '') => new typeClass({
+            data,
+            prefix: name,
+            types: _types,
+            opts,
+            err,
+            util: _util,
+        }), false);
+    });
 }
 
 export const typeRegistry = {

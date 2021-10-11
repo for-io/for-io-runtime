@@ -43,7 +43,7 @@ function dbFactory(config: any, database: any, mongodb__getter: any, mongoCollec
             ObjectId: mongodb.ObjectId.bind(mongodb),
         };
 
-        const collFactory = (name: any) => database.collection(name);
+        const collFactory = (name: string) => database.collection(name);
 
         return createDbProxy(dbProxyTarget, collFactory, mongoCollectionExtensions);
     }
@@ -168,7 +168,7 @@ function updateByIdFactory(responses: any) {
 
 function addRefFactory(responses: any) {
 
-    return async function addRef(this: any, docId: any, relName: any, refId: any) {
+    return async function addRef(this: any, docId: any, relName: string, refId: any) {
         let result = await this.updateOne({ _id: docId }, {
             $push: {
                 [relName]: refId
@@ -182,7 +182,7 @@ function addRefFactory(responses: any) {
 
 function removeRefFactory(responses: any) {
 
-    return async function removeRef(this: any, docId: any, relName: any, refId: any) {
+    return async function removeRef(this: any, docId: any, relName: string, refId: any) {
         let result = await this.updateOne({ _id: docId }, {
             $pull: {
                 [relName]: refId

@@ -35,7 +35,7 @@ export class DependencyTracker {
         return this._chain.slice(startingPos).join(' -> ');
     }
 
-    enter(name: any) {
+    enter(name: string) {
         let pos = this._chain.indexOf(name);
 
         if (pos >= 0) {
@@ -49,7 +49,7 @@ export class DependencyTracker {
         this._chain.push(name);
     }
 
-    leave(name: any) {
+    leave(name: string) {
         let len = this._chain.length;
 
         if (len > 0 && this._chain[len - 1] === name) {

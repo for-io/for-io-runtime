@@ -26,7 +26,7 @@
 
 export default {
 
-    isValidName(name: any) {
+    isValidName(name: string) {
         return /^[\w_$]+$/.test(name);
     },
 
@@ -61,15 +61,15 @@ export default {
         return x !== null && (typeof x === 'object') && !Array.isArray(x);
     },
 
-    must(cond: any, errMsg = 'Assertion failed!') {
+    must(cond: boolean, errMsg = 'Assertion failed!') {
         if (!cond) throw new Error(errMsg);
     },
 
-    def(val: any, desc: any) {
+    def(val: any, desc: string) {
         if (val === undefined) throw new Error(`Undefined "${desc}"!`);
     },
 
-    extractRoute(s: any) {
+    extractRoute(s: string) {
         let parts = s.split(' ');
 
         this.must(parts.length === 2, 'Expected route to have 2 parts: verb and path (e.g. GET /foo), but found: ' + parts.length);

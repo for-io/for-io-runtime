@@ -43,7 +43,7 @@
     "start": "NODE_ENV=dev JWT_SECRET=X ts-node src/run.ts",
     "test": "jest",
     "coverage": "jest --coverage",
-    "dts": "tsc --declaration --module commonjs --target es5 && node dts-pack.js && cp dist/for-io-runtime.d.ts ../ide/src/types/for-io-runtime.d.ts.txt",
+    "dts": "tsc --declaration --module commonjs --target es5 && node dts-pack.js",
     "build": "webpack && ls -l dist/ForIoRuntime.js"
   },
   "repository": {

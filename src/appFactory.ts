@@ -101,8 +101,8 @@ function getModuleNames(appSetup: any, config: any) {
   let testMode = config.NODE_ENV === 'test';
 
   return {
-    src: (moduleNames.src || []).map((name: any) => path.join(dir, name)),
-    test: testMode ? (moduleNames.test || []).map((name: any) => path.join(dir, name)) : [],
+    src: (moduleNames.src || []).map((name: string) => path.join(dir, name)),
+    test: testMode ? (moduleNames.test || []).map((name: string) => path.join(dir, name)) : [],
   };
 }
 
