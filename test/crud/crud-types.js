@@ -33,7 +33,7 @@ class Organization {
         this._id = util._has(data._id) ? types.string(data._id, opts, err, prefix + '_id') : null;
 
         // name : string
-        this.name = util._has(data.name) ? types.string(data.name, opts, err, prefix + 'name') : err.no(prefix + 'name');
+        this.name = util._has(data.name) ? types.string(data.name, opts, err, prefix + 'name') : err.missing(prefix + 'name');
 
         // teams : Team[]
         this.teams = util._coll(types.Team, data.teams, opts, err, prefix + 'teams.');
@@ -47,10 +47,10 @@ class Team {
         this._id = util._has(data._id) ? types.string(data._id, opts, err, prefix + '_id') : null;
 
         // name : string
-        this.name = util._has(data.name) ? types.string(data.name, opts, err, prefix + 'name') : err.no(prefix + 'name');
+        this.name = util._has(data.name) ? types.string(data.name, opts, err, prefix + 'name') : err.missing(prefix + 'name');
 
         // members : object
-        this.members = util._has(data.members) ? types.object(data.members, opts, err, prefix + 'members') : err.no(prefix + 'members');
+        this.members = util._has(data.members) ? types.object(data.members, opts, err, prefix + 'members') : err.missing(prefix + 'members');
     }
 }
 
@@ -58,7 +58,7 @@ class AddOrganizationBody {
     constructor({ data = {}, prefix = '', types, opts, err, util }) {
 
         // name : string
-        this.name = util._has(data.name) ? types.string(data.name, opts, err, prefix + 'name') : err.no(prefix + 'name');
+        this.name = util._has(data.name) ? types.string(data.name, opts, err, prefix + 'name') : err.missing(prefix + 'name');
     }
 }
 
@@ -66,7 +66,7 @@ class UpdateOrganizationParams {
     constructor({ data = {}, prefix = '', types, opts, err, util }) {
 
         // organizationId : string
-        this.organizationId = util._has(data.organizationId) ? types.string(data.organizationId, opts, err, prefix + 'organizationId') : err.no(prefix + 'organizationId');
+        this.organizationId = util._has(data.organizationId) ? types.string(data.organizationId, opts, err, prefix + 'organizationId') : err.missing(prefix + 'organizationId');
     }
 }
 
@@ -74,7 +74,7 @@ class UpdateOrganizationBody {
     constructor({ data = {}, prefix = '', types, opts, err, util }) {
 
         // name : string
-        this.name = util._has(data.name) ? types.string(data.name, opts, err, prefix + 'name') : err.no(prefix + 'name');
+        this.name = util._has(data.name) ? types.string(data.name, opts, err, prefix + 'name') : err.missing(prefix + 'name');
     }
 }
 
@@ -82,7 +82,7 @@ class DeleteOrganizationParams {
     constructor({ data = {}, prefix = '', types, opts, err, util }) {
 
         // organizationId : string
-        this.organizationId = util._has(data.organizationId) ? types.string(data.organizationId, opts, err, prefix + 'organizationId') : err.no(prefix + 'organizationId');
+        this.organizationId = util._has(data.organizationId) ? types.string(data.organizationId, opts, err, prefix + 'organizationId') : err.missing(prefix + 'organizationId');
     }
 }
 
@@ -90,7 +90,7 @@ class GetOrganizationParams {
     constructor({ data = {}, prefix = '', types, opts, err, util }) {
 
         // organizationId : string
-        this.organizationId = util._has(data.organizationId) ? types.string(data.organizationId, opts, err, prefix + 'organizationId') : err.no(prefix + 'organizationId');
+        this.organizationId = util._has(data.organizationId) ? types.string(data.organizationId, opts, err, prefix + 'organizationId') : err.missing(prefix + 'organizationId');
     }
 }
 
@@ -98,7 +98,7 @@ class AddTeamToOrganizationParams {
     constructor({ data = {}, prefix = '', types, opts, err, util }) {
 
         // organizationId : string
-        this.organizationId = util._has(data.organizationId) ? types.string(data.organizationId, opts, err, prefix + 'organizationId') : err.no(prefix + 'organizationId');
+        this.organizationId = util._has(data.organizationId) ? types.string(data.organizationId, opts, err, prefix + 'organizationId') : err.missing(prefix + 'organizationId');
     }
 }
 
@@ -106,10 +106,10 @@ class AddTeamToOrganizationBody {
     constructor({ data = {}, prefix = '', types, opts, err, util }) {
 
         // name : string
-        this.name = util._has(data.name) ? types.string(data.name, opts, err, prefix + 'name') : err.no(prefix + 'name');
+        this.name = util._has(data.name) ? types.string(data.name, opts, err, prefix + 'name') : err.missing(prefix + 'name');
 
         // members : object
-        this.members = util._has(data.members) ? types.object(data.members, opts, err, prefix + 'members') : err.no(prefix + 'members');
+        this.members = util._has(data.members) ? types.object(data.members, opts, err, prefix + 'members') : err.missing(prefix + 'members');
     }
 }
 
@@ -117,10 +117,10 @@ class UpdateTeamOfOrganizationParams {
     constructor({ data = {}, prefix = '', types, opts, err, util }) {
 
         // organizationId : string
-        this.organizationId = util._has(data.organizationId) ? types.string(data.organizationId, opts, err, prefix + 'organizationId') : err.no(prefix + 'organizationId');
+        this.organizationId = util._has(data.organizationId) ? types.string(data.organizationId, opts, err, prefix + 'organizationId') : err.missing(prefix + 'organizationId');
 
         // teamId2 : string
-        this.teamId2 = util._has(data.teamId2) ? types.string(data.teamId2, opts, err, prefix + 'teamId2') : err.no(prefix + 'teamId2');
+        this.teamId2 = util._has(data.teamId2) ? types.string(data.teamId2, opts, err, prefix + 'teamId2') : err.missing(prefix + 'teamId2');
     }
 }
 
@@ -128,10 +128,10 @@ class UpdateTeamOfOrganizationBody {
     constructor({ data = {}, prefix = '', types, opts, err, util }) {
 
         // name : string
-        this.name = util._has(data.name) ? types.string(data.name, opts, err, prefix + 'name') : err.no(prefix + 'name');
+        this.name = util._has(data.name) ? types.string(data.name, opts, err, prefix + 'name') : err.missing(prefix + 'name');
 
         // members : object
-        this.members = util._has(data.members) ? types.object(data.members, opts, err, prefix + 'members') : err.no(prefix + 'members');
+        this.members = util._has(data.members) ? types.object(data.members, opts, err, prefix + 'members') : err.missing(prefix + 'members');
     }
 }
 
@@ -139,10 +139,10 @@ class DeleteTeamOfOrganizationParams {
     constructor({ data = {}, prefix = '', types, opts, err, util }) {
 
         // organizationId : string
-        this.organizationId = util._has(data.organizationId) ? types.string(data.organizationId, opts, err, prefix + 'organizationId') : err.no(prefix + 'organizationId');
+        this.organizationId = util._has(data.organizationId) ? types.string(data.organizationId, opts, err, prefix + 'organizationId') : err.missing(prefix + 'organizationId');
 
         // teamId2 : string
-        this.teamId2 = util._has(data.teamId2) ? types.string(data.teamId2, opts, err, prefix + 'teamId2') : err.no(prefix + 'teamId2');
+        this.teamId2 = util._has(data.teamId2) ? types.string(data.teamId2, opts, err, prefix + 'teamId2') : err.missing(prefix + 'teamId2');
     }
 }
 
@@ -150,10 +150,10 @@ class GetTeamOfOrganizationParams {
     constructor({ data = {}, prefix = '', types, opts, err, util }) {
 
         // organizationId : string
-        this.organizationId = util._has(data.organizationId) ? types.string(data.organizationId, opts, err, prefix + 'organizationId') : err.no(prefix + 'organizationId');
+        this.organizationId = util._has(data.organizationId) ? types.string(data.organizationId, opts, err, prefix + 'organizationId') : err.missing(prefix + 'organizationId');
 
         // teamId2 : string
-        this.teamId2 = util._has(data.teamId2) ? types.string(data.teamId2, opts, err, prefix + 'teamId2') : err.no(prefix + 'teamId2');
+        this.teamId2 = util._has(data.teamId2) ? types.string(data.teamId2, opts, err, prefix + 'teamId2') : err.missing(prefix + 'teamId2');
     }
 }
 
@@ -161,7 +161,7 @@ class ListTeamsOfOrganizationParams {
     constructor({ data = {}, prefix = '', types, opts, err, util }) {
 
         // organizationId : string
-        this.organizationId = util._has(data.organizationId) ? types.string(data.organizationId, opts, err, prefix + 'organizationId') : err.no(prefix + 'organizationId');
+        this.organizationId = util._has(data.organizationId) ? types.string(data.organizationId, opts, err, prefix + 'organizationId') : err.missing(prefix + 'organizationId');
     }
 }
 

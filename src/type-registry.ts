@@ -75,14 +75,15 @@ export type TypeImplOpts = {
 
 export type TypeImplUtils = {
     _has(val: any): boolean;
-    _coll(factory: InternalTypeInstanceFactory, val: any, opts: EntityOptions, err: ValidationErrors, name: string): any[];
+    _coll(factory: InternalTypeInstanceFactory, val: any, opts: EntityOptions, err?: ValidationErrors): any[];
+    _no(name: string, opts?: EntityOptions, err?: ValidationErrors): any;
 };
 
 type TypeFactories = Record<string, InternalTypeInstanceFactory>;
 
 const _types: TypeFactories = {};
 
-const _util: TypeImplUtils = { _has, _coll };
+const _util: TypeImplUtils = { _has, _coll, _no };
 
 function _registerType(typeName: string, factory: TypeInstanceFactory, isBuiltIn: boolean) {
     _types[typeName] = _wrap(factory, isBuiltIn);
@@ -119,7 +120,7 @@ export class ValidationErrors {
         }
     }
 
-    no(name: string) {
+    missing(name: string) {
         this.error(name, 'Missing value');
         return NO_VAL;
     }
@@ -160,7 +161,7 @@ function _error(err: ValidationErrors, opts: DataTypeOptions, msg: string) {
     let name = opts ? opts.name : undefined;
 
     if (err) {
-        if (name === undefined) throw new Error('The name of the type instance be defined!');
+        if (name === undefined || name === null) throw new Error('The name of the type instance be must defined!');
         err.error(name, msg);
 
     } else {
@@ -174,7 +175,7 @@ function _wrongType(err: ValidationErrors | undefined, opts: DataTypeOptions | u
     let name = opts ? opts.name : undefined;
 
     if (err) {
-        if (name === undefined) throw new Error('The name of the type instance be defined!');
+        if (name === undefined || name === null) throw new Error('The name of the type instance be must defined!');
         err.wrongType(name, type, val);
 
     } else {
@@ -293,6 +294,18 @@ const _builtInTypes = {
 
 function _has(val: any) {
     return val !== undefined && val !== null;
+}
+
+function _no(name: string, opts?: EntityOptions, err?: ValidationErrors) {
+    if (err) {
+        if (name === undefined || name === null) throw new Error('The name of the type instance must be defined!');
+        err.missing(name);
+
+    } else {
+        let validate = opts && opts.validation;
+        let errMsg = name ? `A value for '${name}' must be specified!` : `A value must be specified!`;
+        throw validate ? _validationErr(errMsg) : new Error(errMsg);
+    }
 }
 
 function _coll(factory: InternalTypeInstanceFactory, val: any, opts?: EntityOptions, err?: ValidationErrors, name?: string): any[] {
