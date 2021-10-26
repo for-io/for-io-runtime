@@ -25,7 +25,8 @@
  */
 
 export { App, AppSetup } from './app';
-export { PrimitiveTypes, ValidationErrors, TypeImplUtils, TypeImplOpts, EntityOptions, TypeInstanceFactory, ForIoType } from './type-registry';
+export { ExtendedMongoCollection } from './components/db';
+export { EntityOptions, ForIoType, PrimitiveTypes, TypeImplOpts, TypeImplUtils, TypeInstanceFactory, ValidationErrors } from './type-registry';
 import { appFactory as createApp } from './appFactory';
 import server from './server';
 

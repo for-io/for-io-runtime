@@ -24,43 +24,68 @@
  * SOFTWARE.
  */
 
+import { Collection, FilterQuery, UpdateQuery } from "mongodb";
 import { AppSetup } from "..";
 
 const moduleName = 'built-in:components/db.ts';
 
-function dbFactory(config: any, database: any, mongodb__getter: any, mongoCollectionExtensions__optional__getter: any) {
+type MongoDocId = any;
+
+type BaseSchema = { [key: string]: any };
+
+type MongoCollectionExtensions<TSchema extends BaseSchema> = {
+    exists(query: FilterQuery<TSchema>): Promise<boolean>;
+    verifyId(docId: MongoDocId): Promise<void>;
+    getOne(query: FilterQuery<TSchema>): Promise<TSchema>;
+    getById(docId: MongoDocId): Promise<TSchema>;
+    updateById(docId: MongoDocId, modification: UpdateQuery<TSchema> | Partial<TSchema>): Promise<void>;
+    updateByIdIf(docId: MongoDocId, condition: FilterQuery<TSchema>, modification: UpdateQuery<TSchema> | Partial<TSchema>): Promise<void>;
+    deleteById(docId: MongoDocId): Promise<void>;
+    deleteByIdIf(docId: MongoDocId, condition: FilterQuery<TSchema>): Promise<void>;
+    addRef(docId: MongoDocId, relName: string, referencedId: MongoDocId): Promise<void>;
+    removeRef(docId: MongoDocId, relName: string, referencedId: MongoDocId): Promise<void>;
+};
+
+export type ExtendedMongoCollection<TSchema extends BaseSchema> = Collection<TSchema> & MongoCollectionExtensions<TSchema>;
+
+interface ApiResponses {
+    NOT_FOUND: any,
+    FORBIDDEN: any,
+};
+
+function createDbService(config: any, database: any, responses: ApiResponses, mongodb__getter: any) {
 
     switch (config.DB_TYPE) {
         case 'mongodb':
-            return createMongoProxy(mongodb__getter(), mongoCollectionExtensions__optional__getter());
+            return createMongoProxy(mongodb__getter(), responses);
 
         default:
             return null;
     }
 
-    function createMongoProxy(mongodb: any, mongoCollectionExtensions: any) {
+    function createMongoProxy(mongodb: any, responses: ApiResponses) {
         const dbProxyTarget = {
             ObjectId: mongodb.ObjectId.bind(mongodb),
         };
 
         const collFactory = (name: string) => database.collection(name);
 
-        return createDbProxy(dbProxyTarget, collFactory, mongoCollectionExtensions);
+        return createDbProxy(dbProxyTarget, collFactory, getMongoCollectionExtensions(responses));
     }
 
-    function createDbProxy(dbTarget: any, tableFactory: any, tableExtensions: any) {
+    function createDbProxy(dbTarget: any, collFactory: any, collExtensions: any) {
 
-        function extendTable(table: any) {
-            if (tableExtensions) {
-                for (const name in tableExtensions) {
-                    if (tableExtensions.hasOwnProperty(name)) {
-                        const fn = tableExtensions[name];
-                        table[name] = fn.bind(table);
+        function extendColl(coll: any) {
+            if (collExtensions) {
+                for (const name in collExtensions) {
+                    if (collExtensions.hasOwnProperty(name)) {
+                        const fn = collExtensions[name];
+                        coll[name] = fn.bind(coll);
                     }
                 }
             }
 
-            return table;
+            return coll;
         }
 
         return new Proxy(dbTarget, {
@@ -68,7 +93,7 @@ function dbFactory(config: any, database: any, mongodb__getter: any, mongoCollec
 
                 // if not a symbol and not an existing property and not internal
                 if (isCollProperty(target, propName)) {
-                    target[propName] = extendTable(tableFactory(propName));
+                    target[propName] = extendColl(collFactory(propName));
                 }
 
                 return target[propName];
@@ -80,130 +105,97 @@ function dbFactory(config: any, database: any, mongodb__getter: any, mongoCollec
 
 function isCollProperty(target: any, propName: string) {
     return typeof propName === 'string'
-        && !target.hasOwnProperty(propName)
+        && !Object.prototype.hasOwnProperty.call(target, propName)
         && !propName.startsWith('__')
         && propName !== 'then'
         && propName !== 'toJSON';
 }
 
-function existsFactory(responses: any) {
+function getMongoCollectionExtensions<TSchema extends BaseSchema>(responses: ApiResponses) {
+    const collExtensions: MongoCollectionExtensions<TSchema> = {
 
-    return async function exists(this: any, filter: any) {
-        let count = await this.countDocuments(filter, { limit: 1 });
-        return count === 1;
-    };
+        async exists(this: ExtendedMongoCollection<TSchema>, filter: FilterQuery<TSchema>): Promise<boolean> {
+            let count = await this.countDocuments(filter, { limit: 1 });
+            return count === 1;
+        },
 
-}
+        async verifyId(this: ExtendedMongoCollection<TSchema>, docId: MongoDocId): Promise<void> {
+            if (!(await this.exists({ _id: docId }))) throw responses.NOT_FOUND;
+        },
 
-function verifyIdFactory(responses: any) {
+        async getOne(this: ExtendedMongoCollection<TSchema>, filter: FilterQuery<TSchema>): Promise<TSchema> {
+            let doc = await this.findOne(filter);
 
-    return async function verifyId(this: any, id: any) {
-        if (!(await this.exists({ _id: id }))) throw responses.NOT_FOUND;
-    };
+            if (!doc) throw responses.NOT_FOUND;
 
-}
+            return doc;
+        },
 
-function getOneFactory(responses: any) {
+        async getById(this: ExtendedMongoCollection<TSchema>, docId: MongoDocId) {
+            return await this.getOne({ _id: docId });
+        },
 
-    return async function getOne(this: any, filter: any) {
-        let doc = await this.findOne(filter);
+        async updateById(this: ExtendedMongoCollection<TSchema>, docId: MongoDocId,
+            modification: UpdateQuery<TSchema> | Partial<TSchema>): Promise<void> {
 
-        if (!doc) throw responses.NOT_FOUND;
+            let result = await this.updateOne({ _id: docId }, modification);
 
-        return doc;
-    };
+            if (result.matchedCount === 0) throw responses.NOT_FOUND;
+        },
 
-}
+        async updateByIdIf(this: ExtendedMongoCollection<TSchema>, docId: MongoDocId,
+            condition: FilterQuery<TSchema>, modification: UpdateQuery<TSchema> | Partial<TSchema>): Promise<void> {
 
-function getByIdFactory(responses: any) {
+            await this.verifyId(docId);
 
-    return async function getById(this: any, id: any) {
-        return await this.getOne({ _id: id });
-    };
-
-}
-
-function deleteByIdFactory(responses: any) {
-
-    return async function deleteById(this: any, id: any, condition: any) {
-        if (condition) {
-            await this.verifyId(id);
-
-            let filter = Object.assign({ _id: id }, condition);
-
-            let result = await this.deleteOne(filter);
-
-            if (result.deletedCount === 0) throw responses.FORBIDDEN;
-
-        } else {
-            let result = await this.deleteOne({ _id: id });
-
-            if (result.deletedCount === 0) throw responses.NOT_FOUND;
-        }
-    };
-
-}
-
-
-function updateByIdFactory(responses: any) {
-
-    return async function updateById(this: any, id: any, modification: any, condition: any) {
-        if (condition) {
-            await this.verifyId(id);
-
-            let filter = Object.assign({ _id: id }, condition);
+            let filter = Object.assign({ _id: docId }, condition);
 
             let result = await this.updateOne(filter, modification);
 
             if (result.matchedCount === 0) throw responses.FORBIDDEN;
+        },
 
-        } else {
-            let result = await this.updateOne({ _id: id }, modification);
+        async deleteById(this: ExtendedMongoCollection<TSchema>, docId: MongoDocId): Promise<void> {
+            let result = await this.deleteOne({ _id: docId });
+
+            if (result.deletedCount === 0) throw responses.NOT_FOUND;
+        },
+
+        async deleteByIdIf(this: ExtendedMongoCollection<TSchema>, docId: MongoDocId, condition: FilterQuery<TSchema>): Promise<void> {
+            await this.verifyId(docId);
+
+            let filter = Object.assign({ _id: docId }, condition);
+
+            let result = await this.deleteOne(filter);
+
+            if (result.deletedCount === 0) throw responses.FORBIDDEN;
+        },
+
+        async addRef(this: ExtendedMongoCollection<TSchema>, docId: MongoDocId, relName: string, referencedId: MongoDocId): Promise<void> {
+            let result = await this.updateOne({ _id: docId }, {
+                $push: {
+                    [relName]: referencedId
+                },
+            } as any);
 
             if (result.matchedCount === 0) throw responses.NOT_FOUND;
-        }
+        },
+
+        async removeRef(this: ExtendedMongoCollection<TSchema>, docId: MongoDocId, relName: string, referencedId: MongoDocId): Promise<void> {
+            let result = await this.updateOne({ _id: docId }, {
+                $pull: {
+                    [relName]: referencedId
+                },
+            } as any);
+
+            if (result.matchedCount === 0) throw responses.NOT_FOUND;
+        },
+
     };
 
-}
-
-function addRefFactory(responses: any) {
-
-    return async function addRef(this: any, docId: any, relName: string, refId: any) {
-        let result = await this.updateOne({ _id: docId }, {
-            $push: {
-                [relName]: refId
-            },
-        });
-
-        if (result.matchedCount === 0) throw responses.NOT_FOUND;
-    };
-
-}
-
-function removeRefFactory(responses: any) {
-
-    return async function removeRef(this: any, docId: any, relName: string, refId: any) {
-        let result = await this.updateOne({ _id: docId }, {
-            $pull: {
-                [relName]: refId
-            },
-        });
-
-        if (result.matchedCount === 0) throw responses.NOT_FOUND;
-    };
-
+    return collExtensions;
 }
 
 export function registerDb(app: AppSetup) {
-    app.addServiceFactory({ name: 'db', asDefault: true, moduleName }, dbFactory);
-
-    const target = 'mongoCollectionExtensions';
-    app.addMemberFactory(`${target}.exists`, existsFactory);
-    app.addMemberFactory(`${target}.verifyId`, verifyIdFactory);
-    app.addMemberFactory(`${target}.getOne`, getOneFactory);
-    app.addMemberFactory(`${target}.getById`, getByIdFactory);
-    app.addMemberFactory(`${target}.deleteById`, deleteByIdFactory);
-    app.addMemberFactory(`${target}.updateById`, updateByIdFactory);
-    app.addMemberFactory(`${target}.addRef`, addRefFactory);
-    app.addMemberFactory(`${target}.removeRef`, removeRefFactory);
+    app.addServiceFactory({ name: 'db', asDefault: true, moduleName }, createDbService);
 }
